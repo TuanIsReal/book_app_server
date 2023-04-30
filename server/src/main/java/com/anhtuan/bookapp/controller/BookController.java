@@ -4,6 +4,7 @@ import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.Book;
 import com.anhtuan.bookapp.domain.Category;
 import com.anhtuan.bookapp.request.AddBookRequest;
+import com.anhtuan.bookapp.request.GetBookFilterRequest;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.BookService;
 import com.anhtuan.bookapp.service.base.CategoryService;
@@ -55,8 +56,13 @@ public class BookController {
         book.setBookCategory(categoriesId);
         book.setStar(5);
         book.setTotalChapter(0);
+        book.setTotalPurchased(0);
+        book.setTotalReview(0);
         book.setUploadTime(System.currentTimeMillis());
         book.setLastUpdateTime(System.currentTimeMillis());
+        if (request.getUserPost().equals(Constant.ADMIN_ID)){
+            book.setAdminUp(true);
+        }
         bookService.insertBook(book);
         response.setCode(100);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -224,8 +230,9 @@ public class BookController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/getNewBook")
-    public ResponseEntity<Response> getNewBook(){
+    @GetMapping("/getBookHome")
+    public ResponseEntity<Response> getBookHome(@RequestParam int typeFilter,
+                                               @RequestParam boolean limit){
         Response response = new Response();
 
         HashMap<String, String> mapCategory = new HashMap<>();
@@ -234,7 +241,32 @@ public class BookController {
             mapCategory.put(category.getId(), category.getCategoryName());
         }
 
-        List<Book> books = bookService.getNewBookList();
+        List<Book> books = new ArrayList<>();
+        if (limit && typeFilter == Constant.TYPE_FILTER.NEW_BOOK){
+            books = bookService.getTop8NewBookList();
+        }
+        if (!limit && typeFilter == Constant.TYPE_FILTER.NEW_BOOK){
+            books = bookService.getNewBookList();
+        }
+        if (limit && typeFilter == Constant.TYPE_FILTER.RECOMMEND_BOOK){
+            books = bookService.getTop6RecommendBookList();
+        }
+        if (!limit && typeFilter == Constant.TYPE_FILTER.RECOMMEND_BOOK){
+            books = bookService.getRecommendBookList();
+        }
+        if (limit && typeFilter == Constant.TYPE_FILTER.MOST_BUY){
+            books = bookService.getTop6MostBuyBookList();
+        }
+        if (!limit && typeFilter == Constant.TYPE_FILTER.MOST_BUY){
+            books = bookService.getMostBuyBookList();
+        }
+        if (limit && typeFilter == Constant.TYPE_FILTER.MOST_REVIEW){
+            books = bookService.getTop6MostReviewBookList();
+        }
+        if (!limit && typeFilter == Constant.TYPE_FILTER.MOST_REVIEW){
+            books = bookService.getMostReviewBookList();
+        }
+
 
         for (Book book:books){
             List<String> bookCategoryIdList = book.getBookCategory();
@@ -251,8 +283,8 @@ public class BookController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("/getRecommendBook")
-    public ResponseEntity<Response> getRecommendBook(){
+    @PostMapping("/getBookFilter")
+    public ResponseEntity<Response> getBookFilter(@RequestBody GetBookFilterRequest request){
         Response response = new Response();
 
         HashMap<String, String> mapCategory = new HashMap<>();
@@ -261,7 +293,8 @@ public class BookController {
             mapCategory.put(category.getId(), category.getCategoryName());
         }
 
-        List<Book> books = bookService.getRecommendBookList();
+        List<Book> books = bookService.searchBookFilter
+                (request.getSort(), request.getOrder(), request.getStatus(), request.getPost(), request.getCategory(), request.getPage());
 
         for (Book book:books){
             List<String> bookCategoryIdList = book.getBookCategory();
@@ -273,9 +306,9 @@ public class BookController {
 
             book.setBookCategory(bookNameList);
         }
-        System.out.println(books.size());
         response.setCode(100);
         response.setData(books);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 }

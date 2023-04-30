@@ -48,8 +48,6 @@ public class PurchasedBookController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-
-
         PurchasedBook purchasedBook = purchasedBookService.getPurchasedBookByBookIdAndUserId(userId, bookId);
         if (purchasedBook != null){
             response.setCode(112);
@@ -70,6 +68,9 @@ public class PurchasedBookController {
 
                 purchasedBook = new PurchasedBook(bookId, userId, book.getBookName(), 0, time, price, time, true);
                 purchasedBookService.insertPuchasedBook(purchasedBook);
+
+                int totalPurchased = book.getTotalPurchased() + 1;
+                bookService.updateTotalPurchasedById(bookId, totalPurchased);
 
                 String mess = Utils.messageBodyBuyBook(user.getName(), book.getBookName());
                 Notification notification = new Notification

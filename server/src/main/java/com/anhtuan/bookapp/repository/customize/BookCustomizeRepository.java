@@ -11,6 +11,7 @@ public interface BookCustomizeRepository {
 
     void updateTotalChapterById(String bookId, int totalChapter);
     void updateStarById(String id, double star);
-
-
+    void updateTotalPurchasedById(String id, int totalPurchased);
+    void updateTotalReviewById(String id, int totalReview);
+    List<Book> searchBookFilter(String sort,int order, int status, int post, List<String> category, int page);
 }

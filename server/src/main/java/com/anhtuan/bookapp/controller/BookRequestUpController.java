@@ -1,10 +1,8 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.Utils;
 import com.anhtuan.bookapp.config.Constant;
-import com.anhtuan.bookapp.domain.Book;
-import com.anhtuan.bookapp.domain.BookRequestUp;
-import com.anhtuan.bookapp.domain.Category;
-import com.anhtuan.bookapp.domain.PurchasedBook;
+import com.anhtuan.bookapp.domain.*;
 import com.anhtuan.bookapp.request.AddBookRequest;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.*;
@@ -35,6 +33,9 @@ public class BookRequestUpController {
     private CategoryService categoryService;
     private UserService userService;
     private PurchasedBookService purchasedBookService;
+    private NotificationService notificationService;
+    private DeviceService deviceService;
+    private FirebaseMessagingService firebaseMessagingService;
 
     @PostMapping("addBookRequestUp")
     public ResponseEntity<Response> addBook(@RequestBody AddBookRequest request){
@@ -113,6 +114,7 @@ public class BookRequestUpController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
+        String mess;
 
         if (action == Constant.ReactUpBookRequest.ACCEPT){
             bookRequestUpService.updateStatusById(bookId, Constant.StatusBookRequestUp.ACCEPTED);
@@ -127,10 +129,23 @@ public class BookRequestUpController {
             PurchasedBook purchasedBook =
                     new PurchasedBook(bookId, bookRequestUp.getUserPost(), book.getBookName(), 0, time, 0, time, true);
             purchasedBookService.insertPuchasedBook(purchasedBook);
+
+            mess = Utils.messSuccessUploadBook(bookRequestUp.getBookName());
         } else {
             bookRequestUpService.updateStatusById(bookId, Constant.StatusBookRequestUp.REJECTED);
+            mess = Utils.messSuccessUploadBook(bookRequestUp.getBookName());
         }
 
+        Notification notification = new Notification
+            (bookRequestUp.getUserPost(), bookId, mess, false, System.currentTimeMillis());
+            notificationService.insertNotification(notification);
+
+        Device device = deviceService.getDeviceByUserId(bookRequestUp.getUserPost());
+        if (device != null && !device.getDeviceToken().isBlank()) {
+            NotificationMessage message = new
+                    NotificationMessage(device.getDeviceToken(), Constant.BOOK_REQUEST_UP_TITLE, mess);
+            firebaseMessagingService.sendNotificationByToken(message);
+        }
         response.setCode(100);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

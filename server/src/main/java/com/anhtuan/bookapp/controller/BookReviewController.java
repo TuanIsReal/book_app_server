@@ -46,6 +46,9 @@ public class BookReviewController {
         bookReview.setReviewTime(System.currentTimeMillis());
         bookReviewService.addBookReview(bookReview);
 
+        int totalReview = book.getTotalReview() + 1;
+        bookService.updateTotalReviewById(book.getId(), totalReview);
+
         int quantityReview = bookReviewService.countBookReviewsByBookId(request.getBookId()) - 1;
         double reviewStar = request.getReviewStar();
         double star = book.getStar();

@@ -25,8 +25,12 @@ public class Book {
     public static final String BOOK_PRICE = "book_price";
     public static final String STAR = "star";
     public static final String TOTAL_CHAPTER = "total_chapter";
+    public static final String TOTAL_PURCHASED = "total_purchased";
+    public static final String TOTAL_REVIEW = "total_review";
     public static final String UPLOAD_TIME = "upload_time";
     public static final String LAST_UPDATE_TIME = "last_update_time";
+    public static final String COMPLETE_BOOK = "complete_book";
+    public static final String ADMIN_UP = "admin_up";
 
     @Id
     private String id;
@@ -58,11 +62,23 @@ public class Book {
     @Field(TOTAL_CHAPTER)
     private int totalChapter;
 
+    @Field(TOTAL_PURCHASED)
+    private int totalPurchased;
+
+    @Field(TOTAL_REVIEW)
+    private int totalReview;
+
     @Field(UPLOAD_TIME)
     private long uploadTime;
 
     @Field(LAST_UPDATE_TIME)
     private long lastUpdateTime;
+
+    @Field(COMPLETE_BOOK)
+    private boolean completeBook;
+
+    @Field(ADMIN_UP)
+    private boolean adminUp;
 
     public Book() {
     }

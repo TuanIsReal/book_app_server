@@ -23,5 +23,12 @@ public interface BookRepository extends MongoRepository<Book, String>, BookCusto
     List<Book> findTop8ByOrderByUploadTimeDesc();
 
     List<Book> findTop6ByOrderByStarDesc();
+    List<Book> findBooksByIdIsIn(List<String> idList);
+    List<Book> findBooksByOrderByUploadTimeDesc();
+    List<Book> findBooksByOrderByStarDesc();
+    List<Book> findBooksByOrderByTotalPurchasedDesc();
+    List<Book> findTop6ByOrderByTotalPurchasedDesc();
+    List<Book> findBooksByOrderByTotalReviewDesc();
+    List<Book> findTop6ByOrderByTotalReviewDesc();
 
 }

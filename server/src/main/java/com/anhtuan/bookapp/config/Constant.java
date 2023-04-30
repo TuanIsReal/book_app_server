@@ -7,8 +7,12 @@ public class Constant {
     public static final String PDF_STORAGE_PATH = "C:/Book_app_project/server/pdf/";
     public static final String PDF = ".pdf";
 
-    public static final String BUY_BOOK_NOTIFICATION_TITLE = "Thông báo mua sách";
+    public static final String BUY_BOOK_NOTIFICATION_TITLE = "Thông báo mua truyên";
     public static final String ADD_CHAPTER_NOTIFICATION_TITLE = "Thông báo chương mới";
+    public static final String BOOK_REQUEST_UP_TITLE = "Thông báo yêu cầu đăng truyện";
+    public static final String COMMENT_TITLE = "Thông báo bình luận";
+    public static final String ADMIN_ID = "63fccae5fb208813af311df2";
+    public static final int FILTER_ALL = 0;
 
     public class StatusPurchasedBook{
         public static final int PURCHASED = 1;
@@ -24,6 +28,32 @@ public class Constant {
         public static final int REQUEST = 0;
         public static final int ACCEPTED = 1;
         public static final int REJECTED = -1;
+    }
+
+    public class TYPE_FILTER{
+        public static final int NEW_BOOK = 1;
+        public static final int RECOMMEND_BOOK = 2;
+        public static final int MOST_BUY = 3;
+        public static final int MOST_REVIEW = 4;
+    }
+
+    public class FILTER_STATUS{
+        public static final int WRITING = 1;
+        public static final int COMPLETE = 2;
+    }
+
+    public class FILTER_POST{
+        public static final int USER_POST = 1;
+        public static final int ADMIN_POST = 2;
+    }
+
+    public class FILTER_SORT{
+        public static final int SORT_BY_TIME = 1;
+        public static final int SORT_BY_PURCHASED = 2;
+        public static final int SORT_BY_REVIEW = 3;
+        public static final int SORT_BY_STAR = 4;
+        public static final int SORT_BY_CHAPTER = 5;
+        public static final int SORT_BY_PRICE = 6;
     }
 }
 

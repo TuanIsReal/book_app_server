@@ -1,12 +1,11 @@
 package com.anhtuan.bookapp.controller;
 
-import com.anhtuan.bookapp.domain.Comment;
-import com.anhtuan.bookapp.domain.ReComment;
+import com.anhtuan.bookapp.common.Utils;
+import com.anhtuan.bookapp.config.Constant;
+import com.anhtuan.bookapp.domain.*;
 import com.anhtuan.bookapp.request.AddReCommentRequest;
 import com.anhtuan.bookapp.response.Response;
-import com.anhtuan.bookapp.service.base.CommentService;
-import com.anhtuan.bookapp.service.base.ReCommentService;
-import com.anhtuan.bookapp.service.base.UserService;
+import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +20,9 @@ public class ReCommentController {
     private ReCommentService reCommentService;
     private CommentService commentService;
     private UserService userService;
+    private NotificationService notificationService;
+    private DeviceService deviceService;
+    private FirebaseMessagingService firebaseMessagingService;
 
     @PostMapping("addReComment")
     public ResponseEntity<Response> addReComment(@RequestBody AddReCommentRequest request){
@@ -32,7 +34,8 @@ public class ReCommentController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        if (userService.getUserByUserId(request.getAuthor()) == null){
+        User user = userService.getUserByUserId(request.getAuthor());
+        if (user == null){
             response.setCode(106);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -41,6 +44,19 @@ public class ReCommentController {
         reComment.setCommentTime(System.currentTimeMillis());
         reCommentService.insertReComment(reComment);
         commentService.updateTotalReCommentById(request.getParentCommentId(), comment.getTotalReComment()+1);
+
+        String mess = Utils.messReplyCommentBook(user.getName());
+        Notification notification = new Notification
+                (comment.getAuthor(), comment.getBookId(), mess, false, System.currentTimeMillis());
+        notificationService.insertNotification(notification);
+
+        Device device = deviceService.getDeviceByUserId(comment.getAuthor());
+        if (device != null && !device.getDeviceToken().isBlank()){
+            NotificationMessage message = new
+                    NotificationMessage(device.getDeviceToken(), Constant.COMMENT_TITLE, mess);
+            firebaseMessagingService.sendNotificationByToken(message);
+        }
+
         response.setCode(100);
         return new ResponseEntity<>(response, HttpStatus.OK);
 

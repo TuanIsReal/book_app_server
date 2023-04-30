@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.service.implement;
 
+import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.Book;
 import com.anhtuan.bookapp.repository.base.BookRepository;
 import com.anhtuan.bookapp.service.base.BookService;
@@ -71,11 +72,83 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> getNewBookList() {
-        return bookRepository.findTop8ByOrderByUploadTimeDesc();
+        return bookRepository.findBooksByOrderByUploadTimeDesc();
     }
 
     @Override
     public List<Book> getRecommendBookList() {
         return bookRepository.findTop6ByOrderByStarDesc();
+    }
+
+    @Override
+    public List<Book> getTop8NewBookList() {
+        return bookRepository.findTop8ByOrderByUploadTimeDesc();
+    }
+
+    @Override
+    public List<Book> getTop6RecommendBookList() {
+        return bookRepository.findTop6ByOrderByStarDesc();
+    }
+
+    @Override
+    public void updateTotalPurchasedById(String bookId, int totalPurchased) {
+        bookRepository.updateTotalPurchasedById(bookId, totalPurchased);
+    }
+
+    @Override
+    public void updateTotalReviewById(String bookId, int totalReview) {
+        bookRepository.updateTotalReviewById(bookId, totalReview);
+    }
+
+    @Override
+    public List<Book> getMostBuyBookList() {
+        return bookRepository.findBooksByOrderByTotalPurchasedDesc();
+    }
+
+    @Override
+    public List<Book> getMostReviewBookList() {
+        return bookRepository.findBooksByOrderByTotalReviewDesc();
+    }
+
+    @Override
+    public List<Book> getTop6MostBuyBookList() {
+        return bookRepository.findTop6ByOrderByTotalPurchasedDesc();
+    }
+
+    @Override
+    public List<Book> getTop6MostReviewBookList() {
+        return bookRepository.findTop6ByOrderByTotalReviewDesc();
+    }
+
+    @Override
+    public List<Book> searchBookFilter(int sort, int order, int status, int post, List<String> category, int page) {
+        String sortObj;
+        switch (sort){
+            case 0:
+                sortObj = "all";
+                break;
+            case Constant.FILTER_SORT.SORT_BY_TIME:
+                sortObj = Book.UPLOAD_TIME;
+                break;
+            case Constant.FILTER_SORT.SORT_BY_PURCHASED:
+                sortObj = Book.TOTAL_PURCHASED;
+                break;
+            case Constant.FILTER_SORT.SORT_BY_REVIEW:
+                sortObj = Book.TOTAL_REVIEW;
+                break;
+            case Constant.FILTER_SORT.SORT_BY_STAR:
+                sortObj = Book.STAR;
+                break;
+            case Constant.FILTER_SORT.SORT_BY_CHAPTER:
+                sortObj = Book.TOTAL_CHAPTER;
+                break;
+            case Constant.FILTER_SORT.SORT_BY_PRICE:
+                sortObj = Book.BOOK_PRICE;
+                break;
+            default:
+                sortObj = "all";
+                break;
+        }
+        return bookRepository.searchBookFilter(sortObj, order, status, post, category, page);
     }
 }
