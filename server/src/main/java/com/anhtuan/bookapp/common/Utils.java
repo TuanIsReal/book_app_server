@@ -20,4 +20,8 @@ public class Utils {
     public static final String messReplyCommentBook(String userName){
         return userName + " đã phản hồi bình luận của bạn";
     }
+
+    public static final String messSuccessAddPoint(int point){
+        return "Bạn đã nạp thêm thành công " + point + " point vào tài khoản!";
+    }
 }

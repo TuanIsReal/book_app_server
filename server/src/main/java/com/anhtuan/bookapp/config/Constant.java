@@ -11,8 +11,10 @@ public class Constant {
     public static final String ADD_CHAPTER_NOTIFICATION_TITLE = "Thông báo chương mới";
     public static final String BOOK_REQUEST_UP_TITLE = "Thông báo yêu cầu đăng truyện";
     public static final String COMMENT_TITLE = "Thông báo bình luận";
+    public static final String ADD_POINT_TITLE = "Thông báo thêm Point";
     public static final String ADMIN_ID = "63fccae5fb208813af311df2";
     public static final int FILTER_ALL = 0;
+    public static final String ADD_POINT = "addPoint";
 
     public class StatusPurchasedBook{
         public static final int PURCHASED = 1;
@@ -54,6 +56,12 @@ public class Constant {
         public static final int SORT_BY_STAR = 4;
         public static final int SORT_BY_CHAPTER = 5;
         public static final int SORT_BY_PRICE = 6;
+    }
+
+    public class TRANSACTION_STATUS{
+        public static final int SUCCESS = 0;
+        public static final int WAITING = 1;
+        public static final int REJECT = 2;
     }
 }
 
