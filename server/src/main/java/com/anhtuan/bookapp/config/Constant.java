@@ -15,6 +15,8 @@ public class Constant {
     public static final String ADMIN_ID = "63fccae5fb208813af311df2";
     public static final int FILTER_ALL = 0;
     public static final String ADD_POINT = "addPoint";
+    public static final String FORGOT_PASSWORD_SUBJECT = "Truyện AT - Xác nhận quên mật khẩu";
+    public static final long MINUTE_15 = 1000*60*15;
 
     public class StatusPurchasedBook{
         public static final int PURCHASED = 1;
@@ -62,6 +64,10 @@ public class Constant {
         public static final int SUCCESS = 0;
         public static final int WAITING = 1;
         public static final int REJECT = 2;
+    }
+
+    public class VERIFY_CODE_TYPE{
+        public static final int FORGOT_PASS = 1;
     }
 }
 

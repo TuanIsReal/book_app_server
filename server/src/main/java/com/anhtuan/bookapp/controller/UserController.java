@@ -1,15 +1,16 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.Utils;
 import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.NotificationMessage;
 import com.anhtuan.bookapp.domain.User;
+import com.anhtuan.bookapp.domain.VerifyCode;
+import com.anhtuan.bookapp.request.AuthenVerifyCodeRequest;
 import com.anhtuan.bookapp.request.RegisterRequest;
 import com.anhtuan.bookapp.response.LoginResponse;
 import com.anhtuan.bookapp.response.RegisterResponse;
 import com.anhtuan.bookapp.response.Response;
-import com.anhtuan.bookapp.service.base.DeviceService;
-import com.anhtuan.bookapp.service.base.FirebaseMessagingService;
-import com.anhtuan.bookapp.service.base.UserService;
+import com.anhtuan.bookapp.service.base.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 
 @RestController
@@ -33,13 +35,16 @@ public class UserController {
     private UserService userService;
     private FirebaseMessagingService firebaseMessagingService;
     private DeviceService deviceService;
+    private EmailService emailService;
+    private VerifyCodeService verifyCodeService;
+
 
     @GetMapping("/login")
     public ResponseEntity<Response> loginController(@RequestParam String email,
                                                     @RequestParam String password,
                                                     @RequestParam String ip){
         Response response = new Response();
-        User user = userService.getUserByEmailAndPassword(email, password);
+        User user = userService.getByEmailAndPasswordAndIsVerify(email, password, true);
         if (user == null){
             response.setCode(102);
             response.setData(new LoginResponse());
@@ -61,7 +66,7 @@ public class UserController {
         String role = "member";
         String name = registerRequest.getName();
         String ip = registerRequest.getIp();
-        userService.insertUser(new User(email, password, role, name, "", ip, false,500));
+        userService.insertUser(new User(email, password, role, name, "", ip, false,500, false));
         User user = userService.getUserByEmailAndPassword(email,password);
 
         response.setCode(100);
@@ -100,7 +105,7 @@ public class UserController {
     @GetMapping("/checkExistUser")
     public ResponseEntity<Response> checkExistUser(@RequestParam String email){
         Response response = new Response();
-        if (userService.getUserByEmail(email) != null){
+        if (userService.getUserByEmailAndIsVerify(email, true) != null){
             response.setCode(101);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -195,6 +200,75 @@ public class UserController {
     public ResponseEntity<Response> sendNoti(@RequestBody NotificationMessage notificationMessage){
         Response response = new Response();
         response.setCode(firebaseMessagingService.sendNotificationByToken(notificationMessage));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("forgotPassword")
+    public ResponseEntity<Response> forgotPassword(@RequestParam String email){
+        Response response = new Response();
+        User user = userService.getUserByEmailAndIsVerify(email, true);
+        if (Objects.isNull(user)){
+            response.setCode(106);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        String code = Utils.getVerifyCode(6);
+        long time = System.currentTimeMillis();
+        verifyCodeService.addVerifyCode(new VerifyCode(user.getId(), email, Constant.VERIFY_CODE_TYPE.FORGOT_PASS, code, time));
+
+        String text = Utils.mailForgotPassword(code);
+        emailService.sendEmail(email, Constant.FORGOT_PASSWORD_SUBJECT, text);
+        response.setCode(100);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("authenVerifyCode")
+    public ResponseEntity<Response> authenVerifyCode(@RequestBody AuthenVerifyCodeRequest request){
+        Response response = new Response();
+        String code = request.getCode();
+        long time = System.currentTimeMillis() - Constant.MINUTE_15;
+        int type = request.getType();
+        VerifyCode verifyCode = new VerifyCode();
+        if (type == Constant.VERIFY_CODE_TYPE.FORGOT_PASS){
+            verifyCode = verifyCodeService.
+                    findVerifyCodeByCodeAndEmailAndTypeAndTimeGreaterThan(code, request.getEmail(), type, time);
+            if (Objects.isNull(verifyCode)){
+                response.setCode(121);
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+        }
+
+        response.setCode(100);
+        response.setData(verifyCode.getUserId());
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("updateVerifyEmail")
+    public ResponseEntity<Response> updateVerifyEmail(@RequestParam String userId){
+        Response response = new Response();
+        User user = userService.getUserByUserId(userId);
+        if (Objects.isNull(user)){
+            response.setCode(106);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        userService.updateIsVerifyByUserId(userId, true);
+        response.setCode(100);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("createNewPassword")
+    public ResponseEntity<Response> createNewPassword(@RequestParam String userId,
+                                                   @RequestParam String newPassword){
+        Response response = new Response();
+        User user = userService.getUserByUserId(userId);
+        if (user == null){
+            response.setCode(106);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        userService.updatePasswordByUserId(userId, newPassword);
+        response.setCode(100);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -2,6 +2,8 @@ package com.anhtuan.bookapp.repository.customize;
 
 import com.anhtuan.bookapp.domain.User;
 
+import java.util.List;
+
 public interface UserCustomizeRepository {
     void insertUser(User user);
 
@@ -16,4 +18,8 @@ public interface UserCustomizeRepository {
     void updatePasswordByUserId(String userId, String password);
 
     void updateNameByUserId(String userId, String name);
+
+    void updateIsVerifyByUserId(String userId, boolean isVerify);
+    User findUserByEmailAndIsVerify(String email, boolean isVerify);
+    User findByEmailAndPasswordAndIsVerify(String email, String password, boolean isVerify);
 }

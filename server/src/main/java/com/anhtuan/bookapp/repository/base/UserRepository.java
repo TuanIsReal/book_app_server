@@ -17,4 +17,5 @@ public interface UserRepository extends MongoRepository<User, String>, UserCusto
     List<User> findUserByLastLoginIp(String ip);
 
     User findUserByIdAndPassword(String id, String password);
+
 }

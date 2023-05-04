@@ -74,4 +74,27 @@ public class UserRepositoryImpl implements UserCustomizeRepository {
         update.set(User.NAME, name);
         mongoTemplate.updateFirst(query, update, User.class);
     }
+
+    @Override
+    public void updateIsVerifyByUserId(String userId, boolean isVerify) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(User.USER_ID).is(userId));
+        Update update = new Update();
+        update.set(User.IS_VERIFY, isVerify);
+        mongoTemplate.updateFirst(query, update, User.class);
+    }
+
+    @Override
+    public User findUserByEmailAndIsVerify(String email, boolean isVerify) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(User.EMAIL).is(email).and(User.IS_VERIFY).in(isVerify));
+        return mongoTemplate.findOne(query, User.class);
+    }
+
+    @Override
+    public User findByEmailAndPasswordAndIsVerify(String email, String password, boolean isVerify) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(User.EMAIL).is(email).and(User.PASSWORD).is(password).and(User.IS_VERIFY).in(isVerify));
+        return mongoTemplate.findOne(query, User.class);
+    }
 }

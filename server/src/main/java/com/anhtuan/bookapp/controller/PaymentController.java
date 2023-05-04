@@ -55,11 +55,11 @@ public class PaymentController {
         vnp_params.put("vnp_TmnCode", PaymentConfig.VNP_TMN_CODE);
         vnp_params.put("vnp_Amount", String.valueOf(amount));
         payment.setMoney(point * 1000);
-        String bankCode = requestParams.getBankCode();
-        if (bankCode != null && !bankCode.isEmpty()) {
-            vnp_params.put("vnp_BankCode", bankCode);
-            payment.setBankCode(bankCode);
-        }
+//        String bankCode = requestParams.getBankCode();
+//        if (bankCode != null && !bankCode.isEmpty()) {
+//            vnp_params.put("vnp_BankCode", bankCode);
+//            payment.setBankCode(bankCode);
+//        }
 
         LocalDateTime time = LocalDateTime.now();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
