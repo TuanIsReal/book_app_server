@@ -31,6 +31,10 @@ public class Utils {
         return "Mã xác nhận mật khẩu của bạn là : " + code + " \nMã xác nhận có hiệu lực trong vòng 15 phút. Bạn vui lòng quay lại app để xác thực";
     }
 
+    public static final String textVerifyEmail(String code){
+        return "Mã xác nhận để xác thực tài khoản của bạn là : " + code + " \nMã xác nhận có hiệu lực trong vòng 15 phút. Bạn vui lòng quay lại app để xác thực";
+    }
+
     public static String getVerifyCode(int len) {
         Random rnd = new Random();
         String chars = "0123456789";

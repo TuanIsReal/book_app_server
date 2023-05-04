@@ -228,14 +228,13 @@ public class UserController {
         String code = request.getCode();
         long time = System.currentTimeMillis() - Constant.MINUTE_15;
         int type = request.getType();
-        VerifyCode verifyCode = new VerifyCode();
-        if (type == Constant.VERIFY_CODE_TYPE.FORGOT_PASS){
-            verifyCode = verifyCodeService.
-                    findVerifyCodeByCodeAndEmailAndTypeAndTimeGreaterThan(code, request.getEmail(), type, time);
-            if (Objects.isNull(verifyCode)){
-                response.setCode(121);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
+        VerifyCode verifyCode;
+
+        verifyCode = verifyCodeService.
+                findVerifyCodeByCodeAndEmailAndTypeAndTimeGreaterThan(code, request.getEmail(), type, time);
+        if (Objects.isNull(verifyCode)){
+            response.setCode(121);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         response.setCode(100);
@@ -244,11 +243,18 @@ public class UserController {
     }
 
     @PostMapping("updateVerifyEmail")
-    public ResponseEntity<Response> updateVerifyEmail(@RequestParam String userId){
+    public ResponseEntity<Response> updateVerifyEmail(@RequestParam String userId,
+                                                      @RequestParam String email){
         Response response = new Response();
         User user = userService.getUserByUserId(userId);
         if (Objects.isNull(user)){
             response.setCode(106);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        User user1 = userService.getUserByEmailAndIsVerify(email, true);
+        if (!Objects.isNull(user1)){
+            response.setCode(101);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
@@ -268,6 +274,21 @@ public class UserController {
         }
 
         userService.updatePasswordByUserId(userId, newPassword);
+        response.setCode(100);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("verifyEmail")
+    public ResponseEntity<Response> verifyEmail(@RequestParam String email,
+                                                @RequestParam String userId){
+        Response response = new Response();
+
+        String code = Utils.getVerifyCode(6);
+        long time = System.currentTimeMillis();
+        verifyCodeService.addVerifyCode(new VerifyCode(userId, email, Constant.VERIFY_CODE_TYPE.VERIFY_EMAIL, code, time));
+
+        String text = Utils.textVerifyEmail(code);
+        emailService.sendEmail(email, Constant.VERIFY_EMAIL_SUBJECT, text);
         response.setCode(100);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

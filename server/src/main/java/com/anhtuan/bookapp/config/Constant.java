@@ -16,6 +16,7 @@ public class Constant {
     public static final int FILTER_ALL = 0;
     public static final String ADD_POINT = "addPoint";
     public static final String FORGOT_PASSWORD_SUBJECT = "Truyện AT - Xác nhận quên mật khẩu";
+    public static final String VERIFY_EMAIL_SUBJECT = "Truyện AT - Xác thực tài khoản";
     public static final long MINUTE_15 = 1000*60*15;
 
     public class StatusPurchasedBook{
@@ -68,6 +69,7 @@ public class Constant {
 
     public class VERIFY_CODE_TYPE{
         public static final int FORGOT_PASS = 1;
+        public static final int VERIFY_EMAIL = 2;
     }
 }
 
