@@ -20,6 +20,7 @@ public class User {
     public static final String LAST_LOGIN_IP = "last_login_ip";
     public static final String IS_VERIFY = "is_verify";
 
+    public static final String IS_GOOGLE_LOGIN = "google_email";
     @Id
     private String id;
 
@@ -50,10 +51,22 @@ public class User {
     @Field(IS_VERIFY)
     private boolean isVerify;
 
+    @Field(IS_GOOGLE_LOGIN)
+    private Boolean isGoogleLogin;
+
+    public Boolean getGoogleLogin() {
+        return isGoogleLogin;
+    }
+
+    public void setGoogleLogin(Boolean googleLogin) {
+        isGoogleLogin = googleLogin;
+    }
+
     public User() {
     }
 
-    public User(String email, String password, String role, String name, String avatarImage, String lastLoginIp, Boolean isLogged, int point, boolean isVerify) {
+    public User(String email, String password, String role, String name, String avatarImage, String lastLoginIp, Boolean isLogged, int point) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.role = role;
@@ -62,7 +75,89 @@ public class User {
         this.lastLoginIp = lastLoginIp;
         this.isLogged = isLogged;
         this.point = point;
-        this.isVerify = isVerify;
     }
 
+    public User(String email, String password, String role, String name, String avatarImage, String lastLoginIp, Boolean isLogged, int point, Boolean isGoogleLogin) {
+        this.email = email;
+        this.password = password;
+        this.role = role;
+        this.name = name;
+        this.avatarImage = avatarImage;
+        this.lastLoginIp = lastLoginIp;
+        this.isLogged = isLogged;
+        this.point = point;
+        this.isGoogleLogin = isGoogleLogin;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getAvatarImage() {
+        return avatarImage;
+    }
+
+    public void setAvatarImage(String avatarImage) {
+        this.avatarImage = avatarImage;
+    }
+
+    public int getPoint() {
+        return point;
+    }
+
+    public void setPoint(int point) {
+        this.point = point;
+    }
+
+    public String getLastLoginIp() {
+        return lastLoginIp;
+    }
+
+    public Boolean getLogged() {
+        return isLogged;
+    }
+
+    public void setLogged(Boolean logged) {
+        isLogged = logged;
+    }
+
+    public void setLastLoginIp(String lastLoginIp) {
+        this.lastLoginIp = lastLoginIp;
+    }
 }

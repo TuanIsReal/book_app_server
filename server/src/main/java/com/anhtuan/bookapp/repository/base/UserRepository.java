@@ -18,4 +18,6 @@ public interface UserRepository extends MongoRepository<User, String>, UserCusto
 
     User findUserByIdAndPassword(String id, String password);
 
+    User findByEmailAndIsGoogleLogin(String email,boolean isGoogleLogin);
+
 }

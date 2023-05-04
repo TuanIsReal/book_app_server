@@ -25,6 +25,7 @@ public interface UserService {
     void updatePasswordByUserId(String userId, String password);
     void updateNameByUserId(String userId, String name);
     User getUserByIdAndPassword(String id, String password);
+    User findUserLoginGoolge(String email,boolean isGoogleLogin);
     void updateIsVerifyByUserId(String userId, boolean isVerify);
     User getUserByEmailAndIsVerify(String email, boolean isVerify);
     User getByEmailAndPasswordAndIsVerify(String email, String password, boolean isVerify);

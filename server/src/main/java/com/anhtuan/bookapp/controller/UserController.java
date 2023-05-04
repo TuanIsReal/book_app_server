@@ -4,6 +4,7 @@ import com.anhtuan.bookapp.common.Utils;
 import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.NotificationMessage;
 import com.anhtuan.bookapp.domain.User;
+import com.anhtuan.bookapp.request.LoginGoolgeRequest;
 import com.anhtuan.bookapp.domain.VerifyCode;
 import com.anhtuan.bookapp.request.AuthenVerifyCodeRequest;
 import com.anhtuan.bookapp.request.RegisterRequest;
@@ -74,6 +75,31 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("/google-login")
+    public ResponseEntity<Response> googleLogin(@RequestBody LoginGoolgeRequest goolgeRequest){
+        Response response = new Response();
+        User user=userService.findUserLoginGoolge(goolgeRequest.getEmail(),true);
+        if(user!=null && (user.getGoogleLogin()==null||!user.getGoogleLogin())){
+            throw  new RuntimeException("User is existed without google login");
+        }
+        if(user!=null && user.getGoogleLogin()){
+            userService.updateUserIpAndLoggedStatus(user.getId(), goolgeRequest.getIp(), true);
+            response.setCode(100);
+            response.setData(new LoginResponse(user.getId(), user.getRole()));
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        String email = goolgeRequest.getEmail();
+        String password = goolgeRequest.getPassword();
+        String role = "member";
+        String name = goolgeRequest.getName();
+        String ip = goolgeRequest.getIp();
+        User saveUser=new User(email, "", role, name,goolgeRequest.getImg() , ip, false,500,true);
+        userService.insertUser(saveUser);
+        User newUser = userService.getUserByEmailAndPassword(email,password);
+        response.setCode(100);
+        response.setData(new RegisterResponse(newUser.getId(), newUser.getRole()));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
     @PostMapping("/updateAvatarImage")
     public ResponseEntity<Response> updateAvatarImage(@RequestParam String userId,
                                                     @RequestParam("image") MultipartFile image){
