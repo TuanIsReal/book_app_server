@@ -85,4 +85,9 @@ public class UserServiceImpl implements UserService {
     public User getUserByIdAndPassword(String id, String password) {
         return userRepository.findUserByIdAndPassword(id, password);
     }
+
+    @Override
+    public User findUserLoginGoolge(String email, boolean isGoogleLogin) {
+        return userRepository.findByEmailAndIsGoogleLogin(email,isGoogleLogin);
+    }
 }
