@@ -97,4 +97,11 @@ public class UserRepositoryImpl implements UserCustomizeRepository {
         query.addCriteria(Criteria.where(User.EMAIL).is(email).and(User.PASSWORD).is(password).and(User.IS_VERIFY).in(isVerify));
         return mongoTemplate.findOne(query, User.class);
     }
+
+    @Override
+    public User findByEmailAndNotLoginGoogle(String email) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(User.EMAIL).is(email).and(User.IS_GOOGLE_LOGIN).ne(true));
+        return mongoTemplate.findOne(query, User.class);
+    }
 }

@@ -1,6 +1,7 @@
 package com.anhtuan.bookapp.domain;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
@@ -54,14 +55,6 @@ public class User {
     @Field(IS_GOOGLE_LOGIN)
     private Boolean isGoogleLogin;
 
-    public Boolean getGoogleLogin() {
-        return isGoogleLogin;
-    }
-
-    public void setGoogleLogin(Boolean googleLogin) {
-        isGoogleLogin = googleLogin;
-    }
-
     public User() {
     }
 
@@ -89,66 +82,6 @@ public class User {
         this.isGoogleLogin = isGoogleLogin;
     }
 
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAvatarImage() {
-        return avatarImage;
-    }
-
-    public void setAvatarImage(String avatarImage) {
-        this.avatarImage = avatarImage;
-    }
-
-    public int getPoint() {
-        return point;
-    }
-
-    public void setPoint(int point) {
-        this.point = point;
-    }
-
-    public String getLastLoginIp() {
-        return lastLoginIp;
-    }
-
     public Boolean getLogged() {
         return isLogged;
     }
@@ -157,7 +90,20 @@ public class User {
         isLogged = logged;
     }
 
-    public void setLastLoginIp(String lastLoginIp) {
-        this.lastLoginIp = lastLoginIp;
+    public boolean isVerify() {
+        return isVerify;
     }
+
+    public void setVerify(boolean verify) {
+        isVerify = verify;
+    }
+
+    public Boolean getGoogleLogin() {
+        return isGoogleLogin;
+    }
+
+    public void setGoogleLogin(Boolean googleLogin) {
+        isGoogleLogin = googleLogin;
+    }
+
 }

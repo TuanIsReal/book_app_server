@@ -45,7 +45,7 @@ public class UserController {
                                                     @RequestParam String password,
                                                     @RequestParam String ip){
         Response response = new Response();
-        User user = userService.getByEmailAndPasswordAndIsVerify(email, password, true);
+        User user = userService.getUserByEmailAndPassword(email, password);
         if (user == null){
             response.setCode(102);
             response.setData(new LoginResponse());
@@ -67,7 +67,10 @@ public class UserController {
         String role = "member";
         String name = registerRequest.getName();
         String ip = registerRequest.getIp();
-        userService.insertUser(new User(email, password, role, name, "", ip, false,500, false));
+
+        User user1 = new User(email, password, role, name, "", ip, false,500);
+        userService.insertUser(user1);
+
         User user = userService.getUserByEmailAndPassword(email,password);
 
         response.setCode(100);
@@ -78,7 +81,7 @@ public class UserController {
     @PostMapping("/google-login")
     public ResponseEntity<Response> googleLogin(@RequestBody LoginGoolgeRequest goolgeRequest){
         Response response = new Response();
-        User user=userService.findUserLoginGoolge(goolgeRequest.getEmail(),true);
+        User user = userService.findUserLoginGoolge(goolgeRequest.getEmail(),true);
         if(user!=null && (user.getGoogleLogin()==null||!user.getGoogleLogin())){
             throw  new RuntimeException("User is existed without google login");
         }
@@ -131,7 +134,7 @@ public class UserController {
     @GetMapping("/checkExistUser")
     public ResponseEntity<Response> checkExistUser(@RequestParam String email){
         Response response = new Response();
-        if (userService.getUserByEmailAndIsVerify(email, true) != null){
+        if (userService.getUserByEmail(email) != null){
             response.setCode(101);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -232,7 +235,7 @@ public class UserController {
     @PostMapping("forgotPassword")
     public ResponseEntity<Response> forgotPassword(@RequestParam String email){
         Response response = new Response();
-        User user = userService.getUserByEmailAndIsVerify(email, true);
+        User user = userService.findByEmailAndNotLoginGoogle(email);
         if (Objects.isNull(user)){
             response.setCode(106);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -268,26 +271,6 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("updateVerifyEmail")
-    public ResponseEntity<Response> updateVerifyEmail(@RequestParam String userId,
-                                                      @RequestParam String email){
-        Response response = new Response();
-        User user = userService.getUserByUserId(userId);
-        if (Objects.isNull(user)){
-            response.setCode(106);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-
-        User user1 = userService.getUserByEmailAndIsVerify(email, true);
-        if (!Objects.isNull(user1)){
-            response.setCode(101);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-
-        userService.updateIsVerifyByUserId(userId, true);
-        response.setCode(100);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
 
     @PostMapping("createNewPassword")
     public ResponseEntity<Response> createNewPassword(@RequestParam String userId,
@@ -304,18 +287,4 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @PostMapping("verifyEmail")
-    public ResponseEntity<Response> verifyEmail(@RequestParam String email,
-                                                @RequestParam String userId){
-        Response response = new Response();
-
-        String code = Utils.getVerifyCode(6);
-        long time = System.currentTimeMillis();
-        verifyCodeService.addVerifyCode(new VerifyCode(userId, email, Constant.VERIFY_CODE_TYPE.VERIFY_EMAIL, code, time));
-
-        String text = Utils.textVerifyEmail(code);
-        emailService.sendEmail(email, Constant.VERIFY_EMAIL_SUBJECT, text);
-        response.setCode(100);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
 }

@@ -15,4 +15,16 @@ public class GetBookFilterRequest {
     int post;
     List<String> category;
     int page;
+
+    @Override
+    public String toString() {
+        return "GetBookFilterRequest{" +
+                "sort=" + sort +
+                ", order=" + order +
+                ", status=" + status +
+                ", post=" + post +
+                ", category=" + category +
+                ", page=" + page +
+                '}';
+    }
 }

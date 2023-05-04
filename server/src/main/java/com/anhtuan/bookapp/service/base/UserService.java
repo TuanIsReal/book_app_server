@@ -29,4 +29,5 @@ public interface UserService {
     void updateIsVerifyByUserId(String userId, boolean isVerify);
     User getUserByEmailAndIsVerify(String email, boolean isVerify);
     User getByEmailAndPasswordAndIsVerify(String email, String password, boolean isVerify);
+    User findByEmailAndNotLoginGoogle(String email);
 }
