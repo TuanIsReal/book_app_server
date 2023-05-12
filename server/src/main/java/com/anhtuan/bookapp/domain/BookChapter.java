@@ -1,7 +1,5 @@
 package com.anhtuan.bookapp.domain;
 
-
-import com.anhtuan.bookapp.request.AddBookChapterRequest;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;

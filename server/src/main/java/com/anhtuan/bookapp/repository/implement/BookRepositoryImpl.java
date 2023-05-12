@@ -1,6 +1,6 @@
 package com.anhtuan.bookapp.repository.implement;
 
-import com.anhtuan.bookapp.config.Constant;
+import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.Book;
 import com.anhtuan.bookapp.repository.customize.BookCustomizeRepository;
 import lombok.AllArgsConstructor;
@@ -77,16 +77,16 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
     @Override
     public List<Book> searchBookFilter(String sort, int order, int status, int post, List<String> category, int page) {
         Query query = new Query();
-        if (status == Constant.FILTER_STATUS.COMPLETE){
+        if (status == FILTER_STATUS.COMPLETE){
             query.addCriteria(Criteria.where(Book.COMPLETE_BOOK).is(true));
         }
-        if (status == Constant.FILTER_STATUS.WRITING){
+        if (status == FILTER_STATUS.WRITING){
             query.addCriteria(Criteria.where(Book.COMPLETE_BOOK).isNull());
         }
-        if (post == Constant.FILTER_POST.ADMIN_POST){
+        if (post == FILTER_POST.ADMIN_POST){
             query.addCriteria(Criteria.where(Book.ADMIN_UP).is(true));
         }
-        if (post == Constant.FILTER_POST.USER_POST){
+        if (post == FILTER_POST.USER_POST){
             query.addCriteria(Criteria.where(Book.ADMIN_UP).isNull());
         }
         if (category != null && category.size() > 0){

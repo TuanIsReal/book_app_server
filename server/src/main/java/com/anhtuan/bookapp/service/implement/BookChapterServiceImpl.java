@@ -3,15 +3,15 @@ package com.anhtuan.bookapp.service.implement;
 import com.anhtuan.bookapp.domain.BookChapter;
 import com.anhtuan.bookapp.repository.base.BookChapterRepository;
 import com.anhtuan.bookapp.service.base.BookChapterService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class BookChapterServiceImpl implements BookChapterService {
 
-    @Autowired
     private BookChapterRepository bookChapterRepository;
 
     @Override

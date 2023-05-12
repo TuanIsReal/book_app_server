@@ -1,7 +1,7 @@
 package com.anhtuan.bookapp.controller;
 
 import com.anhtuan.bookapp.common.Utils;
-import com.anhtuan.bookapp.config.Constant;
+import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.*;
 import com.anhtuan.bookapp.response.GetUserBookLibraryResponse;
 import com.anhtuan.bookapp.response.Response;
@@ -31,6 +31,8 @@ public class PurchasedBookController {
     NotificationService notificationService;
 
     DeviceService deviceService;
+
+    TransactionHistoryService transactionHistoryService;
 
     @PostMapping("buyBook")
     public ResponseEntity<Response> buyBook(@RequestParam String userId,
@@ -66,6 +68,11 @@ public class PurchasedBookController {
                 userService.updatePointByUserId(userId, pointUser);
                 userService.updatePointByUserId(seller.getId(), pointSeller);
 
+                TransactionHistory buyBookHis = new TransactionHistory(userId, -1*price, TRANSACTION_TYPE.BUY_BOOK, time);
+                TransactionHistory sellBookHis = new TransactionHistory(seller.getId(), price, TRANSACTION_TYPE.SELL_BOOK, time);
+                transactionHistoryService.addTransactionHistory(buyBookHis);
+                transactionHistoryService.addTransactionHistory(sellBookHis);
+
                 purchasedBook = new PurchasedBook(bookId, userId, book.getBookName(), 0, time, price, time, true);
                 purchasedBookService.insertPuchasedBook(purchasedBook);
 
@@ -74,13 +81,13 @@ public class PurchasedBookController {
 
                 String mess = Utils.messageBodyBuyBook(user.getName(), book.getBookName());
                 Notification notification = new Notification
-                        (book.getUserPost(), bookId, mess, false, System.currentTimeMillis());
+                        (book.getUserPost(), bookId, mess, false, time);
                 notificationService.insertNotification(notification);
 
                 Device device = deviceService.getDeviceByUserId(book.getUserPost());
                 if (device != null && !device.getDeviceToken().isBlank()){
                     NotificationMessage message = new
-                            NotificationMessage(device.getDeviceToken(), Constant.BUY_BOOK_NOTIFICATION_TITLE, mess);
+                            NotificationMessage(device.getDeviceToken(), BUY_BOOK_NOTIFICATION_TITLE, mess);
                     firebaseMessagingService.sendNotificationByToken(message);
                 }
 
@@ -138,9 +145,9 @@ public class PurchasedBookController {
         Response response = new Response();
         PurchasedBook purchasedBook = purchasedBookService.getPurchasedBookByBookIdAndUserId(bookId, userId);
         if (purchasedBook != null){
-            response.setData(Constant.StatusPurchasedBook.PURCHASED);
+            response.setData(STATUS_PURCHASED_BOOK.PURCHASED);
         } else {
-            response.setData(Constant.StatusPurchasedBook.NOT_PURCHASED);
+            response.setData(STATUS_PURCHASED_BOOK.NOT_PURCHASED);
         }
         response.setCode(100);
         return new ResponseEntity<>(response, HttpStatus.OK);

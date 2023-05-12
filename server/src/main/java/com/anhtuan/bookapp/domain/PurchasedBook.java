@@ -1,11 +1,13 @@
 package com.anhtuan.bookapp.domain;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Data
+@NoArgsConstructor
 @Document(collection = PurchasedBook.PURCHASED_BOOK_COLLECTION)
 public class PurchasedBook {
 
@@ -46,8 +48,6 @@ public class PurchasedBook {
     @Field(SHOW_LIBRARY)
     private boolean showLibrary;
 
-    public PurchasedBook() {
-    }
 
     public PurchasedBook(String bookId, String userId, String bookName, int lastReadChapter, long lastReadTime, int paymentPoint, long purchasedTime, boolean showLibrary) {
         this.bookId = bookId;

@@ -1,7 +1,7 @@
 package com.anhtuan.bookapp.controller;
 
 import com.anhtuan.bookapp.common.Utils;
-import com.anhtuan.bookapp.config.Constant;
+import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.*;
 import com.anhtuan.bookapp.request.AddBookRequest;
 import com.anhtuan.bookapp.response.Response;
@@ -50,7 +50,7 @@ public class BookRequestUpController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        if (bookRequestUpService.getBookRequestUpByBookNameAndStatus(request.getBookName(), Constant.StatusBookRequestUp.REQUEST) != null){
+        if (bookRequestUpService.getBookRequestUpByBookNameAndStatus(request.getBookName(), STATUS_BOOK_REQUEST_UP.REQUEST) != null){
             response.setCode(114);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -62,7 +62,7 @@ public class BookRequestUpController {
             categoriesId.add(category.getId());
         }
         book.setBookCategory(categoriesId);
-        book.setStatus(Constant.StatusBookRequestUp.REQUEST);
+        book.setStatus(STATUS_BOOK_REQUEST_UP.REQUEST);
         book.setRequestTime(System.currentTimeMillis());
         bookRequestUpService.addBookRequestUp(book);
         response.setCode(100);
@@ -74,7 +74,7 @@ public class BookRequestUpController {
     public ResponseEntity<Response> updateBookImage(@RequestParam String bookName,
                                                     @RequestParam("image") MultipartFile image){
         Response response = new Response();
-        BookRequestUp book = bookRequestUpService.getBookRequestUpByBookNameAndStatus(bookName, Constant.StatusBookRequestUp.REQUEST);
+        BookRequestUp book = bookRequestUpService.getBookRequestUpByBookNameAndStatus(bookName, STATUS_BOOK_REQUEST_UP.REQUEST);
         if (book == null){
             response.setCode(115);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -87,7 +87,7 @@ public class BookRequestUpController {
                 response.setCode(108);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
-            String filePath = Constant.BOOK_IMAGE_STORAGE_PATH + bookId +Constant.PNG;
+            String filePath = BOOK_IMAGE_STORAGE_PATH + bookId + PNG;
             FileOutputStream fos = new FileOutputStream(filePath);
             fos.write(fileData);
             fos.close();
@@ -108,7 +108,7 @@ public class BookRequestUpController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        BookRequestUp bookRequestUp = bookRequestUpService.getBookRequestUp(bookId, Constant.StatusBookRequestUp.REQUEST);
+        BookRequestUp bookRequestUp = bookRequestUpService.getBookRequestUp(bookId, STATUS_BOOK_REQUEST_UP.REQUEST);
         if (bookRequestUp == null){
             response.setCode(115);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -116,8 +116,8 @@ public class BookRequestUpController {
 
         String mess;
 
-        if (action == Constant.ReactUpBookRequest.ACCEPT){
-            bookRequestUpService.updateStatusById(bookId, Constant.StatusBookRequestUp.ACCEPTED);
+        if (action == REACT_UP_BOOK_REQUEST.ACCEPT){
+            bookRequestUpService.updateStatusById(bookId, STATUS_BOOK_REQUEST_UP.ACCEPTED);
             long time = System.currentTimeMillis();
             Book book = new Book(bookRequestUp);
             book.setStar(5);
@@ -132,7 +132,7 @@ public class BookRequestUpController {
 
             mess = Utils.messSuccessUploadBook(bookRequestUp.getBookName());
         } else {
-            bookRequestUpService.updateStatusById(bookId, Constant.StatusBookRequestUp.REJECTED);
+            bookRequestUpService.updateStatusById(bookId, STATUS_BOOK_REQUEST_UP.REJECTED);
             mess = Utils.messSuccessUploadBook(bookRequestUp.getBookName());
         }
 
@@ -143,7 +143,7 @@ public class BookRequestUpController {
         Device device = deviceService.getDeviceByUserId(bookRequestUp.getUserPost());
         if (device != null && !device.getDeviceToken().isBlank()) {
             NotificationMessage message = new
-                    NotificationMessage(device.getDeviceToken(), Constant.BOOK_REQUEST_UP_TITLE, mess);
+                    NotificationMessage(device.getDeviceToken(), BOOK_REQUEST_UP_TITLE, mess);
             firebaseMessagingService.sendNotificationByToken(message);
         }
         response.setCode(100);
@@ -196,7 +196,7 @@ public class BookRequestUpController {
         }
 
         List<BookRequestUp> bookRequestUpList = bookRequestUpService
-                .getBookRequestUpsByStatus(Constant.StatusBookRequestUp.REQUEST);
+                .getBookRequestUpsByStatus(STATUS_BOOK_REQUEST_UP.REQUEST);
 
         for (BookRequestUp bookRequestUp:bookRequestUpList){
             List<String> bookCategoryIdList = bookRequestUp.getBookCategory();
@@ -216,7 +216,7 @@ public class BookRequestUpController {
 
     @GetMapping(value = "/getBookRequestUpImage", produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> getBookRequestUpImage(@RequestParam String imageName) throws Exception{
-        String filePath = Constant.BOOK_IMAGE_STORAGE_PATH + imageName + Constant.PNG;
+        String filePath = BOOK_IMAGE_STORAGE_PATH + imageName + PNG;
         File file = new File(filePath);
         BufferedImage image = ImageIO.read(file);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

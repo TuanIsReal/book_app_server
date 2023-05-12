@@ -91,20 +91,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByEmailAndIsGoogleLogin(email,isGoogleLogin);
     }
 
-    @Override
-    public void updateIsVerifyByUserId(String userId, boolean isVerify) {
-        userRepository.updateIsVerifyByUserId(userId, isVerify);
-    }
-
-    @Override
-    public User getUserByEmailAndIsVerify(String email, boolean isVerify) {
-        return userRepository.findUserByEmailAndIsVerify(email,  isVerify);
-    }
-
-    @Override
-    public User getByEmailAndPasswordAndIsVerify(String email, String password, boolean isVerify) {
-        return userRepository.findByEmailAndPasswordAndIsVerify(email, password, isVerify);
-    }
 
     @Override
     public User findByEmailAndNotLoginGoogle(String email) {

@@ -1,6 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
-import com.anhtuan.bookapp.config.Constant;
+import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.Book;
 import com.anhtuan.bookapp.domain.Category;
 import com.anhtuan.bookapp.request.AddBookRequest;
@@ -60,7 +60,7 @@ public class BookController {
         book.setTotalReview(0);
         book.setUploadTime(System.currentTimeMillis());
         book.setLastUpdateTime(System.currentTimeMillis());
-        if (request.getUserPost().equals(Constant.ADMIN_ID)){
+        if (request.getUserPost().equals(ADMIN_ID)){
             book.setAdminUp(true);
         }
         bookService.insertBook(book);
@@ -86,7 +86,7 @@ public class BookController {
                 response.setCode(108);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
-            String filePath = Constant.BOOK_IMAGE_STORAGE_PATH + bookId +Constant.PNG;
+            String filePath = BOOK_IMAGE_STORAGE_PATH + bookId + PNG;
             FileOutputStream fos = new FileOutputStream(filePath);
             fos.write(fileData);
             fos.close();
@@ -155,7 +155,7 @@ public class BookController {
 
     @GetMapping(value = "/getBookImage", produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> getBookImage(@RequestParam String imageName) throws Exception{
-        String filePath = Constant.BOOK_IMAGE_STORAGE_PATH + imageName + Constant.PNG;
+        String filePath = BOOK_IMAGE_STORAGE_PATH + imageName + PNG;
         File file = new File(filePath);
         BufferedImage image = ImageIO.read(file);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -242,28 +242,28 @@ public class BookController {
         }
 
         List<Book> books = new ArrayList<>();
-        if (limit && typeFilter == Constant.TYPE_FILTER.NEW_BOOK){
+        if (limit && typeFilter == TYPE_FILTER.NEW_BOOK){
             books = bookService.getTop8NewBookList();
         }
-        if (!limit && typeFilter == Constant.TYPE_FILTER.NEW_BOOK){
+        if (!limit && typeFilter == TYPE_FILTER.NEW_BOOK){
             books = bookService.getNewBookList();
         }
-        if (limit && typeFilter == Constant.TYPE_FILTER.RECOMMEND_BOOK){
+        if (limit && typeFilter == TYPE_FILTER.RECOMMEND_BOOK){
             books = bookService.getTop6RecommendBookList();
         }
-        if (!limit && typeFilter == Constant.TYPE_FILTER.RECOMMEND_BOOK){
+        if (!limit && typeFilter == TYPE_FILTER.RECOMMEND_BOOK){
             books = bookService.getRecommendBookList();
         }
-        if (limit && typeFilter == Constant.TYPE_FILTER.MOST_BUY){
+        if (limit && typeFilter == TYPE_FILTER.MOST_BUY){
             books = bookService.getTop6MostBuyBookList();
         }
-        if (!limit && typeFilter == Constant.TYPE_FILTER.MOST_BUY){
+        if (!limit && typeFilter == TYPE_FILTER.MOST_BUY){
             books = bookService.getMostBuyBookList();
         }
-        if (limit && typeFilter == Constant.TYPE_FILTER.MOST_REVIEW){
+        if (limit && typeFilter == TYPE_FILTER.MOST_REVIEW){
             books = bookService.getTop6MostReviewBookList();
         }
-        if (!limit && typeFilter == Constant.TYPE_FILTER.MOST_REVIEW){
+        if (!limit && typeFilter == TYPE_FILTER.MOST_REVIEW){
             books = bookService.getMostReviewBookList();
         }
 
@@ -305,6 +305,7 @@ public class BookController {
             }
 
             book.setBookCategory(bookNameList);
+            System.out.println(book.toString());
         }
         response.setCode(100);
         response.setData(books);

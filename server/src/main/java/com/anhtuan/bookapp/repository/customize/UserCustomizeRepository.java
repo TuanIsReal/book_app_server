@@ -19,8 +19,5 @@ public interface UserCustomizeRepository {
 
     void updateNameByUserId(String userId, String name);
 
-    void updateIsVerifyByUserId(String userId, boolean isVerify);
-    User findUserByEmailAndIsVerify(String email, boolean isVerify);
-    User findByEmailAndPasswordAndIsVerify(String email, String password, boolean isVerify);
     User findByEmailAndNotLoginGoogle(String email);
 }

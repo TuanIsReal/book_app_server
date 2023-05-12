@@ -1,7 +1,7 @@
 package com.anhtuan.bookapp.controller;
 
 import com.anhtuan.bookapp.common.Utils;
-import com.anhtuan.bookapp.config.Constant;
+import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.*;
 import com.anhtuan.bookapp.request.AddBookChapterRequest;
 import com.anhtuan.bookapp.response.Response;
@@ -68,7 +68,7 @@ public class BookChapterController {
         List<Device> deviceList = deviceService.getDevicesByUserIdIsIn(purchasedUserList);
         for (Device device:deviceList){
             if (!device.getDeviceToken().isBlank()){
-                NotificationMessage message = new NotificationMessage(device.getDeviceToken(), Constant.ADD_CHAPTER_NOTIFICATION_TITLE, messBody);
+                NotificationMessage message = new NotificationMessage(device.getDeviceToken(), ADD_CHAPTER_NOTIFICATION_TITLE, messBody);
                 firebaseMessagingService.sendNotificationByToken(message);
             }
         }

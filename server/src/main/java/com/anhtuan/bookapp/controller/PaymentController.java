@@ -1,7 +1,7 @@
 package com.anhtuan.bookapp.controller;
 
 import com.anhtuan.bookapp.common.Utils;
-import com.anhtuan.bookapp.config.Constant;
+import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.config.PaymentConfig;
 import com.anhtuan.bookapp.domain.*;
 import com.anhtuan.bookapp.request.PaymentRequest;
@@ -29,6 +29,7 @@ public class PaymentController {
     private NotificationService notificationService;
     private FirebaseMessagingService firebaseMessagingService;
     private DeviceService deviceService;
+    private TransactionHistoryService transactionHistoryService;
 
     @PostMapping("createPayment")
     public ResponseEntity<Response> createPayment(@RequestBody PaymentRequest requestParams) throws IOException{
@@ -121,7 +122,7 @@ public class PaymentController {
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
 
         String paymentUrl = PaymentConfig.VNP_PAYMENT_URL + "?" + queryUrl;
-        payment.setStatus(Constant.TRANSACTION_STATUS.WAITING);
+        payment.setStatus(TRANSACTION_STATUS.WAITING);
         paymentService.addPayment(payment);
 
         response.setCode(100);
@@ -141,34 +142,38 @@ public class PaymentController {
         }
 
         int status = payment.getStatus();
-        if (status != Constant.TRANSACTION_STATUS.WAITING){
+        if (status != TRANSACTION_STATUS.WAITING){
             modelAndView.setViewName("warning.html");
             return modelAndView;
         }
 
         if (!vnp_ResponseCode.equals("00")){
-            paymentService.updatePaymentByTransactionId(vnp_TxnRef, Constant.TRANSACTION_STATUS.REJECT, vnp_PayDate);
+            paymentService.updatePaymentByTransactionId(vnp_TxnRef, TRANSACTION_STATUS.REJECT, vnp_PayDate);
             modelAndView.setViewName("fail.html");
             return modelAndView;
         }
 
         User user = userService.getUserByUserId(payment.getUserId());
 
-        paymentService.updatePaymentByTransactionId(vnp_TxnRef, Constant.TRANSACTION_STATUS.SUCCESS, vnp_PayDate);
+        paymentService.updatePaymentByTransactionId(vnp_TxnRef, TRANSACTION_STATUS.SUCCESS, vnp_PayDate);
 
-        if (payment.getTransactionInfo().equals(Constant.ADD_POINT)){
+        if (payment.getTransactionInfo().equals(ADD_POINT)){
             int newPoint = user.getPoint() + payment.getPoint();
             userService.updatePointByUserId(user.getId(), newPoint);
 
+            long time = System.currentTimeMillis();
+            TransactionHistory sellBookHis = new TransactionHistory(user.getId(), payment.getPoint(), TRANSACTION_TYPE.RECHARGE_BOOK, time);
+            transactionHistoryService.addTransactionHistory(sellBookHis);
+
             String mess = Utils.messSuccessAddPoint(payment.getPoint());
             Notification notification = new Notification
-                    (user.getId(), "", mess, false, System.currentTimeMillis());
+                    (user.getId(), "", mess, false, time);
             notificationService.insertNotification(notification);
 
             Device device = deviceService.getDeviceByUserId(user.getId());
             if (device != null && !device.getDeviceToken().isBlank()){
                 NotificationMessage message = new
-                        NotificationMessage(device.getDeviceToken(), Constant.ADD_POINT_TITLE, mess);
+                        NotificationMessage(device.getDeviceToken(), ADD_POINT_TITLE, mess);
                 firebaseMessagingService.sendNotificationByToken(message);
             }
         }

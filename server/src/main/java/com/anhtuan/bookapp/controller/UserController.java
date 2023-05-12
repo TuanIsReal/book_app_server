@@ -1,7 +1,7 @@
 package com.anhtuan.bookapp.controller;
 
 import com.anhtuan.bookapp.common.Utils;
-import com.anhtuan.bookapp.config.Constant;
+import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.NotificationMessage;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.request.LoginGoolgeRequest;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -31,7 +32,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping("user")
 @AllArgsConstructor
-public class UserController {
+public class UserController{
 
     private UserService userService;
     private FirebaseMessagingService firebaseMessagingService;
@@ -119,7 +120,7 @@ public class UserController {
                 response.setCode(108);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
-            String filePath = Constant.AVATAR_IMAGE_STORAGE_PATH + userId +Constant.PNG;
+            String filePath = AVATAR_IMAGE_STORAGE_PATH + userId + PNG;
             FileOutputStream fos = new FileOutputStream(filePath);
             fos.write(fileData);
             fos.close();
@@ -183,8 +184,8 @@ public class UserController {
     }
 
     @GetMapping(value = "getAvatarImage", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getAvatarImage(@RequestParam String imageName) throws Exception{
-        String filePath = Constant.AVATAR_IMAGE_STORAGE_PATH + imageName + Constant.PNG;
+    public ResponseEntity<byte[]> getAvatarImage(@RequestParam String imageName) throws Exception, IIOException{
+        String filePath = AVATAR_IMAGE_STORAGE_PATH + imageName + PNG;
         File file = new File(filePath);
         BufferedImage image = ImageIO.read(file);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -243,10 +244,10 @@ public class UserController {
 
         String code = Utils.getVerifyCode(6);
         long time = System.currentTimeMillis();
-        verifyCodeService.addVerifyCode(new VerifyCode(user.getId(), email, Constant.VERIFY_CODE_TYPE.FORGOT_PASS, code, time));
+        verifyCodeService.addVerifyCode(new VerifyCode(user.getId(), email, VERIFY_CODE_TYPE.FORGOT_PASS, code, time));
 
         String text = Utils.mailForgotPassword(code);
-        emailService.sendEmail(email, Constant.FORGOT_PASSWORD_SUBJECT, text);
+        emailService.sendEmail(email, FORGOT_PASSWORD_SUBJECT, text);
         response.setCode(100);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -255,7 +256,7 @@ public class UserController {
     public ResponseEntity<Response> authenVerifyCode(@RequestBody AuthenVerifyCodeRequest request){
         Response response = new Response();
         String code = request.getCode();
-        long time = System.currentTimeMillis() - Constant.MINUTE_15;
+        long time = System.currentTimeMillis() - MINUTE_15;
         int type = request.getType();
         VerifyCode verifyCode;
 

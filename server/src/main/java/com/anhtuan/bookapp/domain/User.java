@@ -19,8 +19,6 @@ public class User {
     public static final String POINT = "point";
     public static final String IS_LOGGED = "is_logged";
     public static final String LAST_LOGIN_IP = "last_login_ip";
-    public static final String IS_VERIFY = "is_verify";
-
     public static final String IS_GOOGLE_LOGIN = "google_email";
     @Id
     private String id;
@@ -48,9 +46,6 @@ public class User {
 
     @Field(POINT)
     private int point;
-
-    @Field(IS_VERIFY)
-    private boolean isVerify;
 
     @Field(IS_GOOGLE_LOGIN)
     private Boolean isGoogleLogin;
@@ -88,14 +83,6 @@ public class User {
 
     public void setLogged(Boolean logged) {
         isLogged = logged;
-    }
-
-    public boolean isVerify() {
-        return isVerify;
-    }
-
-    public void setVerify(boolean verify) {
-        isVerify = verify;
     }
 
     public Boolean getGoogleLogin() {
