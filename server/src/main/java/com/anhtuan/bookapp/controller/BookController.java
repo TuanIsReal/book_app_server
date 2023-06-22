@@ -286,7 +286,6 @@ public class BookController {
     @PostMapping("/getBookFilter")
     public ResponseEntity<Response> getBookFilter(@RequestBody GetBookFilterRequest request){
         Response response = new Response();
-        System.out.println(request.toString());
         HashMap<String, String> mapCategory = new HashMap<>();
         List<Category> listCategory = categoryService.findAll();
         for (Category category: listCategory){
@@ -305,7 +304,6 @@ public class BookController {
             }
 
             book.setBookCategory(bookNameList);
-            System.out.println(book.toString());
         }
         response.setCode(100);
         response.setData(books);

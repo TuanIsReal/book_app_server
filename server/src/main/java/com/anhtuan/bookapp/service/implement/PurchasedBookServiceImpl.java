@@ -31,7 +31,7 @@ public class PurchasedBookServiceImpl implements PurchasedBookService {
 
     @Override
     public List<PurchasedBook> getPurchasedBooksByUserIdAndShowLibrary(String userId, boolean showLibrary) {
-        return purchasedBookRepository.findPurchasedBooksByUserIdAndShowLibrary(userId, showLibrary);
+        return purchasedBookRepository.findPurchasedBooksByUserIdAndShowLibraryOrderByLastReadTimeDesc(userId, showLibrary);
     }
 
     @Override
@@ -42,5 +42,10 @@ public class PurchasedBookServiceImpl implements PurchasedBookService {
     @Override
     public List<PurchasedBook> findPurchasedBooksByBookIdAndUserIdIsNot(String bookId, String userId) {
         return purchasedBookRepository.findPurchasedBooksByBookIdAndUserIdIsNot(bookId, userId);
+    }
+
+    @Override
+    public void unShowPurchasedBook(String bookId, String userId) {
+        purchasedBookRepository.updateShowBookByBookIdAndUserId(bookId, userId, false);
     }
 }

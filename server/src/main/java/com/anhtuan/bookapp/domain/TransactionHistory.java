@@ -16,6 +16,7 @@ public class TransactionHistory {
     public static final String TRANSACTION_HISTORY_COLLECTION = "transaction_history";
     public static final String USER_ID = "user_id";
     public static final String POINT = "point";
+    public static final String TOTAL_POINT = "total_point";
     public static final String TRANSACTION_TYPE = "transaction_type";
     public static final String TRANSACTION_TIME = "transaction_time";
 
@@ -28,15 +29,19 @@ public class TransactionHistory {
     @Field(POINT)
     private int point;
 
+    @Field(TOTAL_POINT)
+    private int totalPoint;
+
     @Field(TRANSACTION_TYPE)
     private int transactionType;
 
     @Field(TRANSACTION_TIME)
     private long transactionTime;
 
-    public TransactionHistory(String userId, int point, int transactionType, long transactionTime) {
+    public TransactionHistory(String userId, int point, int totalPoint, int transactionType, long transactionTime) {
         this.userId = userId;
         this.point = point;
+        this.totalPoint = totalPoint;
         this.transactionType = transactionType;
         this.transactionTime = transactionTime;
     }

@@ -16,4 +16,6 @@ public interface PurchasedBookService {
     int countPurchasedBooksByBookIdAndUserIdIsNot(String bookId, String userId);
 
     List<PurchasedBook> findPurchasedBooksByBookIdAndUserIdIsNot(String bookId, String userId);
+
+    void unShowPurchasedBook(String bookId, String userId);
 }

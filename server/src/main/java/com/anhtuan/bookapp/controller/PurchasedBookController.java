@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @AllArgsConstructor
@@ -68,8 +69,8 @@ public class PurchasedBookController {
                 userService.updatePointByUserId(userId, pointUser);
                 userService.updatePointByUserId(seller.getId(), pointSeller);
 
-                TransactionHistory buyBookHis = new TransactionHistory(userId, -1*price, TRANSACTION_TYPE.BUY_BOOK, time);
-                TransactionHistory sellBookHis = new TransactionHistory(seller.getId(), price, TRANSACTION_TYPE.SELL_BOOK, time);
+                TransactionHistory buyBookHis = new TransactionHistory(userId, -1*price, pointUser, TRANSACTION_TYPE.BUY_BOOK, time);
+                TransactionHistory sellBookHis = new TransactionHistory(seller.getId(), incomePoint, pointSeller, TRANSACTION_TYPE.SELL_BOOK, time);
                 transactionHistoryService.addTransactionHistory(buyBookHis);
                 transactionHistoryService.addTransactionHistory(sellBookHis);
 
@@ -170,6 +171,20 @@ public class PurchasedBookController {
         }
         response.setCode(100);
         response.setData(purchasedBook);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("unShowBook")
+    public ResponseEntity<Response> unShowBook(@RequestParam String bookId,
+                                               @RequestParam String userId){
+        Response response = new Response();
+        PurchasedBook purchasedBook = purchasedBookService.getPurchasedBookByBookIdAndUserId(bookId, userId);
+        if (Objects.isNull(purchasedBook)){
+            response.setCode(112);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        purchasedBookService.unShowPurchasedBook(bookId, userId);
+        response.setCode(100);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

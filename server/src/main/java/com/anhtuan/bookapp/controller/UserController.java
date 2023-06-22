@@ -3,6 +3,7 @@ package com.anhtuan.bookapp.controller;
 import com.anhtuan.bookapp.common.Utils;
 import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.NotificationMessage;
+import com.anhtuan.bookapp.domain.TransactionHistory;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.request.LoginGoolgeRequest;
 import com.anhtuan.bookapp.domain.VerifyCode;
@@ -18,14 +19,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.AllArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -39,6 +39,7 @@ public class UserController{
     private DeviceService deviceService;
     private EmailService emailService;
     private VerifyCodeService verifyCodeService;
+    private TransactionHistoryService transactionHistoryService;
 
 
     @GetMapping("/login")
@@ -61,7 +62,6 @@ public class UserController{
 
     @PostMapping("/register")
     public ResponseEntity<Response> registerController(@RequestBody RegisterRequest registerRequest){
-        System.out.println(registerRequest.toString());
         Response response = new Response();
         String email = registerRequest.getEmail();
         String password = registerRequest.getPassword();
@@ -172,19 +172,15 @@ public class UserController{
         if (user == null || !user.getIsLogged()){
             response.setCode(103);
             response.setData(new User());
-            System.out.println(response.getCode());
-            System.out.println("check login:----" + user.toString());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         response.setCode(100);
         response.setData(user);
-        System.out.println(response.getCode());
-        System.out.println("check login:----" + user.toString());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping(value = "getAvatarImage", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getAvatarImage(@RequestParam String imageName) throws Exception, IIOException{
+    public ResponseEntity<byte[]> getAvatarImage(@RequestParam String imageName) throws Exception{
         String filePath = AVATAR_IMAGE_STORAGE_PATH + imageName + PNG;
         File file = new File(filePath);
         BufferedImage image = ImageIO.read(file);
@@ -285,6 +281,21 @@ public class UserController{
 
         userService.updatePasswordByUserId(userId, newPassword);
         response.setCode(100);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("getBalanceChange")
+    public ResponseEntity<Response> getBalanceChange(@RequestParam String userId){
+        Response response = new Response();
+        User user = userService.getUserByUserId(userId);
+        if (user == null){
+            response.setCode(106);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        List<TransactionHistory> transactionList = transactionHistoryService.getTransactionHistoryUser(userId);
+        response.setCode(100);
+        response.setData(transactionList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

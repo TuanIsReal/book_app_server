@@ -22,6 +22,7 @@ public class Payment {
     public static final String BANK_CODE = "bank_code";
     public static final String STATUS = "status";
     public static final String TRANSACTION_TIME = "transaction_time";
+    public static final String PAY_DATE = "pay_date";
     public static final String PAY_TIME = "pay_time";
 
     @Id
@@ -54,7 +55,10 @@ public class Payment {
     @Field(TRANSACTION_TIME)
     private String transactionTime;
 
+    @Field(PAY_DATE)
+    private String patDate;
+
     @Field(PAY_TIME)
-    private String payTime;
+    private long payTime;
 
 }

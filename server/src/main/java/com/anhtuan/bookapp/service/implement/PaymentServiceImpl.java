@@ -1,10 +1,13 @@
 package com.anhtuan.bookapp.service.implement;
 
+import com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.Payment;
 import com.anhtuan.bookapp.repository.base.PaymentRepository;
 import com.anhtuan.bookapp.service.base.PaymentService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -27,7 +30,12 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void updatePaymentByTransactionId(String transactionId, int status, long payTime) {
-        paymentRepository.updatePaymentByTransactionId(transactionId, status, payTime);
+    public void updatePaymentByTransactionId(String transactionId, int status, String payDate, long payTime) {
+        paymentRepository.updatePaymentByTransactionId(transactionId, status, payDate, payTime);
+    }
+
+    @Override
+    public List<Payment> getIncomeAdmin(long start, long end) {
+        return paymentRepository.findByStatusAndPayTime(TRANSACTION_STATUS.SUCCESS, start, end);
     }
 }

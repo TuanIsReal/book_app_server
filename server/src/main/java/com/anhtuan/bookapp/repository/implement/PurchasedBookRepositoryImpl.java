@@ -21,6 +21,17 @@ public class PurchasedBookRepositoryImpl implements PurchasedBookCustomizeReposi
         query.addCriteria(Criteria.where(PurchasedBook.BOOK_ID).is(bookId).and(PurchasedBook.USER_ID).is(userId));
         Update update = new Update();
         update.set(PurchasedBook.LAST_READ_CHAPTER, chapterNumber);
+        update.set(PurchasedBook.LAST_READ_TIME, System.currentTimeMillis());
+        update.set(PurchasedBook.SHOW_LIBRARY, true);
+        mongoTemplate.updateFirst(query, update, PurchasedBook.class);
+    }
+
+    @Override
+    public void updateShowBookByBookIdAndUserId(String bookId, String userId, boolean status) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(PurchasedBook.BOOK_ID).is(bookId).and(PurchasedBook.USER_ID).is(userId));
+        Update update = new Update();
+        update.set(PurchasedBook.SHOW_LIBRARY, status);
         mongoTemplate.updateFirst(query, update, PurchasedBook.class);
     }
 }

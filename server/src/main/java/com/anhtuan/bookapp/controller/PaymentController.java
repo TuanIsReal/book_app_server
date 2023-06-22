@@ -131,9 +131,10 @@ public class PaymentController {
     }
 
     @GetMapping("returnResponse")
-    public ModelAndView returnResponse(@RequestParam long vnp_PayDate,
+    public ModelAndView returnResponse(@RequestParam String vnp_PayDate,
                                        @RequestParam String vnp_ResponseCode,
                                        @RequestParam String vnp_TxnRef){
+        long time = System.currentTimeMillis();
         Payment payment = paymentService.findPaymentByTransactionId(vnp_TxnRef);
         ModelAndView modelAndView = new ModelAndView();
         if (Objects.isNull(payment)){
@@ -148,21 +149,20 @@ public class PaymentController {
         }
 
         if (!vnp_ResponseCode.equals("00")){
-            paymentService.updatePaymentByTransactionId(vnp_TxnRef, TRANSACTION_STATUS.REJECT, vnp_PayDate);
+            paymentService.updatePaymentByTransactionId(vnp_TxnRef, TRANSACTION_STATUS.REJECT, vnp_PayDate, time);
             modelAndView.setViewName("fail.html");
             return modelAndView;
         }
 
         User user = userService.getUserByUserId(payment.getUserId());
 
-        paymentService.updatePaymentByTransactionId(vnp_TxnRef, TRANSACTION_STATUS.SUCCESS, vnp_PayDate);
+        paymentService.updatePaymentByTransactionId(vnp_TxnRef, TRANSACTION_STATUS.SUCCESS, vnp_PayDate, time);
 
         if (payment.getTransactionInfo().equals(ADD_POINT)){
             int newPoint = user.getPoint() + payment.getPoint();
             userService.updatePointByUserId(user.getId(), newPoint);
 
-            long time = System.currentTimeMillis();
-            TransactionHistory sellBookHis = new TransactionHistory(user.getId(), payment.getPoint(), TRANSACTION_TYPE.RECHARGE_BOOK, time);
+            TransactionHistory sellBookHis = new TransactionHistory(user.getId(), payment.getPoint(), newPoint, TRANSACTION_TYPE.RECHARGE_BOOK, time);
             transactionHistoryService.addTransactionHistory(sellBookHis);
 
             String mess = Utils.messSuccessAddPoint(payment.getPoint());
