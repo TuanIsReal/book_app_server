@@ -51,7 +51,7 @@ public class ReCommentController {
         notificationService.insertNotification(notification);
 
         Device device = deviceService.getDeviceByUserId(comment.getAuthor());
-        if (device != null && !device.getDeviceToken().isBlank()){
+        if (device != null && !device.getDeviceToken().isEmpty()){
             NotificationMessage message = new
                     NotificationMessage(device.getDeviceToken(), Constant.COMMENT_TITLE, mess);
             firebaseMessagingService.sendNotificationByToken(message);

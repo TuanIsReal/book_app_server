@@ -67,7 +67,7 @@ public class BookChapterController {
 
         List<Device> deviceList = deviceService.getDevicesByUserIdIsIn(purchasedUserList);
         for (Device device:deviceList){
-            if (!device.getDeviceToken().isBlank()){
+            if (!device.getDeviceToken().isEmpty()){
                 NotificationMessage message = new NotificationMessage(device.getDeviceToken(), ADD_CHAPTER_NOTIFICATION_TITLE, messBody);
                 firebaseMessagingService.sendNotificationByToken(message);
             }

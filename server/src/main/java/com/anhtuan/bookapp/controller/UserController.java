@@ -14,17 +14,9 @@ import com.anhtuan.bookapp.response.RegisterResponse;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import lombok.AllArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -104,33 +96,6 @@ public class UserController{
         response.setData(new RegisterResponse(newUser.getId(), newUser.getRole()));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-    @PostMapping("/updateAvatarImage")
-    public ResponseEntity<Response> updateAvatarImage(@RequestParam String userId,
-                                                    @RequestParam("image") MultipartFile image){
-        Response response = new Response();
-        User user = userService.getUserByUserId(userId);
-        if (user == null){
-            response.setCode(106);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        byte[] fileData = null;
-        try {
-            fileData = image.getBytes();
-            if (fileData == null){
-                response.setCode(108);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            String filePath = AVATAR_IMAGE_STORAGE_PATH + userId + PNG;
-            FileOutputStream fos = new FileOutputStream(filePath);
-            fos.write(fileData);
-            fos.close();
-            userService.updateAvatarImageByUserId(userId, userId);
-            response.setCode(100);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
 
     @GetMapping("/checkExistUser")
     public ResponseEntity<Response> checkExistUser(@RequestParam String email){
@@ -177,17 +142,6 @@ public class UserController{
         response.setCode(100);
         response.setData(user);
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "getAvatarImage", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getAvatarImage(@RequestParam String imageName) throws Exception{
-        String filePath = AVATAR_IMAGE_STORAGE_PATH + imageName + PNG;
-        File file = new File(filePath);
-        BufferedImage image = ImageIO.read(file);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", outputStream);
-        byte[] bytes = outputStream.toByteArray();
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(bytes);
     }
 
     @PostMapping("updatePassword")

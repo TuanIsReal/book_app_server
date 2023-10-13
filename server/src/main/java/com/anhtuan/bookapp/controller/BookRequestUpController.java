@@ -8,17 +8,8 @@ import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -70,35 +61,6 @@ public class BookRequestUpController {
 
     }
 
-    @PostMapping("/updateBookRequestUpImage")
-    public ResponseEntity<Response> updateBookImage(@RequestParam String bookName,
-                                                    @RequestParam("image") MultipartFile image){
-        Response response = new Response();
-        BookRequestUp book = bookRequestUpService.getBookRequestUpByBookNameAndStatus(bookName, STATUS_BOOK_REQUEST_UP.REQUEST);
-        if (book == null){
-            response.setCode(115);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        String bookId = book.getId();
-        byte[] fileData = null;
-        try {
-            fileData = image.getBytes();
-            if (fileData == null){
-                response.setCode(108);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            String filePath = BOOK_IMAGE_STORAGE_PATH + bookId + PNG;
-            FileOutputStream fos = new FileOutputStream(filePath);
-            fos.write(fileData);
-            fos.close();
-            bookRequestUpService.updateBookImageById(bookId, bookId);
-            response.setCode(100);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
     @PostMapping("reactBookRequestUp")
     public ResponseEntity<Response> updateBookImage(@RequestParam String bookId,
                                                     @RequestParam int action){
@@ -141,7 +103,7 @@ public class BookRequestUpController {
             notificationService.insertNotification(notification);
 
         Device device = deviceService.getDeviceByUserId(bookRequestUp.getUserPost());
-        if (device != null && !device.getDeviceToken().isBlank()) {
+        if (device != null && !device.getDeviceToken().isEmpty()) {
             NotificationMessage message = new
                     NotificationMessage(device.getDeviceToken(), BOOK_REQUEST_UP_TITLE, mess);
             firebaseMessagingService.sendNotificationByToken(message);
@@ -212,17 +174,6 @@ public class BookRequestUpController {
         response.setCode(100);
         response.setData(bookRequestUpList);
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/getBookRequestUpImage", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getBookRequestUpImage(@RequestParam String imageName) throws Exception{
-        String filePath = BOOK_IMAGE_STORAGE_PATH + imageName + PNG;
-        File file = new File(filePath);
-        BufferedImage image = ImageIO.read(file);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", outputStream);
-        byte[] bytes = outputStream.toByteArray();
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(bytes);
     }
 
     @GetMapping("getQuantityPurchased")

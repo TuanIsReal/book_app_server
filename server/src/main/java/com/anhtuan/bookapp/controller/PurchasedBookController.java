@@ -86,7 +86,7 @@ public class PurchasedBookController {
                 notificationService.insertNotification(notification);
 
                 Device device = deviceService.getDeviceByUserId(book.getUserPost());
-                if (device != null && !device.getDeviceToken().isBlank()){
+                if (device != null && !device.getDeviceToken().isEmpty()){
                     NotificationMessage message = new
                             NotificationMessage(device.getDeviceToken(), BUY_BOOK_NOTIFICATION_TITLE, mess);
                     firebaseMessagingService.sendNotificationByToken(message);

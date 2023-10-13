@@ -24,6 +24,10 @@ public class DeviceController {
     public ResponseEntity<Response> loginDevice(@RequestParam String userId,
                                               @RequestParam String deviceToken){
         Response response = new Response();
+        int i = 0;
+        for (i = 0; i<5;){
+
+        }
         if (userService.getUserByUserId(userId) == null){
             response.setCode(106);
             return new ResponseEntity<>(response, HttpStatus.OK);

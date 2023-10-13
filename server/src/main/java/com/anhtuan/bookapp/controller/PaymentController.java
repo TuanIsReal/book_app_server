@@ -109,7 +109,7 @@ public class PaymentController {
 
                 query.append(URLEncoder.encode(name,StandardCharsets.US_ASCII.toString()));
                 query.append("=");
-                query.append(URLEncoder.encode(value,StandardCharsets.US_ASCII));
+                query.append(URLEncoder.encode(value, String.valueOf(StandardCharsets.US_ASCII)));
 
                 if (iterator.hasNext()){
                     query.append("&");
@@ -171,7 +171,7 @@ public class PaymentController {
             notificationService.insertNotification(notification);
 
             Device device = deviceService.getDeviceByUserId(user.getId());
-            if (device != null && !device.getDeviceToken().isBlank()){
+            if (device != null && !device.getDeviceToken().isEmpty()){
                 NotificationMessage message = new
                         NotificationMessage(device.getDeviceToken(), ADD_POINT_TITLE, mess);
                 firebaseMessagingService.sendNotificationByToken(message);

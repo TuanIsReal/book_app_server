@@ -11,14 +11,8 @@ import com.anhtuan.bookapp.service.base.CategoryService;
 import com.anhtuan.bookapp.service.base.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,34 +63,6 @@ public class BookController {
 
     }
 
-    @PostMapping("/updateBookImage")
-    public ResponseEntity<Response> updateBookImage(@RequestParam String bookName,
-                                                    @RequestParam("image") MultipartFile image){
-        Response response = new Response();
-        Book book = bookService.findBookByBookName(bookName);
-        if (book == null){
-            response.setCode(109);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        String bookId = book.getId();
-        byte[] fileData = null;
-        try {
-            fileData = image.getBytes();
-            if (fileData == null){
-                response.setCode(108);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            String filePath = BOOK_IMAGE_STORAGE_PATH + bookId + PNG;
-            FileOutputStream fos = new FileOutputStream(filePath);
-            fos.write(fileData);
-            fos.close();
-            bookService.updateBookImageByBookId(bookId, bookId);
-            response.setCode(100);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
 
     @GetMapping("/getBook")
     public ResponseEntity<Response> getBookByUserPost(@RequestParam String userId){
@@ -151,17 +117,6 @@ public class BookController {
         response.setCode(100);
         response.setData(bookList);
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @GetMapping(value = "/getBookImage", produces = MediaType.IMAGE_PNG_VALUE)
-    public ResponseEntity<byte[]> getBookImage(@RequestParam String imageName) throws Exception{
-        String filePath = BOOK_IMAGE_STORAGE_PATH + imageName + PNG;
-        File file = new File(filePath);
-        BufferedImage image = ImageIO.read(file);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ImageIO.write(image, "png", outputStream);
-        byte[] bytes = outputStream.toByteArray();
-        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(bytes);
     }
 
     @GetMapping("getBookByBookName")

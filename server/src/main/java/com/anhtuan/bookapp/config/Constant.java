@@ -1,11 +1,12 @@
 package com.anhtuan.bookapp.config;
 
 public class Constant {
-    public static final String BOOK_IMAGE_STORAGE_PATH = "C:/Book_app_project/server/book_image/";
-    public static final String AVATAR_IMAGE_STORAGE_PATH = "C:/Book_app_project/server/avatar_image/";
-    public static final String PNG = ".png";
-    public static final String PDF_STORAGE_PATH = "C:/Book_app_project/server/pdf/";
-    public static final String PDF = ".pdf";
+    public static final String BOOK_IMAGE_STORAGE_PATH = "C:/inetpub/wwwroot/book_image/";
+    public static final String BOOK_THUMBNAIL_STORAGE_PATH = "C:/inetpub/wwwroot/book_thumbnail/";
+    public static final String AVATAR_IMAGE_STORAGE_PATH = "C:/inetpub/wwwroot/avatar_image/";
+    public static final String CHAPTER_TEXT_STORAGE_PATH = "C:/Book_app_project/server/chapter/";
+    public static final String JPG = ".jpg";
+
 
     public static final String BUY_BOOK_NOTIFICATION_TITLE = "Thông báo mua truyên";
     public static final String ADD_CHAPTER_NOTIFICATION_TITLE = "Thông báo chương mới";
