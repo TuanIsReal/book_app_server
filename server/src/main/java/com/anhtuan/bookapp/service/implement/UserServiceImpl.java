@@ -33,8 +33,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void insertUser(User user) {
-        userRepository.insertUser(user);
+    public User insertUser(User user) {
+        return userRepository.insertUser(user);
     }
 
     @Override

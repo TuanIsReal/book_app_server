@@ -61,10 +61,8 @@ public class UserController{
         String name = registerRequest.getName();
         String ip = registerRequest.getIp();
 
-        User user1 = new User(email, password, role, name, "", ip, false,500);
-        userService.insertUser(user1);
-
-        User user = userService.getUserByEmailAndPassword(email,password);
+        User newUser = new User(email, password, role, name, "", ip, false,500);
+        User user = userService.insertUser(newUser);
 
         response.setCode(100);
         response.setData(new RegisterResponse(user.getId(), user.getRole()));

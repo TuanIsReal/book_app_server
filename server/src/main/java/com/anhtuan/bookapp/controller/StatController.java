@@ -27,7 +27,6 @@ import java.util.List;
 @RequestMapping("stat")
 @AllArgsConstructor
 public class StatController {
-    private UserService userService;
     private PaymentService paymentService;
     private TransactionHistoryService transactionHistoryService;
 

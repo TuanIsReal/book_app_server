@@ -5,7 +5,7 @@ import com.anhtuan.bookapp.domain.User;
 import java.util.List;
 
 public interface UserCustomizeRepository {
-    void insertUser(User user);
+    User insertUser(User user);
 
     void updateUserLoggedStats(String userId, Boolean status);
 

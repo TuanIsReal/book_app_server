@@ -16,8 +16,8 @@ public class UserRepositoryImpl implements UserCustomizeRepository {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public void insertUser(User user) {
-        mongoTemplate.insert(user);
+    public User insertUser(User user) {
+        return mongoTemplate.insert(user);
     }
 
     @Override
