@@ -32,6 +32,8 @@ public class BookChapterController {
 
     private FirebaseMessagingService firebaseMessagingService;
 
+    private STFService stfService;
+
     @PostMapping("addChapter")
     private ResponseEntity<Response> addChapter(@RequestBody AddBookChapterRequest request){
         Response response = new Response();
@@ -47,8 +49,9 @@ public class BookChapterController {
         }
         long time = System.currentTimeMillis();
         BookChapter bookChapter = new BookChapter(bookId, request.getChapterNumber(), request.getChapterName(), request.getChapterContent(), time, time);
-        bookChapterService.insertBookChapter(bookChapter);
-        bookService.updateTotalChapterById(book.getId(), book.getTotalChapter() + 1);
+        String chapterId = bookChapterService.insertBookChapter(bookChapter);
+        stfService.createChapterText(request.getChapterContent(), chapterId + TXT);
+        bookService.increaseTotalChapter(book.getId());
 
         List<PurchasedBook> purchasedBookList = purchasedBookService.findPurchasedBooksByBookIdAndUserIdIsNot(bookId, book.getUserPost());
         List<String> purchasedUserList = new ArrayList<>();
@@ -59,12 +62,6 @@ public class BookChapterController {
         String messBody = Utils.messBodyAddChapter(book.getBookName(), request.getChapterNumber(), request.getChapterName());
         List<Notification> notificationList = new ArrayList<>();
 
-        for (String userId:purchasedUserList){
-            Notification notification = new Notification(userId, bookId, messBody, false, System.currentTimeMillis());
-            notificationList.add(notification);
-        }
-        notificationService.insertNotificationList(notificationList);
-
         List<Device> deviceList = deviceService.getDevicesByUserIdIsIn(purchasedUserList);
         for (Device device:deviceList){
             if (!device.getDeviceToken().isEmpty()){
@@ -72,6 +69,12 @@ public class BookChapterController {
                 firebaseMessagingService.sendNotificationByToken(message);
             }
         }
+
+        for (String userId:purchasedUserList){
+            Notification notification = new Notification(userId, bookId, messBody, false, System.currentTimeMillis());
+            notificationList.add(notification);
+        }
+        notificationService.insertNotificationList(notificationList);
 
         response.setCode(100);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -107,6 +110,7 @@ public class BookChapterController {
         }
 
         purchasedBookService.updateLastReadChapterByBookIdAndUserId(bookId, userId, chapterNumber);
+        String chapterContent = stfService.getChapterContent(bookChapter.getChapterContent() + TXT);
         response.setCode(100);
         response.setData(bookChapter);
         return new ResponseEntity<>(response, HttpStatus.OK);

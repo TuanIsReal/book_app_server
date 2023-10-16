@@ -6,6 +6,7 @@ public class Constant {
     public static final String AVATAR_IMAGE_STORAGE_PATH = "C:/inetpub/wwwroot/avatar_image/";
     public static final String CHAPTER_TEXT_STORAGE_PATH = "C:/Book_app_project/server/chapter/";
     public static final String JPG = ".jpg";
+    public static final String TXT = ".txt";
 
 
     public static final String BUY_BOOK_NOTIFICATION_TITLE = "Thông báo mua truyên";

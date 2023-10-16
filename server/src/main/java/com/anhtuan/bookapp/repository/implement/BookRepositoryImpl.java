@@ -39,15 +39,6 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
     }
 
     @Override
-    public void updateTotalChapterById(String bookId, int totalChapter) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(Book.ID).is(new ObjectId(bookId)));
-        Update update = new Update();
-        update.set(Book.TOTAL_CHAPTER, totalChapter);
-        mongoTemplate.updateFirst(query, update, Book.class);
-    }
-
-    @Override
     public void updateStarById(String id, double star) {
         Query query = new Query();
         query.addCriteria(Criteria.where(Book.ID).is(new ObjectId(id)));
@@ -100,6 +91,15 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
         }
         query.skip((page - 1) * 10L).limit(10);
         return mongoTemplate.find(query, Book.class);
+    }
+
+    @Override
+    public void increaseTotalChapter(String bookId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(Book.ID).is(new ObjectId(bookId)));
+        Update update = new Update();
+        update.inc(bookId, 1);
+        mongoTemplate.updateFirst(query, update, Book.class);
     }
 
 }

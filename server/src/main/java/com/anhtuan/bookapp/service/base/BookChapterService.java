@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface BookChapterService {
 
-    void insertBookChapter(BookChapter bookChapter);
+    String insertBookChapter(BookChapter bookChapter);
 
     BookChapter findBookChapterByBookIdAndChapterNumber(String bookId, int chapterNumber);
 

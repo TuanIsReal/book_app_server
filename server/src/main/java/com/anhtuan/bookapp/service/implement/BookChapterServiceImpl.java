@@ -15,8 +15,10 @@ public class BookChapterServiceImpl implements BookChapterService {
     private BookChapterRepository bookChapterRepository;
 
     @Override
-    public void insertBookChapter(BookChapter bookChapter) {
-        bookChapterRepository.insert(bookChapter);
+    public String insertBookChapter(BookChapter bookChapter) {
+        String chapterId = bookChapterRepository.insert(bookChapter).getId();
+        bookChapterRepository.updateChapterContent(chapterId, chapterId);
+        return chapterId;
     }
 
     @Override

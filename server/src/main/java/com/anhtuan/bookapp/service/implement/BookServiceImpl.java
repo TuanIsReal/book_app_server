@@ -61,8 +61,8 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public void updateTotalChapterById(String bookId, int totalChapter) {
-        bookRepository.updateTotalChapterById(bookId, totalChapter);
+    public void increaseTotalChapter(String bookId) {
+        bookRepository.increaseTotalChapter(bookId);
     }
 
     @Override

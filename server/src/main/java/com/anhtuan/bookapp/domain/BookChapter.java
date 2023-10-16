@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @Data
 @Document(collection = BookChapter.BOOK_CHAPTER_COLLECTION)
 public class BookChapter {
-
+    public static final String ID = "_id";
     public static final String BOOK_CHAPTER_COLLECTION = "book_chapter";
     public static final String BOOK_ID = "book_id";
     public static final String CHAPTER_NUMBER = "chapter_number";
