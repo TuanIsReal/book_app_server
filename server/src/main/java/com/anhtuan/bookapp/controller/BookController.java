@@ -1,6 +1,8 @@
 package com.anhtuan.bookapp.controller;
 
 import static com.anhtuan.bookapp.config.Constant.*;
+
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.domain.Book;
 import com.anhtuan.bookapp.domain.Category;
 import com.anhtuan.bookapp.request.AddBookRequest;
@@ -58,7 +60,7 @@ public class BookController {
             book.setAdminUp(true);
         }
         bookService.insertBook(book);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
@@ -90,7 +92,7 @@ public class BookController {
 
             book.setBookCategory(bookNameList);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(books);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -114,7 +116,7 @@ public class BookController {
 
             book.setBookCategory(bookNameList);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(bookList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -134,7 +136,7 @@ public class BookController {
             categoriesName.add(category.getCategoryName());
         }
         book.setBookCategory(categoriesName);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(book);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -160,7 +162,7 @@ public class BookController {
 
             book.setBookCategory(bookNameList);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(bookList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -180,7 +182,7 @@ public class BookController {
             categoriesName.add(category.getCategoryName());
         }
         book.setBookCategory(categoriesName);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(book);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -233,7 +235,7 @@ public class BookController {
 
             book.setBookCategory(bookNameList);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(books);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -260,7 +262,7 @@ public class BookController {
 
             book.setBookCategory(bookNameList);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(books);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.common.Utils;
 import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.*;
@@ -56,7 +57,7 @@ public class BookRequestUpController {
         book.setStatus(STATUS_BOOK_REQUEST_UP.REQUEST);
         book.setRequestTime(System.currentTimeMillis());
         bookRequestUpService.addBookRequestUp(book);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
@@ -104,11 +105,10 @@ public class BookRequestUpController {
 
         Device device = deviceService.getDeviceByUserId(bookRequestUp.getUserPost());
         if (device != null && !device.getDeviceToken().isEmpty()) {
-            NotificationMessage message = new
-                    NotificationMessage(device.getDeviceToken(), BOOK_REQUEST_UP_TITLE, mess);
+            NotificationMessage message = new NotificationMessage(device.getDeviceToken(), BOOK_REQUEST_UP_TITLE, mess);
             firebaseMessagingService.sendNotificationByToken(message);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -142,7 +142,7 @@ public class BookRequestUpController {
             bookRequestUp.setBookCategory(bookNameList);
         }
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(bookRequestUpList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -171,7 +171,7 @@ public class BookRequestUpController {
             bookRequestUp.setBookCategory(bookNameList);
         }
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(bookRequestUpList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -182,7 +182,7 @@ public class BookRequestUpController {
         Response response = new Response();
         int quantityPurchased;
         quantityPurchased = purchasedBookService.countPurchasedBooksByBookIdAndUserIdIsNot(bookId, userId);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(quantityPurchased);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -1,12 +1,11 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.common.Utils;
 import static com.anhtuan.bookapp.config.Constant.*;
-import com.anhtuan.bookapp.domain.NotificationMessage;
-import com.anhtuan.bookapp.domain.TransactionHistory;
-import com.anhtuan.bookapp.domain.User;
+
+import com.anhtuan.bookapp.domain.*;
 import com.anhtuan.bookapp.request.LoginGoolgeRequest;
-import com.anhtuan.bookapp.domain.VerifyCode;
 import com.anhtuan.bookapp.request.AuthenVerifyCodeRequest;
 import com.anhtuan.bookapp.request.RegisterRequest;
 import com.anhtuan.bookapp.response.LoginResponse;
@@ -41,12 +40,12 @@ public class UserController{
         Response response = new Response();
         User user = userService.getUserByEmailAndPassword(email, password);
         if (user == null){
-            response.setCode(102);
+            response.setCode(ResponseCode.ACCOUNT_NOT_EXISTS);
             response.setData(new LoginResponse());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         userService.updateUserIpAndLoggedStatus(user.getId(), ip, true);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(new LoginResponse(user.getId(), user.getRole()));
         System.out.println("client ip:  "+ip);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -56,6 +55,12 @@ public class UserController{
     public ResponseEntity<Response> registerController(@RequestBody RegisterRequest registerRequest){
         Response response = new Response();
         String email = registerRequest.getEmail();
+
+        if (userService.getUserByEmail(email) != null){
+            response.setCode(ResponseCode.EMAIL_EXISTS);
+            return ResponseEntity.ok(response);
+        }
+
         String password = registerRequest.getPassword();
         String role = "member";
         String name = registerRequest.getName();
@@ -64,7 +69,7 @@ public class UserController{
         User newUser = new User(email, password, role, name, "", ip, false,500);
         User user = userService.insertUser(newUser);
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(new RegisterResponse(user.getId(), user.getRole()));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -74,11 +79,11 @@ public class UserController{
         Response response = new Response();
         User user = userService.findUserLoginGoolge(goolgeRequest.getEmail(),true);
         if(user!=null && (user.getGoogleLogin()==null||!user.getGoogleLogin())){
-            throw  new RuntimeException("User is existed without google login");
+            throw new RuntimeException("User is existed without google login");
         }
         if(user!=null && user.getGoogleLogin()){
             userService.updateUserIpAndLoggedStatus(user.getId(), goolgeRequest.getIp(), true);
-            response.setCode(100);
+            response.setCode(ResponseCode.SUCCESS);
             response.setData(new LoginResponse(user.getId(), user.getRole()));
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -87,10 +92,10 @@ public class UserController{
         String role = "member";
         String name = goolgeRequest.getName();
         String ip = goolgeRequest.getIp();
-        User saveUser=new User(email, "", role, name,goolgeRequest.getImg() , ip, false,500,true);
+        User saveUser = new User(email, "", role, name,goolgeRequest.getImg() , ip, false,500,true);
         userService.insertUser(saveUser);
         User newUser = userService.getUserByEmailAndPassword(email,password);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(new RegisterResponse(newUser.getId(), newUser.getRole()));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -99,10 +104,10 @@ public class UserController{
     public ResponseEntity<Response> checkExistUser(@RequestParam String email){
         Response response = new Response();
         if (userService.getUserByEmail(email) != null){
-            response.setCode(101);
+            response.setCode(ResponseCode.EMAIL_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -111,11 +116,31 @@ public class UserController{
         Response response = new Response();
         User user = userService.getUserByUserId(userId);
         if (user != null) {
-            response.setCode(100);
+            response.setCode(ResponseCode.SUCCESS);
             response.setData(user);
         } else {
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
         }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/loginDevice")
+    public ResponseEntity<Response> loginDevice(@RequestParam String userId,
+                                                @RequestParam String deviceToken){
+        Response response = new Response();
+        if (userService.getUserByUserId(userId) == null){
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        List<Device> devices = deviceService.getDevicesByDeviceToken(deviceToken);
+        if (devices == null || devices.isEmpty()){
+            deviceService.insertDevice(new Device(userId, deviceToken));
+        } else {
+            deviceService.updateUserIdByDeviceToken(userId, deviceToken);
+        }
+
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -123,8 +148,8 @@ public class UserController{
     public ResponseEntity<Response> logout(@RequestParam String userId){
         Response response = new Response();
         userService.updateUserLoggedStatus(userId, false);
-        deviceService.updateDeviceTokenByUserId(userId, "");
-        response.setCode(100);
+        deviceService.removeDevicesByUserId(userId);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -133,11 +158,11 @@ public class UserController{
         Response response = new Response();
         User user = userService.getUserByIp(ip);
         if (user == null || !user.getIsLogged()){
-            response.setCode(103);
+            response.setCode(ResponseCode.USER_NOT_LOGIN);
             response.setData(new User());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(user);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -149,12 +174,12 @@ public class UserController{
         Response response = new Response();
         User user = userService.getUserByIdAndPassword(userId, password);
         if (user == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         userService.updatePasswordByUserId(userId, newPassword);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -165,19 +190,12 @@ public class UserController{
         Response response = new Response();
         User user = userService.getUserByIdAndPassword(userId, password);
         if (user == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         userService.updateNameByUserId(userId, newName);
-        response.setCode(100);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @PostMapping("sendNoti")
-    public ResponseEntity<Response> sendNoti(@RequestBody NotificationMessage notificationMessage){
-        Response response = new Response();
-        response.setCode(firebaseMessagingService.sendNotificationByToken(notificationMessage));
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -186,7 +204,7 @@ public class UserController{
         Response response = new Response();
         User user = userService.findByEmailAndNotLoginGoogle(email);
         if (Objects.isNull(user)){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
@@ -196,7 +214,7 @@ public class UserController{
 
         String text = Utils.mailForgotPassword(code);
         emailService.sendEmail(email, FORGOT_PASSWORD_SUBJECT, text);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -211,11 +229,11 @@ public class UserController{
         verifyCode = verifyCodeService.
                 findVerifyCodeByCodeAndEmailAndTypeAndTimeGreaterThan(code, request.getEmail(), type, time);
         if (Objects.isNull(verifyCode)){
-            response.setCode(121);
+            response.setCode(ResponseCode.VERIFY_CODE_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(verifyCode.getUserId());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -227,12 +245,12 @@ public class UserController{
         Response response = new Response();
         User user = userService.getUserByUserId(userId);
         if (user == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         userService.updatePasswordByUserId(userId, newPassword);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -241,12 +259,12 @@ public class UserController{
         Response response = new Response();
         User user = userService.getUserByUserId(userId);
         if (user == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         List<TransactionHistory> transactionList = transactionHistoryService.getTransactionHistoryUser(userId);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(transactionList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

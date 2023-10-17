@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.common.Utils;
 import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.*;
@@ -76,7 +77,7 @@ public class BookChapterController {
         }
         notificationService.insertNotificationList(notificationList);
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -109,9 +110,10 @@ public class BookChapterController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        purchasedBookService.updateLastReadChapterByBookIdAndUserId(bookId, userId, chapterNumber);
         String chapterContent = stfService.getChapterContent(bookChapter.getChapterContent() + TXT);
-        response.setCode(100);
+        purchasedBookService.updateLastReadChapterByBookIdAndUserId(bookId, userId, chapterNumber);
+        bookChapter.setChapterContent(chapterContent);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(bookChapter);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -127,7 +129,7 @@ public class BookChapterController {
         }
 
         List<BookChapter> bookChapters = bookChapterService.getBookChaptersByBookId(bookId);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(bookChapters);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

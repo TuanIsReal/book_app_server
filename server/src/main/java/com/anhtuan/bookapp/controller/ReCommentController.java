@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.common.Utils;
 import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.*;
@@ -57,7 +58,7 @@ public class ReCommentController {
             firebaseMessagingService.sendNotificationByToken(message);
         }
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
@@ -67,7 +68,7 @@ public class ReCommentController {
         Response response = new Response();
         List<ReComment> reComments = reCommentService.getReCommentsByParentCommentId(parentCommentId);
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(reComments);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

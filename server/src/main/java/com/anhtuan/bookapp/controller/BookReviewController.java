@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.domain.Book;
 import com.anhtuan.bookapp.domain.BookReview;
 import com.anhtuan.bookapp.request.AddBookReviewRequest;
@@ -55,7 +56,7 @@ public class BookReviewController {
         double newStar = ((star * quantityReview) + reviewStar) / (quantityReview + 1);
         bookService.updateStarById(request.getBookId(), newStar);
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -64,7 +65,7 @@ public class BookReviewController {
         Response response = new Response();
         List<BookReview> bookReviewList = bookReviewService.getBookReviewByBookId(bookId);
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(bookReviewList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -75,10 +76,10 @@ public class BookReviewController {
         Response response = new Response();
         List<BookReview> bookReviewList = bookReviewService.getBookReviewByBookIdAndAuthor(bookId, userId);
         if (bookReviewList == null || bookReviewList.size() == 0){
-            response.setCode(119);
+            response.setCode(ResponseCode.BOOK_REVIEW_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(bookReviewList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

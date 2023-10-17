@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.domain.Category;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.CategoryService;
@@ -21,11 +22,11 @@ public class CategoryController {
     public ResponseEntity<Response> addCategory(@RequestParam String categoryName){
         Response response = new Response();
         if (categoryService.getCategoryByCategoryName(categoryName) != null){
-            response.setCode(104);
+            response.setCode(ResponseCode.BOOK_CATEGORY_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         categoryService.insertCategory(new Category(categoryName));
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -34,7 +35,7 @@ public class CategoryController {
         Response response = new Response();
         List<Category> categoryList = categoryService.findAll();
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(categoryList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -45,7 +46,7 @@ public class CategoryController {
 
         categoryService.deleteById(id);
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -53,7 +54,7 @@ public class CategoryController {
     public ResponseEntity<Response> searchCategory(@RequestParam String text){
         Response response = new Response();
         List<Category> categoryList = categoryService.findCategoryByText(text);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(categoryList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.Payment;
 import com.anhtuan.bookapp.domain.TransactionHistory;
@@ -60,10 +61,10 @@ public class StatController {
             incomeMemberResponse.setSpend(spend * -1);
             incomeMemberResponse.setChange(revenue + spend);
         } catch (ParseException e) {
-            response.setCode(99);
+            response.setCode(ResponseCode.UNKNOWN_ERROR);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(incomeMemberResponse);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -106,10 +107,10 @@ public class StatController {
             incomeAdminResponse.setPaymentList(paymentList);
 
         } catch (ParseException e) {
-            response.setCode(99);
+            response.setCode(ResponseCode.UNKNOWN_ERROR);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(incomeAdminResponse);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

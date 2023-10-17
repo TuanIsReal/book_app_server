@@ -16,11 +16,11 @@ public class DeviceRepositoryImpl implements DeviceCustomizeRepository {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public void updateDeviceTokenByUserId(String userId, String deviceToken) {
+    public void updateUserIdByDeviceToken(String userId, String deviceToken) {
         Query query = new Query();
-        query.addCriteria(Criteria.where(Device.USER_ID).is(userId));
+        query.addCriteria(Criteria.where(Device.DEVICE_TOKEN).is(deviceToken));
         Update update = new Update();
-        update.set(Device.DEVICE_TOKEN, deviceToken);
+        update.set(Device.USER_ID, userId);
         mongoTemplate.updateFirst(query, update, Device.class);
     }
 }

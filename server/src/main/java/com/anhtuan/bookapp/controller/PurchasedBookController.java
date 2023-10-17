@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.common.Utils;
 import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.*;
@@ -92,9 +93,9 @@ public class PurchasedBookController {
                     firebaseMessagingService.sendNotificationByToken(message);
                 }
 
-                response.setCode(100);
+                response.setCode(ResponseCode.SUCCESS);
             } else {
-                response.setCode(111);
+                response.setCode(ResponseCode.NOT_ENOUGH_POINT);
             }
         }
 
@@ -106,7 +107,7 @@ public class PurchasedBookController {
         Response response = new Response();
         User user = userService.getUserByUserId(userId);
         if (user == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
@@ -135,7 +136,7 @@ public class PurchasedBookController {
             getUserBookLibraryResponses.add(getUserBookLibraryResponse);
         }
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(getUserBookLibraryResponses);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -150,7 +151,7 @@ public class PurchasedBookController {
         } else {
             response.setData(STATUS_PURCHASED_BOOK.NOT_PURCHASED);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -160,16 +161,16 @@ public class PurchasedBookController {
         Response response = new Response();
         Book book = bookService.findBookById(bookId);
         if (book == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         PurchasedBook purchasedBook = purchasedBookService.getPurchasedBookByBookIdAndUserId(bookId, userId);
         if (purchasedBook == null){
-            response.setCode(112);
+            response.setCode(ResponseCode.PURCHASED_BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(purchasedBook);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -180,11 +181,11 @@ public class PurchasedBookController {
         Response response = new Response();
         PurchasedBook purchasedBook = purchasedBookService.getPurchasedBookByBookIdAndUserId(bookId, userId);
         if (Objects.isNull(purchasedBook)){
-            response.setCode(112);
+            response.setCode(ResponseCode.PURCHASED_BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         purchasedBookService.unShowPurchasedBook(bookId, userId);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

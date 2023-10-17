@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.domain.Comment;
 import com.anhtuan.bookapp.request.AddCommentRequest;
 import com.anhtuan.bookapp.response.Response;
@@ -25,12 +26,12 @@ public class CommentController {
     public ResponseEntity<Response> addComment(@RequestBody AddCommentRequest request){
         Response response = new Response();
         if (bookService.findBookById(request.getBookId()) == null){
-            response.setCode(109);
+            response.setCode(ResponseCode.BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         if (userService.getUserByUserId(request.getAuthor()) == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
@@ -39,7 +40,7 @@ public class CommentController {
         comment.setCommentTime(System.currentTimeMillis());
         commentService.insertComment(comment);
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
 
     }
@@ -49,7 +50,7 @@ public class CommentController {
         Response response = new Response();
         List<Comment> commentList = commentService.getCommentsByBookId(bookId);
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(commentList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

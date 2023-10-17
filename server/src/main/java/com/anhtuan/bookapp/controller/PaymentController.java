@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.common.Utils;
 import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.config.PaymentConfig;
@@ -40,7 +41,7 @@ public class PaymentController {
         User user = userService.getUserByUserId(userId);
 
         if (Objects.isNull(user)){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
@@ -125,7 +126,7 @@ public class PaymentController {
         payment.setStatus(TRANSACTION_STATUS.WAITING);
         paymentService.addPayment(payment);
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(paymentUrl);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

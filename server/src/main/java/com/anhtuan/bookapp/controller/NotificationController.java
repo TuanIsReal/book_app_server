@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.domain.Notification;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.response.Response;
@@ -26,14 +27,14 @@ public class NotificationController {
         Response response = new Response();
         User user = userService.getUserByUserId(userId);
         if (user == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         List<Notification> notificationList = new ArrayList<>();
         notificationList = notificationService.getNotificationByUserId(userId);
 
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         response.setData(notificationList);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -42,7 +43,7 @@ public class NotificationController {
     public ResponseEntity<Response> clickNotification(@RequestParam String id){
         Response response = new Response();
         notificationService.updateIsClickById(id, true);
-        response.setCode(100);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

@@ -14,7 +14,7 @@ public class FirebaseMessagingServiceImpl implements FirebaseMessagingService {
     private FirebaseMessaging firebaseMessaging;
 
     @Override
-    public int sendNotificationByToken(NotificationMessage notificationMessage) {
+    public void sendNotificationByToken(NotificationMessage notificationMessage) {
 
         Notification notification = Notification
                 .builder()
@@ -30,10 +30,8 @@ public class FirebaseMessagingServiceImpl implements FirebaseMessagingService {
 
         try {
             firebaseMessaging.send(message);
-            return 100;
         } catch (FirebaseMessagingException e){
             e.printStackTrace();
-            return 117;
         }
     }
 }

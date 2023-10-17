@@ -26,12 +26,23 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public void updateDeviceTokenByUserId(String userId, String deviceToken) {
-        deviceRepository.updateDeviceTokenByUserId(userId, deviceToken);
+    public void updateUserIdByDeviceToken(String userId, String deviceToken) {
+        deviceRepository.updateUserIdByDeviceToken(userId, deviceToken);
     }
 
     @Override
     public List<Device> getDevicesByUserIdIsIn(List<String> userIdList) {
         return deviceRepository.findDevicesByUserIdIsIn(userIdList);
     }
+
+    @Override
+    public List<Device> getDevicesByDeviceToken(String deviceToken) {
+        return deviceRepository.findDevicesByDeviceToken(deviceToken);
+    }
+
+    @Override
+    public void removeDevicesByUserId(String userId) {
+        deviceRepository.deleteDevicesByUserId(userId);
+    }
+
 }
