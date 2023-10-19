@@ -25,16 +25,14 @@ public class UserRepositoryImpl implements UserCustomizeRepository {
         Query query = new Query();
         query.addCriteria(Criteria.where(User.USER_ID).is(userId));
         Update update = new Update();
-        update.set(User.IS_LOGGED, status);
         mongoTemplate.updateFirst(query, update, User.class);
     }
 
     @Override
-    public void updateUserIpAndLoggedStats(String userId, String ip, Boolean status) {
+    public void updateUserIpAndLoggedStats(String userId, String ip) {
         Query query = new Query();
         query.addCriteria(Criteria.where(User.USER_ID).is(userId));
         Update update = new Update();
-        update.set(User.IS_LOGGED, status);
         update.set(User.LAST_LOGIN_IP, ip);
         mongoTemplate.updateFirst(query, update, User.class);
     }

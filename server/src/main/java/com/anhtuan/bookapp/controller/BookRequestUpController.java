@@ -37,7 +37,7 @@ public class BookRequestUpController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        if (userService.getUserByUserId(request.getUserPost()) == null){
+        if (userService.getUserByUserId(request.getAuthor()) == null){
             response.setCode(106);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }

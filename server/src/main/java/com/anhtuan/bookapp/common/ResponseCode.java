@@ -22,4 +22,6 @@ public class ResponseCode {
     public static final int BOOK_REVIEW_NOT_EXISTS = 119;
     public static final int PURCHASED_BOOK_NOT_EXISTS = 120;
     public static final int VERIFY_CODE_NOT_EXISTS = 121;
+    public static final int ACCOUNT_IS_BLOCKED = 122;
+    public static final int PASSWORD_IS_WRONG = 123;
 }

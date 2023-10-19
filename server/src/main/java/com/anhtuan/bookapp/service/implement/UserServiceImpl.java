@@ -1,35 +1,24 @@
 package com.anhtuan.bookapp.service.implement;
 
+import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.repository.base.UserRepository;
 import com.anhtuan.bookapp.service.base.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
     UserRepository userRepository;
 
     @Override
-    public User getUserByEmailAndPassword(String email, String password) {
-        List<User> userList = userRepository.findByEmailAndPassword(email, password);
-        if (userList.size() != 0){
-            return userList.get(0);
-        }
-        return null;
-    }
-
-    @Override
     public User getUserByEmail(String email) {
-        List<User> userList = userRepository.findUserByEmail(email);
-        if (userList.size() != 0){
-            return userList.get(0);
-        }
-        return null;
+        return userRepository.findUserByEmail(email);
     }
 
     @Override
@@ -48,8 +37,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserIpAndLoggedStatus(String userId, String ip, Boolean status) {
-        userRepository.updateUserIpAndLoggedStats(userId, ip, status);
+    public void updateUserIpAndLoggedStatus(String userId, String ip) {
+        userRepository.updateUserIpAndLoggedStats(userId, ip);
     }
 
     @Override

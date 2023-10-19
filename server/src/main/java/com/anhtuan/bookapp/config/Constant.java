@@ -80,6 +80,24 @@ public class Constant {
         public static final int RECHARGE_BOOK = 3;
         public static final int ADMIN_ADD = 4;
     }
+
+    public static class USER_STATUS{
+        public static final int NORMAL = 1;
+        public static final int BLOCK = -1;
+    }
+
+    public static class USER_ROLE{
+        public static final int USER = 1;
+        public static final int WRITER = 2;
+        public static final int ADMIN = 3;
+    }
+
+    public static class BOOK_STATUS{
+        public static final int REQUEST = 0;
+        public static final int ACCEPTED = 1;
+        public static final int COMPLETED = 2;
+        public static final int REJECTED = -1;
+    }
 }
 
 

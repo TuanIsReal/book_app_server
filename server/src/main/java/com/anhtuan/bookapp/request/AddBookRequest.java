@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 public class AddBookRequest extends BaseRequest{
 
-    private String userPost;
     private String bookName;
     private String author;
     private String introduction;

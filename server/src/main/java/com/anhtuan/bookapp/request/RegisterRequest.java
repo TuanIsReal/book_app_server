@@ -1,8 +1,13 @@
 package com.anhtuan.bookapp.request;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotNull;
 
-public class RegisterRequest extends BaseRequest{
+@Data
+@NoArgsConstructor
+public class RegisterRequest {
 
     @NotNull
     private String email;
@@ -14,10 +19,10 @@ public class RegisterRequest extends BaseRequest{
     private String name;
 
     @NotNull
-    private String ip;
+    private Integer role;
 
-    public RegisterRequest() {
-    }
+    @NotNull
+    private String ip;
 
     public RegisterRequest(String email, String password, String name, String ip) {
         this.email = email;
@@ -26,37 +31,6 @@ public class RegisterRequest extends BaseRequest{
         this.ip = ip;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-        this.ip = ip;
-    }
 
     @Override
     public String toString() {

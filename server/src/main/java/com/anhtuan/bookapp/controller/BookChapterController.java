@@ -54,7 +54,7 @@ public class BookChapterController {
         stfService.createChapterText(request.getChapterContent(), chapterId + TXT);
         bookService.increaseTotalChapter(book.getId());
 
-        List<PurchasedBook> purchasedBookList = purchasedBookService.findPurchasedBooksByBookIdAndUserIdIsNot(bookId, book.getUserPost());
+        List<PurchasedBook> purchasedBookList = purchasedBookService.findPurchasedBooksByBookIdAndUserIdIsNot(bookId, book.getAuthor());
         List<String> purchasedUserList = new ArrayList<>();
         for (PurchasedBook purchasedBook: purchasedBookList){
             purchasedUserList.add(purchasedBook.getUserId());

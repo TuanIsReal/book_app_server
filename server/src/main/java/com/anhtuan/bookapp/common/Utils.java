@@ -44,4 +44,13 @@ public class Utils {
         }
         return sb.toString();
     }
+
+    public static String byteToString(byte[] b) {
+        int n = b.length;
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < n; i++) {
+            builder.append((char) b[i]);
+        }
+        return builder.toString();
+    }
 }

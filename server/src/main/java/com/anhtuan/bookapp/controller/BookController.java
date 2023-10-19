@@ -5,6 +5,7 @@ import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.domain.Book;
 import com.anhtuan.bookapp.domain.Category;
+import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.request.AddBookRequest;
 import com.anhtuan.bookapp.request.GetBookFilterRequest;
 import com.anhtuan.bookapp.response.Response;
@@ -38,7 +39,8 @@ public class BookController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        if (userService.getUserByUserId(request.getUserPost()) == null){
+        User author = userService.getUserByUserId(request.getAuthor());
+        if (author == null){
             response.setCode(106);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -50,15 +52,13 @@ public class BookController {
             categoriesId.add(category.getId());
         }
         book.setBookCategory(categoriesId);
-        book.setStar(5);
+        book.setStar(0);
         book.setTotalChapter(0);
         book.setTotalPurchased(0);
         book.setTotalReview(0);
         book.setUploadTime(System.currentTimeMillis());
         book.setLastUpdateTime(System.currentTimeMillis());
-        if (request.getUserPost().equals(ADMIN_ID)){
-            book.setAdminUp(true);
-        }
+        book.setAdminUp(USER_ROLE.ADMIN == author.getRole());
         bookService.insertBook(book);
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -66,8 +66,9 @@ public class BookController {
     }
 
 
-    @GetMapping("/getBook")
-    public ResponseEntity<Response> getBookByUserPost(@RequestParam String userId){
+    @GetMapping("/getBookUp")
+    public ResponseEntity<Response> getBookByUserPost(@RequestParam String userId,
+                                                      @RequestParam int status){
         Response response = new Response();
         if (userService.getUserByUserId(userId) == null){
             response.setCode(106);
@@ -189,7 +190,7 @@ public class BookController {
 
     @GetMapping("/getBookHome")
     public ResponseEntity<Response> getBookHome(@RequestParam int typeFilter,
-                                               @RequestParam boolean limit){
+                                               @RequestParam int limit){
         Response response = new Response();
 
         HashMap<String, String> mapCategory = new HashMap<>();

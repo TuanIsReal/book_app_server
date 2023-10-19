@@ -27,13 +27,9 @@ public interface BookService {
     void updateStarById(String id, double star);
     List<Book> getNewBookList();
     List<Book> getRecommendBookList();
-    List<Book> getTop8NewBookList();
-    List<Book> getTop6RecommendBookList();
     void updateTotalPurchasedById(String bookId, int totalPurchased);
     void updateTotalReviewById(String bookId, int totalReview);
     List<Book> getMostBuyBookList();
     List<Book> getMostReviewBookList();
-    List<Book> getTop6MostBuyBookList();
-    List<Book> getTop6MostReviewBookList();
     List<Book> searchBookFilter(int sort, int order, int status, int post, List<String> category, int page);
 }

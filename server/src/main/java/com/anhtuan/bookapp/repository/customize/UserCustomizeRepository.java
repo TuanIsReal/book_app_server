@@ -9,7 +9,7 @@ public interface UserCustomizeRepository {
 
     void updateUserLoggedStats(String userId, Boolean status);
 
-    void updateUserIpAndLoggedStats(String userId, String ip, Boolean status);
+    void updateUserIpAndLoggedStats(String userId, String ip);
 
     void updatePointByUserId(String userId, int point);
 

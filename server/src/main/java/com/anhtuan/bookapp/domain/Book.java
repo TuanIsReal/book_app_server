@@ -18,7 +18,6 @@ public class Book {
     public static final String ID = "_id";
     public static final String BOOK_NAME = "book_name";
     public static final String AUTHOR = "author";
-    public static final String USER_POST = "user_post";
     public static final String INTRODUCTION = "introduction";
     public static final String BOOK_IMAGE = "book_image";
     public static final String BOOK_CATEGORY = "book_category";
@@ -27,9 +26,10 @@ public class Book {
     public static final String TOTAL_CHAPTER = "total_chapter";
     public static final String TOTAL_PURCHASED = "total_purchased";
     public static final String TOTAL_REVIEW = "total_review";
+    public static final String REQUEST_TIME = "request_time";
     public static final String UPLOAD_TIME = "upload_time";
     public static final String LAST_UPDATE_TIME = "last_update_time";
-    public static final String COMPLETE_BOOK = "complete_book";
+    public static final String STATUS = "status";
     public static final String ADMIN_UP = "admin_up";
 
     @Id
@@ -40,9 +40,6 @@ public class Book {
 
     @Field(AUTHOR)
     private String author;
-
-    @Field(USER_POST)
-    private String userPost;
 
     @Field(INTRODUCTION)
     private String introduction;
@@ -68,14 +65,17 @@ public class Book {
     @Field(TOTAL_REVIEW)
     private int totalReview;
 
+    @Field(REQUEST_TIME)
+    private long requestTime;
+
     @Field(UPLOAD_TIME)
     private long uploadTime;
 
     @Field(LAST_UPDATE_TIME)
     private long lastUpdateTime;
 
-    @Field(COMPLETE_BOOK)
-    private boolean completeBook;
+    @Field(STATUS)
+    private int status;
 
     @Field(ADMIN_UP)
     private boolean adminUp;
@@ -84,8 +84,7 @@ public class Book {
     }
 
     public Book(AddBookRequest request) {
-        this.userPost = request.getUserPost()
-;        this.bookName = request.getBookName();
+        this.bookName = request.getBookName();
         this.author = request.getAuthor();
         this.introduction = request.getIntroduction();
         this.bookImage = request.getBookImage();
@@ -94,7 +93,6 @@ public class Book {
 
     public Book(BookRequestUp book) {
         this.id = book.getId();
-        this.userPost = book.getUserPost();
         this.bookName = book.getBookName();
         this.author = book.getAuthor();
         this.introduction = book.getIntroduction();

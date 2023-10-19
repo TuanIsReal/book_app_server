@@ -4,8 +4,6 @@ import com.anhtuan.bookapp.domain.User;
 
 public interface UserService {
 
-    User getUserByEmailAndPassword(String email, String password);
-
     User getUserByEmail(String email);
 
     User insertUser(User user);
@@ -14,7 +12,7 @@ public interface UserService {
 
     void updateUserLoggedStatus(String userId, Boolean status);
 
-    void updateUserIpAndLoggedStatus(String userId, String ip, Boolean status);
+    void updateUserIpAndLoggedStatus(String userId, String ip);
 
     User getUserByIp(String ip);
 

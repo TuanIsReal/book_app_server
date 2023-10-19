@@ -12,15 +12,13 @@ public interface BookRepository extends MongoRepository<Book, String>, BookCusto
 
     Book findBookById(String id);
 
-    List<Book> findBooksByUserPost(String userId);
+    List<Book> findBooksByAuthorAndStatus(String userId, Integer status);
 
-    List<Book> findBooksByAuthorAndBookNameIsNot(String author, String bookName);
+    List<Book> findBooksByAuthorAndStatusAndIdIsNot(String author, Integer status, String bookId);
 
-    List<Book> findBooksByAuthorAndIdIsNot(String author, String bookId);
+    List<Book> findBooksByIdInAndStatus(List<String> idList, Integer status);
 
-    List<Book> findBooksByIdIn(List<String> idList);
-
-    List<Book> findTop8ByOrderByUploadTimeDesc();
+    List<Book> findBooksByStatusTop8ByOrderByUploadTimeDesc();
 
     List<Book> findTop6ByOrderByStarDesc();
     List<Book> findBooksByIdIsIn(List<String> idList);

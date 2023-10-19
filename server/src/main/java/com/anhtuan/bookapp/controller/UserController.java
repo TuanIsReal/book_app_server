@@ -1,11 +1,12 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.common.PasswordUtil;
 import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.common.Utils;
 import static com.anhtuan.bookapp.config.Constant.*;
 
 import com.anhtuan.bookapp.domain.*;
-import com.anhtuan.bookapp.request.LoginGoolgeRequest;
+import com.anhtuan.bookapp.request.LoginGoogleRequest;
 import com.anhtuan.bookapp.request.AuthenVerifyCodeRequest;
 import com.anhtuan.bookapp.request.RegisterRequest;
 import com.anhtuan.bookapp.response.LoginResponse;
@@ -38,16 +39,29 @@ public class UserController{
                                                     @RequestParam String password,
                                                     @RequestParam String ip){
         Response response = new Response();
-        User user = userService.getUserByEmailAndPassword(email, password);
+        User user = userService.getUserByEmail(email);
         if (user == null){
             response.setCode(ResponseCode.ACCOUNT_NOT_EXISTS);
             response.setData(new LoginResponse());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        userService.updateUserIpAndLoggedStatus(user.getId(), ip, true);
+
+        if (user.getStatus() == USER_STATUS.BLOCK){
+            response.setCode(ResponseCode.ACCOUNT_IS_BLOCKED);
+            response.setData(new LoginResponse());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        String encryptPassword = PasswordUtil.encryptPassword(password);
+        if (!user.getPassword().equals(encryptPassword)){
+            response.setCode(ResponseCode.PASSWORD_IS_WRONG);
+            response.setData(new LoginResponse());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        userService.updateUserIpAndLoggedStatus(user.getId(), ip);
         response.setCode(ResponseCode.SUCCESS);
         response.setData(new LoginResponse(user.getId(), user.getRole()));
-        System.out.println("client ip:  "+ip);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -62,11 +76,12 @@ public class UserController{
         }
 
         String password = registerRequest.getPassword();
-        String role = "member";
+        String encryptPassword = PasswordUtil.encryptPassword(password);
+        Integer role = registerRequest.getRole();
         String name = registerRequest.getName();
         String ip = registerRequest.getIp();
 
-        User newUser = new User(email, password, role, name, "", ip, false,500);
+        User newUser = new User(email, encryptPassword, role, name, "", ip, USER_STATUS.NORMAL,500);
         User user = userService.insertUser(newUser);
 
         response.setCode(ResponseCode.SUCCESS);
@@ -75,28 +90,25 @@ public class UserController{
     }
 
     @PostMapping("/google-login")
-    public ResponseEntity<Response> googleLogin(@RequestBody LoginGoolgeRequest goolgeRequest){
+    public ResponseEntity<Response> googleLogin(@RequestBody LoginGoogleRequest googleRequest){
         Response response = new Response();
-        User user = userService.findUserLoginGoolge(goolgeRequest.getEmail(),true);
-        if(user!=null && (user.getGoogleLogin()==null||!user.getGoogleLogin())){
+        User user = userService.findUserLoginGoolge(googleRequest.getEmail(),true);
+        if(user!=null && (user.getIsGoogleLogin()==null || !user.getIsGoogleLogin())){
             throw new RuntimeException("User is existed without google login");
         }
-        if(user!=null && user.getGoogleLogin()){
-            userService.updateUserIpAndLoggedStatus(user.getId(), goolgeRequest.getIp(), true);
+        if(user != null && user.getIsGoogleLogin()){
+            userService.updateUserIpAndLoggedStatus(user.getId(), googleRequest.getIp());
             response.setCode(ResponseCode.SUCCESS);
             response.setData(new LoginResponse(user.getId(), user.getRole()));
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        String email = goolgeRequest.getEmail();
-        String password = goolgeRequest.getPassword();
-        String role = "member";
-        String name = goolgeRequest.getName();
-        String ip = goolgeRequest.getIp();
-        User saveUser = new User(email, "", role, name,goolgeRequest.getImg() , ip, false,500,true);
-        userService.insertUser(saveUser);
-        User newUser = userService.getUserByEmailAndPassword(email,password);
+        String email = googleRequest.getEmail();
+        String name = googleRequest.getName();
+        String ip = googleRequest.getIp();
+        User newUser = new User(email, "", USER_ROLE.USER, name,googleRequest.getImg(), ip, USER_STATUS.NORMAL,500,true);
+        User saveUser = userService.insertUser(newUser);
         response.setCode(ResponseCode.SUCCESS);
-        response.setData(new RegisterResponse(newUser.getId(), newUser.getRole()));
+        response.setData(new RegisterResponse(saveUser.getId(), saveUser.getRole()));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -150,20 +162,6 @@ public class UserController{
         userService.updateUserLoggedStatus(userId, false);
         deviceService.removeDevicesByUserId(userId);
         response.setCode(ResponseCode.SUCCESS);
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @GetMapping("/checkUserLogged")
-    public ResponseEntity<Response> checkUserLogged(@RequestParam String ip){
-        Response response = new Response();
-        User user = userService.getUserByIp(ip);
-        if (user == null || !user.getIsLogged()){
-            response.setCode(ResponseCode.USER_NOT_LOGIN);
-            response.setData(new User());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        response.setCode(ResponseCode.SUCCESS);
-        response.setData(user);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

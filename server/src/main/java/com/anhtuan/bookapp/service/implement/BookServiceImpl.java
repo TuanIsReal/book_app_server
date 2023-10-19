@@ -46,11 +46,6 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> findBooksByAuthorAndBookNameIsNot(String author, String bookName) {
-        return bookRepository.findBooksByAuthorAndBookNameIsNot(author, bookName);
-    }
-
-    @Override
     public List<Book> getBooksByAuthorAndIdIsNot(String author, String bookId) {
         return bookRepository.findBooksByAuthorAndIdIsNot(author, bookId);
     }
@@ -81,16 +76,6 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> getTop8NewBookList() {
-        return bookRepository.findTop8ByOrderByUploadTimeDesc();
-    }
-
-    @Override
-    public List<Book> getTop6RecommendBookList() {
-        return bookRepository.findTop6ByOrderByStarDesc();
-    }
-
-    @Override
     public void updateTotalPurchasedById(String bookId, int totalPurchased) {
         bookRepository.updateTotalPurchasedById(bookId, totalPurchased);
     }
@@ -108,16 +93,6 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> getMostReviewBookList() {
         return bookRepository.findBooksByOrderByTotalReviewDesc();
-    }
-
-    @Override
-    public List<Book> getTop6MostBuyBookList() {
-        return bookRepository.findTop6ByOrderByTotalPurchasedDesc();
-    }
-
-    @Override
-    public List<Book> getTop6MostReviewBookList() {
-        return bookRepository.findTop6ByOrderByTotalReviewDesc();
     }
 
     @Override
