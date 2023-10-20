@@ -34,6 +34,7 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
     @Override
     public List<Book> findBookByText(String text) {
         Query query = new Query();
+        query.addCriteria(Criteria.where(Book.STATUS).gte(BOOK_STATUS.ACCEPTED));
         query.addCriteria(Criteria.where(Book.BOOK_NAME).regex(text, "i"));
         return mongoTemplate.find(query, Book.class);
     }
@@ -68,11 +69,12 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
     @Override
     public List<Book> searchBookFilter(String sort, int order, int status, int post, List<String> category, int page) {
         Query query = new Query();
+        query.addCriteria(Criteria.where(Book.STATUS).gte(BOOK_STATUS.ACCEPTED));
         if (status == FILTER_STATUS.COMPLETE){
-            query.addCriteria(Criteria.where(Book.COMPLETE_BOOK).is(true));
+            query.addCriteria(Criteria.where(Book.STATUS).is(BOOK_STATUS.COMPLETED));
         }
         if (status == FILTER_STATUS.WRITING){
-            query.addCriteria(Criteria.where(Book.COMPLETE_BOOK).isNull());
+            query.addCriteria(Criteria.where(Book.STATUS).is(BOOK_STATUS.ACCEPTED));
         }
         if (post == FILTER_POST.ADMIN_POST){
             query.addCriteria(Criteria.where(Book.ADMIN_UP).is(true));
@@ -100,6 +102,23 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
         Update update = new Update();
         update.inc(bookId, 1);
         mongoTemplate.updateFirst(query, update, Book.class);
+    }
+
+    @Override
+    public List<Book> findBookHome(int type, int limit) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(Book.STATUS).gte(BOOK_STATUS.ACCEPTED));
+        if (TYPE_FILTER.NEW_BOOK == type){
+            query.with(Sort.by(Sort.Order.desc(Book.UPLOAD_TIME)));
+        } else if (TYPE_FILTER.RECOMMEND_BOOK == type) {
+            query.with(Sort.by(Sort.Order.desc(Book.STAR)));
+        } else if (TYPE_FILTER.MOST_BUY == type) {
+            query.with(Sort.by(Sort.Order.desc(Book.TOTAL_PURCHASED)));
+        } else if (TYPE_FILTER.MOST_REVIEW == type) {
+            query.with(Sort.by(Sort.Order.desc(Book.TOTAL_REVIEW)));
+        }
+        query.skip(0).limit(limit);
+        return mongoTemplate.find(query, Book.class);
     }
 
 }

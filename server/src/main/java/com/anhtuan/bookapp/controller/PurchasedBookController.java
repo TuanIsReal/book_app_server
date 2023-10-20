@@ -46,7 +46,7 @@ public class PurchasedBookController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         User user = userService.getUserByUserId(userId);
-        User seller = userService.getUserByUserId(book.getUserPost());
+        User seller = userService.getUserByUserId(book.getAuthor());
         if (user == null || seller == null){
             response.setCode(106);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -83,10 +83,10 @@ public class PurchasedBookController {
 
                 String mess = Utils.messageBodyBuyBook(user.getName(), book.getBookName());
                 Notification notification = new Notification
-                        (book.getUserPost(), bookId, mess, false, time);
+                        (book.getAuthor(), bookId, mess, false, time);
                 notificationService.insertNotification(notification);
 
-                Device device = deviceService.getDeviceByUserId(book.getUserPost());
+                Device device = deviceService.getDeviceByUserId(book.getAuthor());
                 if (device != null && !device.getDeviceToken().isEmpty()){
                     NotificationMessage message = new
                             NotificationMessage(device.getDeviceToken(), BUY_BOOK_NOTIFICATION_TITLE, mess);

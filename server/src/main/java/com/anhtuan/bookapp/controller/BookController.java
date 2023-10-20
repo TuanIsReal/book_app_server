@@ -35,13 +35,13 @@ public class BookController {
     public ResponseEntity<Response> addBook(@RequestBody AddBookRequest request){
         Response response = new Response();
         if (bookService.findBookByBookName(request.getBookName()) != null){
-            response.setCode(105);
+            response.setCode(ResponseCode.BOOK_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         User author = userService.getUserByUserId(request.getAuthor());
         if (author == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         Book book = new Book(request);
@@ -56,9 +56,16 @@ public class BookController {
         book.setTotalChapter(0);
         book.setTotalPurchased(0);
         book.setTotalReview(0);
-        book.setUploadTime(System.currentTimeMillis());
-        book.setLastUpdateTime(System.currentTimeMillis());
+        Long currentTime = System.currentTimeMillis();
+        book.setRequestTime();
         book.setAdminUp(USER_ROLE.ADMIN == author.getRole());
+        book.setLastUpdateTime(System.currentTimeMillis());
+        if (USER_ROLE.ADMIN == author.getRole()){
+
+        }
+        book.setUploadTime(System.currentTimeMillis());
+
+
         bookService.insertBook(book);
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -67,8 +74,7 @@ public class BookController {
 
 
     @GetMapping("/getBookUp")
-    public ResponseEntity<Response> getBookByUserPost(@RequestParam String userId,
-                                                      @RequestParam int status){
+    public ResponseEntity<Response> getBookByUserPost(@RequestParam String userId){
         Response response = new Response();
         if (userService.getUserByUserId(userId) == null){
             response.setCode(106);
@@ -81,7 +87,7 @@ public class BookController {
             mapCategory.put(category.getId(), category.getCategoryName());
         }
 
-        List<Book> books = bookService.findBooksByUserPost(userId);
+        List<Book> books = bookService.findBooksUpByAuthor(userId);
 
         for (Book book:books){
             List<String> bookCategoryIdList = book.getBookCategory();
@@ -128,7 +134,7 @@ public class BookController {
         Book book = bookService.findBookByBookName(bookName);
 
         if (book == null){
-            response.setCode(109);
+            response.setCode(ResponseCode.BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         List<Category> categories = categoryService.findCategoriesByIdList(book.getBookCategory());
@@ -199,32 +205,7 @@ public class BookController {
             mapCategory.put(category.getId(), category.getCategoryName());
         }
 
-        List<Book> books = new ArrayList<>();
-        if (limit && typeFilter == TYPE_FILTER.NEW_BOOK){
-            books = bookService.getTop8NewBookList();
-        }
-        if (!limit && typeFilter == TYPE_FILTER.NEW_BOOK){
-            books = bookService.getNewBookList();
-        }
-        if (limit && typeFilter == TYPE_FILTER.RECOMMEND_BOOK){
-            books = bookService.getTop6RecommendBookList();
-        }
-        if (!limit && typeFilter == TYPE_FILTER.RECOMMEND_BOOK){
-            books = bookService.getRecommendBookList();
-        }
-        if (limit && typeFilter == TYPE_FILTER.MOST_BUY){
-            books = bookService.getTop6MostBuyBookList();
-        }
-        if (!limit && typeFilter == TYPE_FILTER.MOST_BUY){
-            books = bookService.getMostBuyBookList();
-        }
-        if (limit && typeFilter == TYPE_FILTER.MOST_REVIEW){
-            books = bookService.getTop6MostReviewBookList();
-        }
-        if (!limit && typeFilter == TYPE_FILTER.MOST_REVIEW){
-            books = bookService.getMostReviewBookList();
-        }
-
+        List<Book> books = bookService.getBooksHome(typeFilter, limit);
 
         for (Book book:books){
             List<String> bookCategoryIdList = book.getBookCategory();

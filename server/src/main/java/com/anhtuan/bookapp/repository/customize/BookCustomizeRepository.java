@@ -13,5 +13,5 @@ public interface BookCustomizeRepository {
     void updateTotalReviewById(String id, int totalReview);
     List<Book> searchBookFilter(String sort,int order, int status, int post, List<String> category, int page);
     void increaseTotalChapter(String bookId);
-    List<Book> findBookHome(t);
+    List<Book> findBookHome(int type, int limit);
 }

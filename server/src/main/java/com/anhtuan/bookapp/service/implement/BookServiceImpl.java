@@ -22,7 +22,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Book findBookByBookName(String bookName) {
-        return bookRepository.findBookByBookName(bookName);
+        return bookRepository.findBookByBookNameAndStatusGreaterThanEqual(bookName, Constant.BOOK_STATUS.REQUEST);
     }
 
     @Override
@@ -31,8 +31,13 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public List<Book> findBooksByUserPost(String userId) {
-        return bookRepository.findBooksByUserPost(userId);
+    public List<Book> findBooksByAuthorAndStatus(String userId, Integer status) {
+        return bookRepository.findBooksByAuthorAndStatus(userId, status);
+    }
+
+    @Override
+    public List<Book> findBooksUpByAuthor(String userId) {
+        return bookRepository.findBooksByAuthorAndStatusGreaterThanEqual(userId, Constant.BOOK_STATUS.ACCEPTED);
     }
 
     @Override
@@ -47,12 +52,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public List<Book> getBooksByAuthorAndIdIsNot(String author, String bookId) {
-        return bookRepository.findBooksByAuthorAndIdIsNot(author, bookId);
+        return bookRepository.findBooksByAuthorAndStatusGreaterThanEqualAndIdIsNot(author, Constant.BOOK_STATUS.ACCEPTED, bookId);
     }
 
     @Override
     public List<Book> getBooksByIdList(List<String> idList) {
-        return bookRepository.findBooksByIdIn(idList);
+        return bookRepository.findBooksByIdInAndStatusGreaterThanEqual(idList, Constant.BOOK_STATUS.ACCEPTED);
     }
 
     @Override
@@ -65,15 +70,6 @@ public class BookServiceImpl implements BookService {
         bookRepository.updateStarById(id, star);
     }
 
-    @Override
-    public List<Book> getNewBookList() {
-        return bookRepository.findBooksByOrderByUploadTimeDesc();
-    }
-
-    @Override
-    public List<Book> getRecommendBookList() {
-        return bookRepository.findTop6ByOrderByStarDesc();
-    }
 
     @Override
     public void updateTotalPurchasedById(String bookId, int totalPurchased) {
@@ -83,16 +79,6 @@ public class BookServiceImpl implements BookService {
     @Override
     public void updateTotalReviewById(String bookId, int totalReview) {
         bookRepository.updateTotalReviewById(bookId, totalReview);
-    }
-
-    @Override
-    public List<Book> getMostBuyBookList() {
-        return bookRepository.findBooksByOrderByTotalPurchasedDesc();
-    }
-
-    @Override
-    public List<Book> getMostReviewBookList() {
-        return bookRepository.findBooksByOrderByTotalReviewDesc();
     }
 
     @Override
@@ -125,5 +111,10 @@ public class BookServiceImpl implements BookService {
                 break;
         }
         return bookRepository.searchBookFilter(sortObj, order, status, post, category, page);
+    }
+
+    @Override
+    public List<Book> getBooksHome(int type, int limit) {
+        return bookRepository.findBookHome(type, limit);
     }
 }
