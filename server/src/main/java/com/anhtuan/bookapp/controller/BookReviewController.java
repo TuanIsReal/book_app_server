@@ -28,18 +28,18 @@ public class BookReviewController {
     public ResponseEntity<Response> addBookReview(@RequestBody AddBookReviewRequest request){
         Response response = new Response();
         if (userService.getUserByUserId(request.getAuthor()) == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        if (bookReviewService.getBookReviewByBookIdAndAuthor(request.getBookId(), request.getAuthor()).size() > 0){
-            response.setCode(118);
+        if (!bookReviewService.getBookReviewByBookIdAndAuthor(request.getBookId(), request.getAuthor()).isEmpty()){
+            response.setCode(ResponseCode.BOOK_REVIEW_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         Book book = bookService.findBookById(request.getBookId());
         if (book == null){
-            response.setCode(109);
+            response.setCode(ResponseCode.BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
@@ -47,14 +47,11 @@ public class BookReviewController {
         bookReview.setReviewTime(System.currentTimeMillis());
         bookReviewService.addBookReview(bookReview);
 
-        int totalReview = book.getTotalReview() + 1;
-        bookService.updateTotalReviewById(book.getId(), totalReview);
-
-        int quantityReview = bookReviewService.countBookReviewsByBookId(request.getBookId()) - 1;
         double reviewStar = request.getReviewStar();
         double star = book.getStar();
-        double newStar = ((star * quantityReview) + reviewStar) / (quantityReview + 1);
+        double newStar = ((star * book.getTotalReview()) + reviewStar) / (book.getTotalReview() + 1);
         bookService.updateStarById(request.getBookId(), newStar);
+        bookService.increaseTotalReview(book.getId());
 
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -75,7 +72,7 @@ public class BookReviewController {
                                                   @RequestParam String userId){
         Response response = new Response();
         List<BookReview> bookReviewList = bookReviewService.getBookReviewByBookIdAndAuthor(bookId, userId);
-        if (bookReviewList == null || bookReviewList.size() == 0){
+        if (bookReviewList == null || bookReviewList.isEmpty()){
             response.setCode(ResponseCode.BOOK_REVIEW_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }

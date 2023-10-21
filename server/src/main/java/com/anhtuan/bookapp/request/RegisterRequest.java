@@ -19,9 +19,6 @@ public class RegisterRequest {
     private String name;
 
     @NotNull
-    private Integer role;
-
-    @NotNull
     private String ip;
 
     public RegisterRequest(String email, String password, String name, String ip) {

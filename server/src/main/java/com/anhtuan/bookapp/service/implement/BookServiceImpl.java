@@ -70,15 +70,14 @@ public class BookServiceImpl implements BookService {
         bookRepository.updateStarById(id, star);
     }
 
-
     @Override
-    public void updateTotalPurchasedById(String bookId, int totalPurchased) {
-        bookRepository.updateTotalPurchasedById(bookId, totalPurchased);
+    public void increaseTotalReview(String bookId) {
+        bookRepository.increaseTotalReview(bookId);
     }
 
     @Override
-    public void updateTotalReviewById(String bookId, int totalReview) {
-        bookRepository.updateTotalReviewById(bookId, totalReview);
+    public void increaseTotalPurchased(String bookId) {
+        bookRepository.increaseTotalPurchased(bookId);
     }
 
     @Override
@@ -116,5 +115,15 @@ public class BookServiceImpl implements BookService {
     @Override
     public List<Book> getBooksHome(int type, int limit) {
         return bookRepository.findBookHome(type, limit);
+    }
+
+    @Override
+    public List<Book> getBookByStatus(int status) {
+        return bookRepository.findBooksByStatus(status);
+    }
+
+    @Override
+    public void updateBookStatus(String bookId, int status) {
+        bookRepository.updateBookStatus(bookId, status);
     }
 }

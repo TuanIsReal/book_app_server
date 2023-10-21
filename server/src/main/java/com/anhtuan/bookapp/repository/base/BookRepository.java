@@ -9,6 +9,7 @@ import java.util.List;
 public interface BookRepository extends MongoRepository<Book, String>, BookCustomizeRepository {
 
     Book findBookByBookNameAndStatusGreaterThanEqual(String bookName, Integer status);
+    List<Book> findBooksByStatus(Integer status);
 
     Book findBookById(String id);
 

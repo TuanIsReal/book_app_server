@@ -77,7 +77,7 @@ public class UserController{
 
         String password = registerRequest.getPassword();
         String encryptPassword = PasswordUtil.encryptPassword(password);
-        Integer role = registerRequest.getRole();
+        Integer role = USER_ROLE.USER;
         String name = registerRequest.getName();
         String ip = registerRequest.getIp();
 

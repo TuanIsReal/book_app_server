@@ -103,11 +103,11 @@ public class BookRequestUpController {
             (bookRequestUp.getUserPost(), bookId, mess, false, System.currentTimeMillis());
             notificationService.insertNotification(notification);
 
-        Device device = deviceService.getDeviceByUserId(bookRequestUp.getUserPost());
-        if (device != null && !device.getDeviceToken().isEmpty()) {
-            NotificationMessage message = new NotificationMessage(device.getDeviceToken(), BOOK_REQUEST_UP_TITLE, mess);
-            firebaseMessagingService.sendNotificationByToken(message);
-        }
+//        Device device = deviceService.getDeviceByUserId(bookRequestUp.getUserPost());
+//        if (device != null && !device.getDeviceToken().isEmpty()) {
+//            NotificationMessage message = new NotificationMessage(device.getDeviceToken(), BOOK_REQUEST_UP_TITLE, mess);
+//            firebaseMessagingService.sendNotificationByToken(message);
+//        }
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

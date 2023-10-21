@@ -42,19 +42,19 @@ public class PurchasedBookController {
         Response response = new Response();
         Book book = bookService.findBookById(bookId);
         if (book == null){
-            response.setCode(109);
+            response.setCode(ResponseCode.BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         User user = userService.getUserByUserId(userId);
         User seller = userService.getUserByUserId(book.getAuthor());
         if (user == null || seller == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
         PurchasedBook purchasedBook = purchasedBookService.getPurchasedBookByBookIdAndUserId(userId, bookId);
         if (purchasedBook != null){
-            response.setCode(112);
+            response.setCode(ResponseCode.PURCHASED_BOOK_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
             int pointUser = user.getPoint();
@@ -78,19 +78,20 @@ public class PurchasedBookController {
                 purchasedBook = new PurchasedBook(bookId, userId, book.getBookName(), 0, time, price, time, true);
                 purchasedBookService.insertPuchasedBook(purchasedBook);
 
-                int totalPurchased = book.getTotalPurchased() + 1;
-                bookService.updateTotalPurchasedById(bookId, totalPurchased);
+                bookService.increaseTotalPurchased(bookId);
 
                 String mess = Utils.messageBodyBuyBook(user.getName(), book.getBookName());
                 Notification notification = new Notification
                         (book.getAuthor(), bookId, mess, false, time);
                 notificationService.insertNotification(notification);
 
-                Device device = deviceService.getDeviceByUserId(book.getAuthor());
-                if (device != null && !device.getDeviceToken().isEmpty()){
-                    NotificationMessage message = new
-                            NotificationMessage(device.getDeviceToken(), BUY_BOOK_NOTIFICATION_TITLE, mess);
-                    firebaseMessagingService.sendNotificationByToken(message);
+                List<Device> devices = deviceService.getDevicesByUserId(book.getAuthor());
+                if (devices != null && !devices.isEmpty()){
+                    devices.forEach(device -> {
+                        NotificationMessage message = new
+                                NotificationMessage(device.getDeviceToken(), BUY_BOOK_NOTIFICATION_TITLE, mess);
+                        firebaseMessagingService.sendNotificationByToken(message);
+                    });
                 }
 
                 response.setCode(ResponseCode.SUCCESS);

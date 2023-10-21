@@ -25,8 +25,10 @@ public interface BookService {
     List<Book> getBooksByIdList(List<String> idList);
     void increaseTotalChapter(String bookId);
     void updateStarById(String id, double star);
-    void updateTotalPurchasedById(String bookId, int totalPurchased);
-    void updateTotalReviewById(String bookId, int totalReview);
+    void increaseTotalReview(String bookId);
+    void increaseTotalPurchased(String bookId);
     List<Book> searchBookFilter(int sort, int order, int status, int post, List<String> category, int page);
     List<Book> getBooksHome(int type, int limit);
+    List<Book> getBookByStatus(int status);
+    void updateBookStatus(String bookId, int status);
 }

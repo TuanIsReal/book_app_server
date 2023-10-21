@@ -21,8 +21,8 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public Device getDeviceByUserId(String userId) {
-        return deviceRepository.findDeviceByUserId(userId);
+    public List<Device> getDevicesByUserId(String userId) {
+        return deviceRepository.findDevicesByUserId(userId);
     }
 
     @Override

@@ -49,24 +49,6 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
     }
 
     @Override
-    public void updateTotalPurchasedById(String id, int totalPurchased) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(Book.ID).is(new ObjectId(id)));
-        Update update = new Update();
-        update.set(Book.TOTAL_PURCHASED, totalPurchased);
-        mongoTemplate.updateFirst(query, update, Book.class);
-    }
-
-    @Override
-    public void updateTotalReviewById(String id, int totalReview) {
-        Query query = new Query();
-        query.addCriteria(Criteria.where(Book.ID).is(new ObjectId(id)));
-        Update update = new Update();
-        update.set(Book.TOTAL_REVIEW, totalReview);
-        mongoTemplate.updateFirst(query, update, Book.class);
-    }
-
-    @Override
     public List<Book> searchBookFilter(String sort, int order, int status, int post, List<String> category, int page) {
         Query query = new Query();
         query.addCriteria(Criteria.where(Book.STATUS).gte(BOOK_STATUS.ACCEPTED));
@@ -100,7 +82,26 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
         Query query = new Query();
         query.addCriteria(Criteria.where(Book.ID).is(new ObjectId(bookId)));
         Update update = new Update();
-        update.inc(bookId, 1);
+        update.inc(Book.TOTAL_CHAPTER, 1);
+        update.set(Book.LAST_UPDATE_TIME, System.currentTimeMillis());
+        mongoTemplate.updateFirst(query, update, Book.class);
+    }
+
+    @Override
+    public void increaseTotalReview(String bookId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(Book.ID).is(new ObjectId(bookId)));
+        Update update = new Update();
+        update.inc(Book.TOTAL_REVIEW, 1);
+        mongoTemplate.updateFirst(query, update, Book.class);
+    }
+
+    @Override
+    public void increaseTotalPurchased(String bookId) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(Book.ID).is(new ObjectId(bookId)));
+        Update update = new Update();
+        update.inc(Book.TOTAL_PURCHASED, 1);
         mongoTemplate.updateFirst(query, update, Book.class);
     }
 
@@ -119,6 +120,19 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
         }
         query.skip(0).limit(limit);
         return mongoTemplate.find(query, Book.class);
+    }
+
+    @Override
+    public void updateBookStatus(String bookId, int status) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(Book.ID).is(new ObjectId(bookId)));
+        Update update = new Update();
+        update.set(Book.STATUS, status);
+        if (BOOK_STATUS.ACCEPTED == status){
+            update.set(Book.UPLOAD_TIME, System.currentTimeMillis());
+        }
+        update.set(Book.LAST_UPDATE_TIME, System.currentTimeMillis());
+        mongoTemplate.updateFirst(query, update, Book.class);
     }
 
 }

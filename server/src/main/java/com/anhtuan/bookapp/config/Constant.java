@@ -88,8 +88,7 @@ public class Constant {
 
     public static class USER_ROLE{
         public static final int USER = 1;
-        public static final int WRITER = 2;
-        public static final int ADMIN = 3;
+        public static final int ADMIN = 2;
     }
 
     public static class BOOK_STATUS{

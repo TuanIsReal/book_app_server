@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface DeviceService {
     void insertDevice(Device device);
-    Device getDeviceByUserId(String userId);
+    List<Device> getDevicesByUserId(String userId);
     void updateUserIdByDeviceToken(String userId, String deviceToken);
     List<Device> getDevicesByUserIdIsIn(List<String> userIdList);
     List<Device> getDevicesByDeviceToken(String deviceToken);
