@@ -59,7 +59,6 @@ public class BookRequestUp {
 
 
     public BookRequestUp(AddBookRequest request) {
-        this.userPost = request.getUserPost();
         this.bookName = request.getBookName();
         this.author = request.getAuthor();
         this.introduction = request.getIntroduction();

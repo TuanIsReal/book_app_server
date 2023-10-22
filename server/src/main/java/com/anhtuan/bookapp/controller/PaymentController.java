@@ -171,11 +171,13 @@ public class PaymentController {
                     (user.getId(), "", mess, false, time);
             notificationService.insertNotification(notification);
 
-            Device device = deviceService.getDeviceByUserId(user.getId());
-            if (device != null && !device.getDeviceToken().isEmpty()){
-                NotificationMessage message = new
-                        NotificationMessage(device.getDeviceToken(), ADD_POINT_TITLE, mess);
-                firebaseMessagingService.sendNotificationByToken(message);
+            List<Device> devices = deviceService.getDevicesByUserId(user.getId());
+            if (devices != null && !devices.isEmpty()){
+                devices.forEach(device -> {
+                    NotificationMessage message = new
+                            NotificationMessage(device.getDeviceToken(), ADD_POINT_TITLE, mess);
+                    firebaseMessagingService.sendNotificationByToken(message);
+                });
             }
         }
 

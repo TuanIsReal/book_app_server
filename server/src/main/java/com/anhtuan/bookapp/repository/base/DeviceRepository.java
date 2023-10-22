@@ -9,6 +9,6 @@ import java.util.List;
 public interface DeviceRepository extends MongoRepository<Device, String>, DeviceCustomizeRepository {
     List<Device> findDevicesByUserId(String userId);
     List<Device> findDevicesByUserIdIsIn(List<String> userIdList);
-    List<Device> findDevicesByDeviceToken(String deviceToken);
+    Device findDeviceByDeviceToken(String deviceToken);
     void deleteDevicesByUserId(String userId);
 }

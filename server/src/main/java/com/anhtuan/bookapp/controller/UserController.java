@@ -86,6 +86,7 @@ public class UserController{
 
         response.setCode(ResponseCode.SUCCESS);
         response.setData(new RegisterResponse(user.getId(), user.getRole()));
+        System.out.println(response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -126,6 +127,7 @@ public class UserController{
     @GetMapping("/getUserInfo")
     public ResponseEntity<Response> getUserInfoController(@RequestParam String userId){
         Response response = new Response();
+        System.out.println("getUserInfo: " + userId);
         User user = userService.getUserByUserId(userId);
         if (user != null) {
             response.setCode(ResponseCode.SUCCESS);
@@ -133,6 +135,7 @@ public class UserController{
         } else {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
         }
+        System.out.println(response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -147,15 +150,18 @@ public class UserController{
     public ResponseEntity<Response> loginDevice(@RequestParam String userId,
                                                 @RequestParam String deviceToken){
         Response response = new Response();
+        System.out.println("device token: " + deviceToken);
         if (userService.getUserByUserId(userId) == null){
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        List<Device> devices = deviceService.getDevicesByDeviceToken(deviceToken);
-        if (devices == null || devices.isEmpty()){
+        Device devices = deviceService.getDeviceByDeviceToken(deviceToken);
+        if (devices == null){
+            System.out.println("insert Device");
             deviceService.insertDevice(new Device(userId, deviceToken));
         } else {
+            System.out.println("update Device");
             deviceService.updateUserIdByDeviceToken(userId, deviceToken);
         }
 

@@ -36,8 +36,8 @@ public class DeviceServiceImpl implements DeviceService {
     }
 
     @Override
-    public List<Device> getDevicesByDeviceToken(String deviceToken) {
-        return deviceRepository.findDevicesByDeviceToken(deviceToken);
+    public Device getDeviceByDeviceToken(String deviceToken) {
+        return deviceRepository.findDeviceByDeviceToken(deviceToken);
     }
 
     @Override

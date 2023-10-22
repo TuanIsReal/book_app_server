@@ -7,7 +7,11 @@ public class Constant {
     public static final String CHAPTER_TEXT_STORAGE_PATH = "C:/Book_app_project/server/chapter/";
     public static final String JPG = ".jpg";
     public static final String TXT = ".txt";
-
+    public static final String HTTP = "http://";
+    public static final String IP_SERVER = "192.168.1.2";
+    public static final String BOOK_IMAGE_STORAGE_PATH_RESPONSE = "/book_image/";
+    public static final String THUMBNAIL_STORAGE_PATH_RESPONSE = "/thumbnail/";
+    public static final String AVATAR_IMAGE_STORAGE_PATH_RESPONSE = "/avatar_image/";
 
     public static final String BUY_BOOK_NOTIFICATION_TITLE = "Thông báo mua truyên";
     public static final String ADD_CHAPTER_NOTIFICATION_TITLE = "Thông báo chương mới";

@@ -51,11 +51,13 @@ public class ReCommentController {
                 (comment.getAuthor(), comment.getBookId(), mess, false, System.currentTimeMillis());
         notificationService.insertNotification(notification);
 
-        Device device = deviceService.getDeviceByUserId(comment.getAuthor());
-        if (device != null && !device.getDeviceToken().isEmpty()){
-            NotificationMessage message = new
-                    NotificationMessage(device.getDeviceToken(), Constant.COMMENT_TITLE, mess);
-            firebaseMessagingService.sendNotificationByToken(message);
+        List<Device> devices = deviceService.getDevicesByUserId(comment.getAuthor());
+        if (devices != null && !devices.isEmpty()){
+            devices.forEach(device -> {
+                NotificationMessage message = new
+                        NotificationMessage(device.getDeviceToken(), Constant.COMMENT_TITLE, mess);
+                firebaseMessagingService.sendNotificationByToken(message);
+            });
         }
 
         response.setCode(ResponseCode.SUCCESS);

@@ -21,7 +21,7 @@ public class PaymentConfig {
     public static final String VNP_CURR_CODE = "VND";
     public static final String VNP_LOCALE ="vn";
     public static final String VNP_PAYMENT_URL = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
-    public static final String VNP_RETURN_URL = "http://192.168.1.9:8080/payment/returnResponse";
+    public static final String VNP_RETURN_URL = "http://192.168.1.2:8080/payment/returnResponse";
     public static final String VNP_SECURE_HASH = "SBPXHSNKRZFFHKWQBANRBOUZLTATOBNQ";
 
     public static String getOTP(int len) {
