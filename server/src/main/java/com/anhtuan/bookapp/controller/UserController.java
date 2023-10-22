@@ -136,6 +136,13 @@ public class UserController{
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/getUsername")
+    public ResponseEntity<String> getUsername(@RequestParam String userId){
+        User user = userService.getUserByUserId(userId);
+
+        return new ResponseEntity<>(user.getName(), HttpStatus.OK);
+    }
+
     @PostMapping("/loginDevice")
     public ResponseEntity<Response> loginDevice(@RequestParam String userId,
                                                 @RequestParam String deviceToken){

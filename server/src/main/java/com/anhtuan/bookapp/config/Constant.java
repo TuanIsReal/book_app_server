@@ -2,7 +2,7 @@ package com.anhtuan.bookapp.config;
 
 public class Constant {
     public static final String BOOK_IMAGE_STORAGE_PATH = "C:/inetpub/wwwroot/book_image/";
-    public static final String BOOK_THUMBNAIL_STORAGE_PATH = "C:/inetpub/wwwroot/book_thumbnail/";
+    public static final String THUMBNAIL_STORAGE_PATH = "C:/inetpub/wwwroot/thumbnail/";
     public static final String AVATAR_IMAGE_STORAGE_PATH = "C:/inetpub/wwwroot/avatar_image/";
     public static final String CHAPTER_TEXT_STORAGE_PATH = "C:/Book_app_project/server/chapter/";
     public static final String JPG = ".jpg";

@@ -14,15 +14,15 @@ import java.io.FileWriter;
 @Service
 public class STFServiceImpl implements STFService {
     @Override
-    public void createThumbnailImage(String pathImage) {
+    public void createThumbnail(String folderPath, String pathImage) {
         try {
-            BufferedImage img = ImageIO.read(new File(Constant.BOOK_IMAGE_STORAGE_PATH + pathImage));
+            BufferedImage img = ImageIO.read(new File(folderPath + pathImage));
             double scale = (double) img.getWidth(null) / (double) 300;
             int height = Double.valueOf(img.getHeight(null) / scale).intValue();
             java.awt.Image newImg = img.getScaledInstance(300, height, java.awt.Image.SCALE_SMOOTH);
             BufferedImage bsi = new BufferedImage(newImg.getWidth(null), newImg.getHeight(null), BufferedImage.TYPE_INT_RGB);
             bsi.getGraphics().drawImage(newImg, 0, 0, null);
-            File destFile = new File(Constant.BOOK_THUMBNAIL_STORAGE_PATH + pathImage);
+            File destFile = new File(Constant.THUMBNAIL_STORAGE_PATH + pathImage);
             destFile.getParentFile().mkdirs();
             ImageIO.write(bsi, "jpg", destFile);
         } catch (Exception ex) {

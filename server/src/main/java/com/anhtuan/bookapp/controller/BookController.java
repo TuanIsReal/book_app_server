@@ -116,10 +116,10 @@ public class BookController {
     }
 
     @GetMapping("/getBookUp")
-    public ResponseEntity<Response> getBookByUserPost(@RequestParam String userId){
+    public ResponseEntity<Response> getBookByAuthor(@RequestParam String userId){
         Response response = new Response();
         if (userService.getUserByUserId(userId) == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 

@@ -40,12 +40,12 @@ public class BookChapterController {
         Response response = new Response();
         Book book = bookService.findBookByBookName(request.getBookName());
         if (book == null){
-            response.setCode(109);
+            response.setCode(ResponseCode.BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         String bookId = book.getId();
         if (bookChapterService.findBookChapterByBookIdAndChapterNumber(bookId, request.getChapterNumber()) != null){
-            response.setCode(107);
+            response.setCode(ResponseCode.CHAPTER_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         long time = System.currentTimeMillis();

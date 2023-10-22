@@ -22,7 +22,7 @@ import static com.anhtuan.bookapp.config.Constant.*;
 import static com.anhtuan.bookapp.config.Constant.JPG;
 
 @RestController
-@RequestMapping("image")
+@RequestMapping("stf")
 @AllArgsConstructor
 public class STFController {
 
@@ -52,38 +52,8 @@ public class STFController {
             FileOutputStream fos = new FileOutputStream(filePath);
             fos.write(fileData);
             fos.close();
-            STFService.createThumbnailImage(bookId + JPG);
+            STFService.createThumbnail(BOOK_IMAGE_STORAGE_PATH, bookId + JPG);
             bookService.updateBookImageByBookId(bookId, bookId);
-            response.setCode(ResponseCode.SUCCESS);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @PostMapping("/updateBookRequestUpImage")
-    public ResponseEntity<Response> updateBookRequestUpImage(@RequestParam String bookName,
-                                                    @RequestParam("image") MultipartFile image){
-        Response response = new Response();
-        BookRequestUp book = bookRequestUpService.getBookRequestUpByBookNameAndStatus(bookName, Constant.STATUS_BOOK_REQUEST_UP.REQUEST);
-        if (book == null){
-            response.setCode(ResponseCode.BOOK_REQUEST_UP_NOT_EXISTS);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-        String bookId = book.getId();
-        byte[] fileData = null;
-        try {
-            fileData = image.getBytes();
-            if (fileData == null){
-                response.setCode(ResponseCode.UPLOAD_FILE_FAILED);
-                return new ResponseEntity<>(response, HttpStatus.OK);
-            }
-            String filePath = BOOK_IMAGE_STORAGE_PATH + bookId + JPG;
-            FileOutputStream fos = new FileOutputStream(filePath);
-            fos.write(fileData);
-            fos.close();
-            STFService.createThumbnailImage(bookId + JPG);
-            bookRequestUpService.updateBookImageById(bookId, bookId);
             response.setCode(ResponseCode.SUCCESS);
         } catch (IOException e) {
             e.printStackTrace();
@@ -111,6 +81,7 @@ public class STFController {
             FileOutputStream fos = new FileOutputStream(filePath);
             fos.write(fileData);
             fos.close();
+            STFService.createThumbnail(AVATAR_IMAGE_STORAGE_PATH, userId + JPG);
             userService.updateAvatarImageByUserId(userId, userId);
             response.setCode(ResponseCode.SUCCESS);
         } catch (IOException e) {
@@ -119,7 +90,7 @@ public class STFController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/getImage")
+    @GetMapping(value = "/getBookImage")
     public ResponseEntity<Response> getBookImage(@RequestParam String imageName){
         Response response = new Response();
         String filePath = BOOK_IMAGE_STORAGE_PATH + imageName + Constant.JPG;
@@ -131,7 +102,7 @@ public class STFController {
     @GetMapping(value = "/getThumbnail")
     public ResponseEntity<Response> getThumbnail(@RequestParam String thumbnailName){
         Response response = new Response();
-        String filePath = BOOK_THUMBNAIL_STORAGE_PATH + thumbnailName + Constant.JPG;
+        String filePath = THUMBNAIL_STORAGE_PATH + thumbnailName + Constant.JPG;
         response.setCode(ResponseCode.SUCCESS);
         response.setData(filePath);
         return ResponseEntity.ok(response);
