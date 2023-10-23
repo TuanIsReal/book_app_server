@@ -14,6 +14,7 @@ public class AddBookRequest extends BaseRequest{
     private String bookImage;
     private ArrayList<String> bookCategory;
     private int bookPrice;
+    private int freeChapter;
 
     public AddBookRequest() {
     }

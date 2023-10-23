@@ -8,7 +8,7 @@ public class Constant {
     public static final String JPG = ".jpg";
     public static final String TXT = ".txt";
     public static final String HTTP = "http://";
-    public static final String IP_SERVER = "192.168.1.3";
+    public static final String IP_SERVER = "192.168.1.9";
     public static final String BOOK_IMAGE_STORAGE_PATH_RESPONSE = "/book_image/";
     public static final String THUMBNAIL_STORAGE_PATH_RESPONSE = "/thumbnail/";
     public static final String AVATAR_IMAGE_STORAGE_PATH_RESPONSE = "/avatar_image/";

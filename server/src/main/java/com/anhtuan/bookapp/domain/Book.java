@@ -22,6 +22,7 @@ public class Book {
     public static final String BOOK_IMAGE = "book_image";
     public static final String BOOK_CATEGORY = "book_category";
     public static final String BOOK_PRICE = "book_price";
+    public static final String FREE_CHAPTER = "free_chapter";
     public static final String STAR = "star";
     public static final String TOTAL_CHAPTER = "total_chapter";
     public static final String TOTAL_PURCHASED = "total_purchased";
@@ -52,6 +53,9 @@ public class Book {
 
     @Field(BOOK_PRICE)
     private int bookPrice;
+
+    @Field(FREE_CHAPTER)
+    private int freeChapter;
 
     @Field(STAR)
     private double star;
@@ -89,16 +93,7 @@ public class Book {
         this.introduction = request.getIntroduction();
         this.bookImage = request.getBookImage();
         this.bookPrice = request.getBookPrice();
-    }
-
-    public Book(BookRequestUp book) {
-        this.id = book.getId();
-        this.bookName = book.getBookName();
-        this.author = book.getAuthor();
-        this.introduction = book.getIntroduction();
-        this.bookImage = book.getBookImage();
-        this.bookPrice = book.getBookPrice();
-        this.bookCategory = book.getBookCategory();
+        this.freeChapter = request.getFreeChapter();
     }
 
     public String getId() {

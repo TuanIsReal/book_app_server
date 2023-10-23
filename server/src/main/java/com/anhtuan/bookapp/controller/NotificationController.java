@@ -31,8 +31,7 @@ public class NotificationController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        List<Notification> notificationList = new ArrayList<>();
-        notificationList = notificationService.getNotificationByUserId(userId);
+        List<Notification> notificationList = notificationService.getNotificationByUserId(userId);
 
         response.setCode(ResponseCode.SUCCESS);
         response.setData(notificationList);

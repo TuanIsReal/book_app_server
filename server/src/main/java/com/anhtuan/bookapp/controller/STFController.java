@@ -3,10 +3,8 @@ package com.anhtuan.bookapp.controller;
 import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.Book;
-import com.anhtuan.bookapp.domain.BookRequestUp;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.response.Response;
-import com.anhtuan.bookapp.service.base.BookRequestUpService;
 import com.anhtuan.bookapp.service.base.BookService;
 import com.anhtuan.bookapp.service.base.STFService;
 import com.anhtuan.bookapp.service.base.UserService;
@@ -27,7 +25,6 @@ import static com.anhtuan.bookapp.config.Constant.JPG;
 public class STFController {
 
     private BookService bookService;
-    private BookRequestUpService bookRequestUpService;
     private STFService STFService;
     private UserService userService;
 

@@ -106,7 +106,7 @@ public class BookChapterController {
         }
         String chapterContent;
         if(purchasedBookService.getPurchasedBookByBookIdAndUserId(bookId, userId) == null){
-            if (chapterNumber < 4){
+            if (chapterNumber <= book.getFreeChapter()){
                 chapterContent = stfService.getChapterContent(bookChapter.getChapterContent() + TXT);
             } else {
                 chapterContent = CHAPTER_BLOCK_CONTENT;
