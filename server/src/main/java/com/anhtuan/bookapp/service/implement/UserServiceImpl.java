@@ -32,8 +32,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void updateUserLoggedStatus(String userId, Boolean status) {
-        userRepository.updateUserLoggedStats(userId, status);
+    public void updateUserStatus(String userId, Integer status) {
+        userRepository.updateUserStatus(userId, status);
     }
 
     @Override

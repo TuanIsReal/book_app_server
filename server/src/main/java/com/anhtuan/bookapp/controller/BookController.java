@@ -81,8 +81,8 @@ public class BookController {
                                                     @RequestParam int action){
         Response response = new Response();
         Book book = bookService.findBookById(bookId);
-        if (book != null){
-            response.setCode(ResponseCode.BOOK_EXISTS);
+        if (book == null){
+            response.setCode(ResponseCode.BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 

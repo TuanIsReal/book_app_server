@@ -92,11 +92,6 @@ public class BookChapterController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        if(purchasedBookService.getPurchasedBookByBookIdAndUserId(bookId, userId) == null){
-            response.setCode(120);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-
         BookChapter bookChapter = bookChapterService.findBookChapterByBookIdAndChapterNumber(bookId, chapterNumber);
         if (bookChapter == null){
             List<BookChapter> bookChapters = bookChapterService.findBookChaptersByBookIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(bookId, chapterNumber);
@@ -109,9 +104,18 @@ public class BookChapterController {
             response.setCode(113);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+        String chapterContent;
+        if(purchasedBookService.getPurchasedBookByBookIdAndUserId(bookId, userId) == null){
+            if (chapterNumber < 4){
+                chapterContent = stfService.getChapterContent(bookChapter.getChapterContent() + TXT);
+            } else {
+                chapterContent = CHAPTER_BLOCK_CONTENT;
+            }
+        } else {
+            chapterContent = stfService.getChapterContent(bookChapter.getChapterContent() + TXT);
+            purchasedBookService.updateLastReadChapterByBookIdAndUserId(bookId, userId, chapterNumber);
+        }
 
-        String chapterContent = stfService.getChapterContent(bookChapter.getChapterContent() + TXT);
-        purchasedBookService.updateLastReadChapterByBookIdAndUserId(bookId, userId, chapterNumber);
         bookChapter.setChapterContent(chapterContent);
         response.setCode(ResponseCode.SUCCESS);
         response.setData(bookChapter);

@@ -114,7 +114,6 @@ public class STFController {
         String filePath = HTTP + IP_SERVER + AVATAR_IMAGE_STORAGE_PATH_RESPONSE + imageName + Constant.JPG;
         response.setCode(ResponseCode.SUCCESS);
         response.setData(filePath);
-        System.out.println(response);
         return ResponseEntity.ok(response);
     }
 }

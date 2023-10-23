@@ -10,7 +10,7 @@ public interface UserService {
 
     User getUserByUserId(String userId);
 
-    void updateUserLoggedStatus(String userId, Boolean status);
+    void updateUserStatus(String userId, Integer status);
 
     void updateUserIpAndLoggedStatus(String userId, String ip);
 

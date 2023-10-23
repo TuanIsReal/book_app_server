@@ -4,11 +4,11 @@ public class Constant {
     public static final String BOOK_IMAGE_STORAGE_PATH = "C:/inetpub/wwwroot/book_image/";
     public static final String THUMBNAIL_STORAGE_PATH = "C:/inetpub/wwwroot/thumbnail/";
     public static final String AVATAR_IMAGE_STORAGE_PATH = "C:/inetpub/wwwroot/avatar_image/";
-    public static final String CHAPTER_TEXT_STORAGE_PATH = "C:/Book_app_project/server/chapter/";
+    public static final String CHAPTER_TEXT_STORAGE_PATH = "C:/chapter/";
     public static final String JPG = ".jpg";
     public static final String TXT = ".txt";
     public static final String HTTP = "http://";
-    public static final String IP_SERVER = "192.168.1.2";
+    public static final String IP_SERVER = "192.168.1.3";
     public static final String BOOK_IMAGE_STORAGE_PATH_RESPONSE = "/book_image/";
     public static final String THUMBNAIL_STORAGE_PATH_RESPONSE = "/thumbnail/";
     public static final String AVATAR_IMAGE_STORAGE_PATH_RESPONSE = "/avatar_image/";
@@ -18,10 +18,12 @@ public class Constant {
     public static final String BOOK_REQUEST_UP_TITLE = "Thông báo yêu cầu đăng truyện";
     public static final String COMMENT_TITLE = "Thông báo bình luận";
     public static final String ADD_POINT_TITLE = "Thông báo thêm Point";
-    public static final String ADMIN_ID = "63fccae5fb208813af311df2";
     public static final int FILTER_ALL = 0;
     public static final String ADD_POINT = "addPoint";
     public static final String FORGOT_PASSWORD_SUBJECT = "Truyện AT - Xác nhận quên mật khẩu";
+
+    public static final String CHAPTER_BLOCK_CONTENT = "\n\n\n\n\nChương này bị khóa do bạn chưa mua truyện. Bạn vui lòng mua truyện để có thể tiếp tục theo dõi chương này và các chương về sau";
+
     public static final String VERIFY_EMAIL_SUBJECT = "Truyện AT - Xác thực tài khoản";
     public static final long MINUTE_15 = 1000*60*15;
 
@@ -86,7 +88,8 @@ public class Constant {
     }
 
     public static class USER_STATUS{
-        public static final int NORMAL = 1;
+        public static final int LOGIN = 1;
+        public static final int LOGOUT = 0;
         public static final int BLOCK = -1;
     }
 

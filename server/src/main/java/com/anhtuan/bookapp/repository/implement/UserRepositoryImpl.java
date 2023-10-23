@@ -21,10 +21,11 @@ public class UserRepositoryImpl implements UserCustomizeRepository {
     }
 
     @Override
-    public void updateUserLoggedStats(String userId, Boolean status) {
+    public void updateUserStatus(String userId, Integer status) {
         Query query = new Query();
         query.addCriteria(Criteria.where(User.USER_ID).is(userId));
         Update update = new Update();
+        update.set(User.STATUS, status);
         mongoTemplate.updateFirst(query, update, User.class);
     }
 

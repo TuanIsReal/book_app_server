@@ -81,12 +81,11 @@ public class UserController{
         String name = registerRequest.getName();
         String ip = registerRequest.getIp();
 
-        User newUser = new User(email, encryptPassword, role, name, "", ip, USER_STATUS.NORMAL,500);
+        User newUser = new User(email, encryptPassword, role, name, "", ip, USER_STATUS.LOGIN,500);
         User user = userService.insertUser(newUser);
 
         response.setCode(ResponseCode.SUCCESS);
         response.setData(new RegisterResponse(user.getId(), user.getRole()));
-        System.out.println(response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -106,7 +105,7 @@ public class UserController{
         String email = googleRequest.getEmail();
         String name = googleRequest.getName();
         String ip = googleRequest.getIp();
-        User newUser = new User(email, "", USER_ROLE.USER, name,googleRequest.getImg(), ip, USER_STATUS.NORMAL,500,true);
+        User newUser = new User(email, "", USER_ROLE.USER, name,googleRequest.getImg(), ip, USER_STATUS.LOGIN,500,true);
         User saveUser = userService.insertUser(newUser);
         response.setCode(ResponseCode.SUCCESS);
         response.setData(new RegisterResponse(saveUser.getId(), saveUser.getRole()));
@@ -127,7 +126,6 @@ public class UserController{
     @GetMapping("/getUserInfo")
     public ResponseEntity<Response> getUserInfoController(@RequestParam String userId){
         Response response = new Response();
-        System.out.println("getUserInfo: " + userId);
         User user = userService.getUserByUserId(userId);
         if (user != null) {
             response.setCode(ResponseCode.SUCCESS);
@@ -135,22 +133,22 @@ public class UserController{
         } else {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
         }
-        System.out.println(response);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/getUsername")
-    public ResponseEntity<String> getUsername(@RequestParam String userId){
+    public ResponseEntity<Response> getUsername(@RequestParam String userId){
+        Response response = new Response();
         User user = userService.getUserByUserId(userId);
-
-        return new ResponseEntity<>(user.getName(), HttpStatus.OK);
+        response.setCode(100);
+        response.setData(user.getName());
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/loginDevice")
     public ResponseEntity<Response> loginDevice(@RequestParam String userId,
                                                 @RequestParam String deviceToken){
         Response response = new Response();
-        System.out.println("device token: " + deviceToken);
         if (userService.getUserByUserId(userId) == null){
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -158,10 +156,8 @@ public class UserController{
 
         Device devices = deviceService.getDeviceByDeviceToken(deviceToken);
         if (devices == null){
-            System.out.println("insert Device");
             deviceService.insertDevice(new Device(userId, deviceToken));
         } else {
-            System.out.println("update Device");
             deviceService.updateUserIdByDeviceToken(userId, deviceToken);
         }
 
@@ -172,7 +168,7 @@ public class UserController{
     @PutMapping("/logout")
     public ResponseEntity<Response> logout(@RequestParam String userId){
         Response response = new Response();
-        userService.updateUserLoggedStatus(userId, false);
+        userService.updateUserStatus(userId, USER_STATUS.LOGOUT);
         deviceService.removeDevicesByUserId(userId);
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);

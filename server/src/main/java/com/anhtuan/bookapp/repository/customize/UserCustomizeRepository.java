@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserCustomizeRepository {
     User insertUser(User user);
 
-    void updateUserLoggedStats(String userId, Boolean status);
+    void updateUserStatus(String userId, Integer status);
 
     void updateUserIpAndLoggedStats(String userId, String ip);
 
