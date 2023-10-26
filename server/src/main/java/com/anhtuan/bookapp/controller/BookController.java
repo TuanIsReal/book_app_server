@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("book")
@@ -287,18 +289,17 @@ public class BookController {
             response.setCode(109);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        List<Category> categories = categoryService.findCategoriesByIdList(book.getBookCategory());
-        List<String> categoriesName = new ArrayList<>();
-        for (Category category: categories){
-            categoriesName.add(category.getCategoryName());
-        }
+
+        List<String> categoriesName = categoryService.findCategoriesByIdList(book.getBookCategory())
+                .stream()
+                .map(Category::getCategoryName)
+                .collect(Collectors.toList());
+
         book.setBookCategory(categoriesName);
         response.setCode(ResponseCode.SUCCESS);
         response.setData(book);
         return new ResponseEntity<>(response, HttpStatus.OK);
-    }
-
-    @GetMapping("/getBookHome")
+    }    @GetMapping("/getBookHome")
     public ResponseEntity<Response> getBookHome(@RequestParam int typeFilter,
                                                @RequestParam int limit){
         Response response = new Response();
@@ -327,27 +328,29 @@ public class BookController {
     }
 
     @PostMapping("/getBookFilter")
-    public ResponseEntity<Response> getBookFilter(@RequestBody GetBookFilterRequest request){
+    public ResponseEntity<Response> getBookFilter(@RequestBody GetBookFilterRequest request) {
         Response response = new Response();
-        HashMap<String, String> mapCategory = new HashMap<>();
         List<Category> listCategory = categoryService.findAll();
-        for (Category category: listCategory){
-            mapCategory.put(category.getId(), category.getCategoryName());
-        }
+        Map<String, String> mapCategory = listCategory.stream()
+                .collect(Collectors.toMap(Category::getId, Category::getCategoryName));
 
-        List<Book> books = bookService.searchBookFilter
-                (request.getSort(), request.getOrder(), request.getStatus(), request.getPost(), request.getCategory(), request.getPage());
+        List<Book> books = bookService.searchBookFilter(
+                request.getSort(),
+                request.getOrder(),
+                request.getStatus(),
+                request.getPost(),
+                request.getCategory(),
+                request.getPage()
+        );
 
-        for (Book book:books){
+        books.forEach(book -> {
             List<String> bookCategoryIdList = book.getBookCategory();
-            List<String> bookNameList = new ArrayList<>();
-
-            for (String categoryId: bookCategoryIdList){
-                bookNameList.add(mapCategory.get(categoryId));
-            }
-
+            List<String> bookNameList = bookCategoryIdList.stream()
+                    .map(mapCategory::get)
+                    .collect(Collectors.toList());
             book.setBookCategory(bookNameList);
-        }
+        });
+
         response.setCode(ResponseCode.SUCCESS);
         response.setData(books);
         return new ResponseEntity<>(response, HttpStatus.OK);

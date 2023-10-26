@@ -114,7 +114,7 @@ public class StatController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    @GetMapping("rankingUser")
+    @PostMapping("rankingUser")
     public ResponseEntity<Response> getRankingUser(@RequestParam int typeRanking){
         Response response = new Response();
         List<TransactionHistory> transactionHistoryList;
@@ -157,19 +157,19 @@ public class StatController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("rankingBook")
+    @PostMapping("rankingBook")
     public ResponseEntity<Response> getRankingBook(){
         Response response = new Response();
         List<PurchasedBook> purchasedBookList = purchasedBookService.getPurchasedSpendPoint();
         Map<String, Integer> dataMap = new HashMap<>();
 
         purchasedBookList.forEach(purchasedBook -> {
-            Integer pointData = dataMap.get(purchasedBook.getUserId());
+            Integer pointData = dataMap.get(purchasedBook.getBookId());
             if (Objects.isNull(pointData)){
-                dataMap.put(purchasedBook.getUserId(), purchasedBook.getPaymentPoint());
+                dataMap.put(purchasedBook.getBookId(), purchasedBook.getPaymentPoint());
                 return;
             }
-            dataMap.put(purchasedBook.getUserId(), pointData + purchasedBook.getPaymentPoint());
+            dataMap.put(purchasedBook.getBookId(), pointData + purchasedBook.getPaymentPoint());
         });
 
         Map<String, Integer> result = dataMap.entrySet().stream()
@@ -185,4 +185,6 @@ public class StatController {
         response.setData(result);
         return ResponseEntity.ok(response);
     }
+
+
 }
