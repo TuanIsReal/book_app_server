@@ -109,6 +109,7 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
     public List<Book> findBookHome(int type, int limit) {
         Query query = new Query();
         query.addCriteria(Criteria.where(Book.STATUS).gte(BOOK_STATUS.ACCEPTED));
+        query.addCriteria(Criteria.where(Book.TOTAL_CHAPTER).gt(0));
         if (TYPE_FILTER.NEW_BOOK == type){
             query.with(Sort.by(Sort.Order.desc(Book.UPLOAD_TIME)));
         } else if (TYPE_FILTER.RECOMMEND_BOOK == type) {

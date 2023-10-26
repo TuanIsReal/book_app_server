@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @AllArgsConstructor
 public class PurchasedBookRepositoryImpl implements PurchasedBookCustomizeRepository {
@@ -33,5 +35,12 @@ public class PurchasedBookRepositoryImpl implements PurchasedBookCustomizeReposi
         Update update = new Update();
         update.set(PurchasedBook.SHOW_LIBRARY, status);
         mongoTemplate.updateFirst(query, update, PurchasedBook.class);
+    }
+
+    @Override
+    public List<PurchasedBook> getPurchasedSpendPoint() {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(PurchasedBook.PAYMENT_POINT).gt(0));
+        return mongoTemplate.find(query, PurchasedBook.class);
     }
 }

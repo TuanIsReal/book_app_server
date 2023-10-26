@@ -3,32 +3,31 @@ package com.anhtuan.bookapp.controller;
 import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.Payment;
+import com.anhtuan.bookapp.domain.PurchasedBook;
 import com.anhtuan.bookapp.domain.TransactionHistory;
 import com.anhtuan.bookapp.response.IncomeAdminResponse;
 import com.anhtuan.bookapp.response.IncomeMemberResponse;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.PaymentService;
+import com.anhtuan.bookapp.service.base.PurchasedBookService;
 import com.anhtuan.bookapp.service.base.TransactionHistoryService;
 import com.anhtuan.bookapp.service.base.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("stat")
 @AllArgsConstructor
 public class StatController {
     private PaymentService paymentService;
+    private PurchasedBookService purchasedBookService;
     private TransactionHistoryService transactionHistoryService;
 
     @PostMapping("incomeMember")
@@ -113,5 +112,77 @@ public class StatController {
         response.setCode(ResponseCode.SUCCESS);
         response.setData(incomeAdminResponse);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("rankingUser")
+    public ResponseEntity<Response> getRankingUser(@RequestParam int typeRanking){
+        Response response = new Response();
+        List<TransactionHistory> transactionHistoryList;
+        switch (typeRanking){
+            case USER_TYPE_RANKING.INCOME_WRITER:
+                transactionHistoryList = transactionHistoryService.getIncomeWriter();
+                break;
+            case USER_TYPE_RANKING.SPEND_POINT_USER:
+                transactionHistoryList = transactionHistoryService.getSpendMoneyUser();
+                break;
+            case USER_TYPE_RANKING.RECHARGE_USER:
+                transactionHistoryList = transactionHistoryService.getRechargedUser();
+                break;
+            default:
+                response.setCode(ResponseCode.UNKNOWN_ERROR);
+                return ResponseEntity.ok(response);
+        }
+
+        Map<String, Integer> dataMap = new HashMap<>();
+        transactionHistoryList.forEach(transactionHistory -> {
+            Integer pointData = dataMap.get(transactionHistory.getUserId());
+            if (Objects.isNull(pointData)){
+                dataMap.put(transactionHistory.getUserId(), Math.abs(transactionHistory.getPoint()));
+                return;
+            }
+            dataMap.put(transactionHistory.getUserId(), pointData + Math.abs(transactionHistory.getPoint()));
+        });
+
+        Map<String, Integer> result = dataMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(result);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("rankingBook")
+    public ResponseEntity<Response> getRankingBook(){
+        Response response = new Response();
+        List<PurchasedBook> purchasedBookList = purchasedBookService.getPurchasedSpendPoint();
+        Map<String, Integer> dataMap = new HashMap<>();
+
+        purchasedBookList.forEach(purchasedBook -> {
+            Integer pointData = dataMap.get(purchasedBook.getUserId());
+            if (Objects.isNull(pointData)){
+                dataMap.put(purchasedBook.getUserId(), purchasedBook.getPaymentPoint());
+                return;
+            }
+            dataMap.put(purchasedBook.getUserId(), pointData + purchasedBook.getPaymentPoint());
+        });
+
+        Map<String, Integer> result = dataMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toMap(
+                        Map.Entry::getKey,
+                        Map.Entry::getValue,
+                        (e1, e2) -> e1,
+                        LinkedHashMap::new
+                ));
+
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(result);
+        return ResponseEntity.ok(response);
     }
 }

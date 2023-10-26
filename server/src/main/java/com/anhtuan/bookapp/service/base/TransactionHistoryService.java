@@ -10,4 +10,7 @@ public interface TransactionHistoryService {
     List<TransactionHistory> findIncomeMember(String userId, long start, long end);
     List<TransactionHistory> findIncomeAdmin(long start, long end);
     List<TransactionHistory> getTransactionHistoryUser(String userId);
+    List<TransactionHistory> getIncomeWriter();
+    List<TransactionHistory> getRechargedUser();
+    List<TransactionHistory> getSpendMoneyUser();
 }

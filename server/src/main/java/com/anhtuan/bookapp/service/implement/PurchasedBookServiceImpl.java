@@ -48,4 +48,9 @@ public class PurchasedBookServiceImpl implements PurchasedBookService {
     public void unShowPurchasedBook(String bookId, String userId) {
         purchasedBookRepository.updateShowBookByBookIdAndUserId(bookId, userId, false);
     }
+
+    @Override
+    public List<PurchasedBook> getPurchasedSpendPoint() {
+        return purchasedBookRepository.getPurchasedSpendPoint();
+    }
 }

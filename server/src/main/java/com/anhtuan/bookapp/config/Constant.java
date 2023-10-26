@@ -104,6 +104,12 @@ public class Constant {
         public static final int COMPLETED = 2;
         public static final int REJECTED = -1;
     }
+
+    public static class USER_TYPE_RANKING{
+        public static final int INCOME_WRITER = 1;
+        public static final int SPEND_POINT_USER = 2;
+        public static final int RECHARGE_USER = 3;
+    }
 }
 
 

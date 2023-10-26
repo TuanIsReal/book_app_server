@@ -34,4 +34,19 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
     public List<TransactionHistory> getTransactionHistoryUser(String userId) {
         return transactionHistoryRepository.getTransactionHistoriesByUserIdOrderByTransactionTimeDesc(userId);
     }
+
+    @Override
+    public List<TransactionHistory> getIncomeWriter() {
+        return transactionHistoryRepository.getIncomeWriter();
+    }
+
+    @Override
+    public List<TransactionHistory> getRechargedUser() {
+        return transactionHistoryRepository.getRechargedUser();
+    }
+
+    @Override
+    public List<TransactionHistory> getSpendMoneyUser() {
+        return transactionHistoryRepository.getSpendMoneyUser();
+    }
 }

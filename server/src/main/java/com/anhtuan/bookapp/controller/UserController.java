@@ -179,13 +179,19 @@ public class UserController{
                                                    @RequestParam String password,
                                                    @RequestParam String newPassword){
         Response response = new Response();
-        User user = userService.getUserByIdAndPassword(userId, password);
+        User user = userService.getUserByUserId(userId);
         if (user == null){
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+        String encryptPassword = PasswordUtil.encryptPassword(password);
+        if (!user.getPassword().equals(encryptPassword)){
+            response.setCode(ResponseCode.PASSWORD_IS_WRONG);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
 
-        userService.updatePasswordByUserId(userId, newPassword);
+        String encryptNewPassword = PasswordUtil.encryptPassword(newPassword);
+        userService.updatePasswordByUserId(userId, encryptNewPassword);
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -255,8 +261,8 @@ public class UserController{
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-
-        userService.updatePasswordByUserId(userId, newPassword);
+        String encryptPassword = PasswordUtil.encryptPassword(newPassword);
+        userService.updatePasswordByUserId(userId, encryptPassword);
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
