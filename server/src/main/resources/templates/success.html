@@ -35,6 +35,24 @@
             text-decoration: none;
             border-radius: 5px;
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        tr {
+            background-color: #f2f2f2;
+        }
     </style>
 </head>
 <body>
@@ -43,6 +61,21 @@
     <br/>
     <br/>
     <h1>Giao dịch thành công!</h1>
+    <table>
+        <tr>
+            <td>User name</td>
+            <td th:text="${userName}">/td>
+        </tr>
+        <tr>
+            <td>Point</td>
+            <td th:text="${point}"></td>
+        </tr>
+        <tr>
+            <td>Money</td>
+            <td th:text="${money}"></td>
+        </tr>
+    </table>
+
     <p>Vui lòng quay trở lại ứng dụng để kiểm tài khoản.</p>
     <a href="app://back" class="button">Quay về ứng dụng</a>
 </div>

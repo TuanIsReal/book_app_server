@@ -182,6 +182,9 @@ public class PaymentController {
         }
 
         modelAndView.setViewName("success.html");
+        modelAndView.addObject("point", payment.getPoint());
+        modelAndView.addObject("money", payment.getMoney() + " VND");
+        modelAndView.addObject("userName", user.getName());
         return modelAndView;
     }
 
