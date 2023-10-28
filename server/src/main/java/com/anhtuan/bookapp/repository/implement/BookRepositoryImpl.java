@@ -51,28 +51,29 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
     @Override
     public List<Book> searchBookFilter(String sort, int order, int status, int post, List<String> category, int page) {
         Query query = new Query();
-        query.addCriteria(Criteria.where(Book.STATUS).gte(BOOK_STATUS.ACCEPTED));
+
         if (status == FILTER_STATUS.COMPLETE){
             query.addCriteria(Criteria.where(Book.STATUS).is(BOOK_STATUS.COMPLETED));
-        }
-        if (status == FILTER_STATUS.WRITING){
+        } else if (status == FILTER_STATUS.WRITING){
             query.addCriteria(Criteria.where(Book.STATUS).is(BOOK_STATUS.ACCEPTED));
+        } else {
+            query.addCriteria(Criteria.where(Book.STATUS).gte(BOOK_STATUS.ACCEPTED));
         }
+
         if (post == FILTER_POST.ADMIN_POST){
             query.addCriteria(Criteria.where(Book.ADMIN_UP).is(true));
-        }
-        if (post == FILTER_POST.USER_POST){
-            query.addCriteria(Criteria.where(Book.ADMIN_UP).isNull());
+        } else if (post == FILTER_POST.USER_POST){
+            query.addCriteria(Criteria.where(Book.ADMIN_UP).is(false));
         }
         if (category != null && category.size() > 0){
             query.addCriteria(Criteria.where(Book.BOOK_CATEGORY).in(category));
         }
         if (!sort.equals("all") && order == 1){
             query.with(Sort.by(Sort.Order.asc(sort)));
-        }
-        if (!sort.equals("all") && order == -1){
+        } else if (!sort.equals("all") && order == -1){
             query.with(Sort.by(Sort.Order.desc(sort)));
         }
+
         query.skip((page - 1) * 10L).limit(10);
         return mongoTemplate.find(query, Book.class);
     }
@@ -131,6 +132,22 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
         update.set(Book.STATUS, status);
         if (BOOK_STATUS.ACCEPTED == status){
             update.set(Book.UPLOAD_TIME, System.currentTimeMillis());
+        }
+        update.set(Book.LAST_UPDATE_TIME, System.currentTimeMillis());
+        mongoTemplate.updateFirst(query, update, Book.class);
+    }
+
+    @Override
+    public void updateBookInfo(Book book, boolean isFinish) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(Book.ID).is(new ObjectId(book.getId())));
+        Update update = new Update();
+        update.set(Book.INTRODUCTION, book.getIntroduction());
+        update.set(Book.BOOK_PRICE, book.getBookPrice());
+        update.set(Book.FREE_CHAPTER, book.getFreeChapter());
+        update.set(Book.BOOK_CATEGORY, book.getBookCategory());
+        if (isFinish){
+            update.set(Book.STATUS, BOOK_STATUS.COMPLETED);
         }
         update.set(Book.LAST_UPDATE_TIME, System.currentTimeMillis());
         mongoTemplate.updateFirst(query, update, Book.class);

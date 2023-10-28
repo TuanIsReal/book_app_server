@@ -31,4 +31,6 @@ public interface BookService {
     List<Book> getBooksHome(int type, int limit);
     List<Book> getBookByStatus(int status);
     void updateBookStatus(String bookId, int status);
+
+    void updateBookInfo(Book book, boolean isFinish);
 }

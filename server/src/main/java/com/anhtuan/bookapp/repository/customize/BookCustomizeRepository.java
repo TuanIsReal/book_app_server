@@ -14,4 +14,6 @@ public interface BookCustomizeRepository {
     void increaseTotalPurchased(String bookId);
     List<Book> findBookHome(int type, int limit);
     void updateBookStatus(String bookId, int status);
+
+    void updateBookInfo(Book book, boolean isFinish);
 }

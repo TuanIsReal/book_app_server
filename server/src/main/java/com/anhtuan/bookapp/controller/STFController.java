@@ -45,12 +45,13 @@ public class STFController {
                 response.setCode(ResponseCode.UPLOAD_FILE_FAILED);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
-            String filePath = BOOK_IMAGE_STORAGE_PATH + bookId + JPG;
+            long time = System.currentTimeMillis();
+            String filePath = BOOK_IMAGE_STORAGE_PATH + bookId + "-" + time + JPG;
             FileOutputStream fos = new FileOutputStream(filePath);
             fos.write(fileData);
             fos.close();
-            STFService.createThumbnail(BOOK_IMAGE_STORAGE_PATH, bookId + JPG);
-            bookService.updateBookImageByBookId(bookId, bookId);
+            STFService.createThumbnail(BOOK_IMAGE_STORAGE_PATH, bookId + "-" + time + JPG);
+            bookService.updateBookImageByBookId(bookId, bookId + "-" + time);
             response.setCode(ResponseCode.SUCCESS);
         } catch (IOException e) {
             e.printStackTrace();

@@ -126,4 +126,9 @@ public class BookServiceImpl implements BookService {
     public void updateBookStatus(String bookId, int status) {
         bookRepository.updateBookStatus(bookId, status);
     }
+
+    @Override
+    public void updateBookInfo(Book book, boolean isFinish) {
+        bookRepository.updateBookInfo(book, isFinish);
+    }
 }

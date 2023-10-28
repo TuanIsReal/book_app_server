@@ -1,6 +1,7 @@
 package com.anhtuan.bookapp.domain;
 
 import com.anhtuan.bookapp.request.AddBookRequest;
+import com.anhtuan.bookapp.request.UpdateBookRequest;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -92,6 +93,13 @@ public class Book {
         this.author = request.getAuthor();
         this.introduction = request.getIntroduction();
         this.bookImage = request.getBookImage();
+        this.bookPrice = request.getBookPrice();
+        this.freeChapter = request.getFreeChapter();
+    }
+
+    public Book(UpdateBookRequest request) {
+        this.id = request.getBookId();
+        this.introduction = request.getIntroduction();
         this.bookPrice = request.getBookPrice();
         this.freeChapter = request.getFreeChapter();
     }

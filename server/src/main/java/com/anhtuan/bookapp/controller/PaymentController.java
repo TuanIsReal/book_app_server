@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -183,8 +184,11 @@ public class PaymentController {
 
         modelAndView.setViewName("success.html");
         modelAndView.addObject("point", payment.getPoint());
-        modelAndView.addObject("money", payment.getMoney() + " VND");
+        DecimalFormat decimalFormat = new DecimalFormat("###,###,###");
+        String formattedMoney = decimalFormat.format(payment.getMoney()) + " VND";
+        modelAndView.addObject("money", formattedMoney);
         modelAndView.addObject("userName", user.getName());
+
         return modelAndView;
     }
 

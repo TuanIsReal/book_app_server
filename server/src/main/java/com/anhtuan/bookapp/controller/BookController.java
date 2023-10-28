@@ -7,16 +7,15 @@ import com.anhtuan.bookapp.common.Utils;
 import com.anhtuan.bookapp.domain.*;
 import com.anhtuan.bookapp.request.AddBookRequest;
 import com.anhtuan.bookapp.request.GetBookFilterRequest;
+import com.anhtuan.bookapp.request.UpdateBookRequest;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -165,6 +164,10 @@ public class BookController {
         }
 
         List<Book> bookRequestUpList = bookService.findBooksByAuthorAndStatus(userId, status);
+        if (status == BOOK_STATUS.ACCEPTED){
+            List<Book> completedBook = bookService.findBooksByAuthorAndStatus(userId, BOOK_STATUS.COMPLETED);
+            bookRequestUpList.addAll(completedBook);
+        }
 
         for (Book bookRequestUp:bookRequestUpList){
             List<String> bookCategoryIdList = bookRequestUp.getBookCategory();
@@ -353,6 +356,34 @@ public class BookController {
 
         response.setCode(ResponseCode.SUCCESS);
         response.setData(books);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/updateBookInfo")
+    public ResponseEntity<Response> updateBookInfo(@RequestBody UpdateBookRequest request) {
+        Response response = new Response();
+        
+        Book book = bookService.findBookById(request.getBookId());
+        if (Objects.isNull(book)){
+            response.setCode(ResponseCode.BOOK_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        Book newBook = new Book(request);
+
+        ArrayList<String> categoriesName = request.getBookCategory();
+        if (!Objects.isNull(categoriesName) && !categoriesName.isEmpty()){
+            List<Category> categories = categoryService.findCategoriesByNameList(categoriesName);
+            List<String> categoriesId = new ArrayList<>();
+            for (Category category: categories){
+                categoriesId.add(category.getId());
+            }
+            newBook.setBookCategory(categoriesId);
+        }
+
+        bookService.updateBookInfo(newBook, request.getIsFinish());
+
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
