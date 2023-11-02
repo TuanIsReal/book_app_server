@@ -5,6 +5,7 @@ import com.anhtuan.bookapp.common.Utils;
 import static com.anhtuan.bookapp.config.Constant.*;
 import com.anhtuan.bookapp.domain.*;
 import com.anhtuan.bookapp.request.AddBookChapterRequest;
+import com.anhtuan.bookapp.request.UpdateBannerWordRequest;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @RestController
@@ -34,6 +36,8 @@ public class BookChapterController {
     private FirebaseMessagingService firebaseMessagingService;
 
     private STFService stfService;
+
+    private BannedWordService bannedWordService;
 
     @PostMapping("addChapter")
     private ResponseEntity<Response> addChapter(@RequestBody AddBookChapterRequest request){
@@ -138,5 +142,33 @@ public class BookChapterController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("updateBannedWord")
+    private ResponseEntity<Response> updateBannedWord(@RequestBody UpdateBannerWordRequest request){
+        Response response = new Response();
+        BannedWord bannedWord = bannedWordService.findOne();
+        if (Objects.isNull(bannedWord)){
+            BannedWord newBannedWord = new BannedWord(1, request.getWords());
+            bannedWordService.createBannedWord(newBannedWord);
+            response.setCode(ResponseCode.SUCCESS);
+            return ResponseEntity.ok(response);
+        }
 
+        bannedWordService.updateBannedWord(bannedWord.getVersion(), request.getWords());
+        response.setCode(ResponseCode.SUCCESS);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("getBannedWord")
+    private ResponseEntity<Response> getBannedWord(@RequestParam int version){
+        Response response = new Response();
+        BannedWord bannedWord = bannedWordService.findOne();
+        if (bannedWord.getVersion() == version){
+            response.setCode(ResponseCode.BANNED_WORD_NO_CHANGE);
+            System.out.println(response.getCode());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(bannedWord);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
 }

@@ -1,6 +1,7 @@
 package com.anhtuan.bookapp.common;
 
 public class ResponseCode {
+    public static final int BANNED_WORD_NO_CHANGE = 98;
     public static final int UNKNOWN_ERROR = 99;
     public static final int SUCCESS = 100;
     public static final int EMAIL_EXISTS = 101;
