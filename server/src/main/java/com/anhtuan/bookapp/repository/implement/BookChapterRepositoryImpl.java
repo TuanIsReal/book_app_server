@@ -22,6 +22,17 @@ public class BookChapterRepositoryImpl implements BookChapterCustomizeRepository
         query.addCriteria(Criteria.where(BookChapter.ID).is(new ObjectId(chapterId)));
         Update update = new Update();
         update.set(BookChapter.CHAPTER_CONTENT, chapterContent);
+        update.set(BookChapter.LAST_UPDATE_TIME, System.currentTimeMillis());
+        mongoTemplate.updateFirst(query, update, BookChapter.class);
+    }
+
+    @Override
+    public void updateStatus(String chapterId, int status) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(BookChapter.ID).is(new ObjectId(chapterId)));
+        Update update = new Update();
+        update.set(BookChapter.STATUS, status);
+        update.set(BookChapter.LAST_UPDATE_TIME, System.currentTimeMillis());
         mongoTemplate.updateFirst(query, update, BookChapter.class);
     }
 }

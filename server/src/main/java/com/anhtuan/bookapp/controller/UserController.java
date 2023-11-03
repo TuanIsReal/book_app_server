@@ -20,14 +20,12 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.Objects;
 
-
 @RestController
 @RequestMapping("user")
 @AllArgsConstructor
 public class UserController{
 
     private UserService userService;
-    private FirebaseMessagingService firebaseMessagingService;
     private DeviceService deviceService;
     private EmailService emailService;
     private VerifyCodeService verifyCodeService;

@@ -1,13 +1,18 @@
 package com.anhtuan.bookapp.domain;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = BookChapter.BOOK_CHAPTER_COLLECTION)
-public class BookChapter {
+public class BookChapter extends Domain{
     public static final String ID = "_id";
     public static final String BOOK_CHAPTER_COLLECTION = "book_chapter";
     public static final String BOOK_ID = "book_id";
@@ -16,9 +21,7 @@ public class BookChapter {
     public static final String CHAPTER_CONTENT = "chapter_content";
     public static final String UPLOAD_TIME= "upload_time";
     public static final String LAST_UPDATE_TIME = "last_update_time";
-
-    @Id
-    private String id;
+    public static final String STATUS = "status";
 
     @Field(BOOK_ID)
     private String bookId;
@@ -38,16 +41,7 @@ public class BookChapter {
     @Field(LAST_UPDATE_TIME)
     private long lastUpdateTime;
 
-    public BookChapter() {
-    }
-
-    public BookChapter(String bookId, int chapterNumber, String chapterName, String chapterContent, long uploadTime, long lastUpdateTime) {
-        this.bookId = bookId;
-        this.chapterNumber = chapterNumber;
-        this.chapterName = chapterName;
-        this.chapterContent = chapterContent;
-        this.uploadTime = uploadTime;
-        this.lastUpdateTime = lastUpdateTime;
-    }
+    @Field(STATUS)
+    private int status;
 
 }

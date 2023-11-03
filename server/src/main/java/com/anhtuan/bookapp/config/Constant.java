@@ -18,6 +18,7 @@ public class Constant {
     public static final String BOOK_REQUEST_UP_TITLE = "Thông báo yêu cầu đăng truyện";
     public static final String COMMENT_TITLE = "Thông báo bình luận";
     public static final String ADD_POINT_TITLE = "Thông báo thêm Point";
+    public static final String WARNING_CHAPTER_TITLE = "Thông báo vi phạm";
     public static final int FILTER_ALL = 0;
     public static final String ADD_POINT = "addPoint";
     public static final String FORGOT_PASSWORD_SUBJECT = "Truyện AT - Xác nhận quên mật khẩu";
@@ -109,6 +110,17 @@ public class Constant {
         public static final int INCOME_WRITER = 1;
         public static final int SPEND_POINT_USER = 2;
         public static final int RECHARGE_USER = 3;
+    }
+
+    public static class BOOK_CHAPTER_STATUS{
+        public static final int NOT_VERIFY = 0;
+        public static final int VERIFY = 1;
+        public static final int WARNING = -1;
+    }
+
+    public static class REACT_WARNING{
+        public static final int GOOD = 1;
+        public static final int NOT_GOOD = -1;
     }
 }
 

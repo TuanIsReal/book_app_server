@@ -6,7 +6,7 @@ public class ResponseCode {
     public static final int SUCCESS = 100;
     public static final int EMAIL_EXISTS = 101;
     public static final int ACCOUNT_NOT_EXISTS = 102;
-    public static final int USER_NOT_LOGIN = 103;
+    public static final int WRONG_DATA_FORMAT = 103;
     public static final int BOOK_CATEGORY_EXISTS = 104;
     public static final int BOOK_EXISTS = 105;
     public static final int USER_NOT_EXISTS = 106;

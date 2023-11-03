@@ -79,11 +79,11 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
     }
 
     @Override
-    public void increaseTotalChapter(String bookId) {
+    public void increaseTotalChapter(String bookId, int number) {
         Query query = new Query();
         query.addCriteria(Criteria.where(Book.ID).is(new ObjectId(bookId)));
         Update update = new Update();
-        update.inc(Book.TOTAL_CHAPTER, 1);
+        update.inc(Book.TOTAL_CHAPTER, number);
         update.set(Book.LAST_UPDATE_TIME, System.currentTimeMillis());
         mongoTemplate.updateFirst(query, update, Book.class);
     }

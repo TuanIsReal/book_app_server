@@ -53,10 +53,10 @@ public class BookChapterController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         long time = System.currentTimeMillis();
-        BookChapter bookChapter = new BookChapter(bookId, request.getChapterNumber(), request.getChapterName(), request.getChapterContent(), time, time);
+        BookChapter bookChapter = new BookChapter(bookId, request.getChapterNumber(), request.getChapterName(), request.getChapterContent(), time, time, BOOK_CHAPTER_STATUS.NOT_VERIFY);
         String chapterId = bookChapterService.insertBookChapter(bookChapter);
         stfService.createChapterText(request.getChapterContent(), chapterId + TXT);
-        bookService.increaseTotalChapter(book.getId());
+        bookService.increaseTotalChapter(book.getId(), 1);
 
         List<PurchasedBook> purchasedBookList = purchasedBookService.findPurchasedBooksByBookIdAndUserIdIsNot(bookId, book.getAuthor());
         List<String> purchasedUserList = new ArrayList<>();
@@ -92,7 +92,7 @@ public class BookChapterController {
         Response response = new Response();
         Book book = bookService.findBookById(bookId);
         if (book == null){
-            response.setCode(106);
+            response.setCode(ResponseCode.BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
@@ -105,7 +105,7 @@ public class BookChapterController {
         }
 
         if (bookChapter == null){
-            response.setCode(113);
+            response.setCode(ResponseCode.CHAPTER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         String chapterContent;

@@ -23,7 +23,7 @@ public interface BookService {
     List<Book> getBooksByAuthorAndIdIsNot(String author, String bookId);
 
     List<Book> getBooksByIdList(List<String> idList);
-    void increaseTotalChapter(String bookId);
+    void increaseTotalChapter(String bookId, int number);
     void updateStarById(String id, double star);
     void increaseTotalReview(String bookId);
     void increaseTotalPurchased(String bookId);

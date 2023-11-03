@@ -13,4 +13,13 @@ public interface BookChapterService {
     List<BookChapter> getBookChaptersByBookId(String bookId);
 
     List<BookChapter> findBookChaptersByBookIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(String bookId, int chapterNumber);
+
+    List<BookChapter> findBookChaptersVerify(List<String> bookIds);
+    List<BookChapter> findBookChaptersNotVerify();
+
+    void updateStatus(String chapterId, int status);
+
+    void deleteById(String id);
+
+    BookChapter getBookChapter(String id);
 }
