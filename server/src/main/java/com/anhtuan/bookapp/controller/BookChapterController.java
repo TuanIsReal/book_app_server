@@ -164,7 +164,6 @@ public class BookChapterController {
         BannedWord bannedWord = bannedWordService.findOne();
         if (bannedWord.getVersion() == version){
             response.setCode(ResponseCode.BANNED_WORD_NO_CHANGE);
-            System.out.println(response.getCode());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         response.setCode(ResponseCode.SUCCESS);

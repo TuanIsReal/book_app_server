@@ -1,9 +1,11 @@
 package com.anhtuan.bookapp.worker;
 
 import com.anhtuan.bookapp.config.Constant;
+import com.anhtuan.bookapp.domain.Book;
 import com.anhtuan.bookapp.domain.BookChapter;
 import com.anhtuan.bookapp.domain.WarningChapter;
 import com.anhtuan.bookapp.service.base.BookChapterService;
+import com.anhtuan.bookapp.service.base.BookService;
 import com.anhtuan.bookapp.service.base.STFService;
 import com.anhtuan.bookapp.service.base.WarningChapterService;
 import lombok.AllArgsConstructor;
@@ -22,44 +24,63 @@ public class PlagiarismChecker {
     private STFService stfService;
     private BookChapterService bookChapterService;
     private WarningChapterService warningChapterService;
+    private BookService bookService;
 
-    private static final Double MAX_SIMILAR_DOCUMENT = 50.0;
+    private static final Double MAX_SIMILAR_DOCUMENT = 60.0;
 
-    @Scheduled(fixedDelay = 50000, initialDelay = 10000)
+    @Scheduled(fixedDelay = 600000, initialDelay = 5000)
     private void checkPlagiarism() {
         System.out.println("------Start check Plagiarism-----");
         List<BookChapter> unVerifyChapters = bookChapterService.findBookChaptersNotVerify();
+
+        System.out.println("----UnVerify Chapters Size: " + unVerifyChapters.size());
         if (unVerifyChapters.isEmpty()){
             System.out.println("------No Chapter to check");
             return;
         }
 
         List<String> unVerifyBookIds = unVerifyChapters.stream().map(BookChapter::getBookId).toList();
+
         List<BookChapter> verifyChapters = bookChapterService.findBookChaptersVerify(unVerifyBookIds);
-        Map<String, String> verifyTexts = new HashMap<>();
+        Map<BookChapter, String> verifyTexts = new HashMap<>();
         verifyChapters.forEach(verifyChapter -> {
-            verifyTexts.put(verifyChapter.getId(), stfService.getChapterContent(verifyChapter.getChapterContent() + TXT));
+            verifyTexts.put(verifyChapter, stfService.getChapterContent(verifyChapter.getChapterContent() + TXT));
         });
 
+        System.out.println("-----Done get verify Chapters, Size: " + verifyChapters.size());
+
         for (BookChapter unVerifyChapter : unVerifyChapters){
-            String unVerifyText = stfService.getChapterContent(unVerifyChapter.getChapterContent() + TXT);
-            String verifyChapterId = null;
+            Book book = bookService.findBookById(unVerifyChapter.getBookId());
+            List<Book> books = bookService.findBooksUpByAuthor(book.getAuthor());
+            List<String> bookIds = books.stream().map(Book::getId).toList();
+
+            System.out.println("-----Check Chapter: " + unVerifyChapter.getChapterName());
             double similarDocument = 0;
-            for (Map.Entry<String, String> entry : verifyTexts.entrySet()){
+            String unVerifyText = stfService.getChapterContent(unVerifyChapter.getChapterContent() + TXT);
+            BookChapter verifyChapter = null;
+
+            for (Map.Entry<BookChapter, String> entry : verifyTexts.entrySet()){
+                if (bookIds.contains(entry.getKey().getBookId())){
+                    continue;
+                }
                 similarDocument = checkDocument(unVerifyText, entry.getValue());
                 if (similarDocument >= MAX_SIMILAR_DOCUMENT){
-                    verifyChapterId = entry.getKey();
-                    return;
+                    verifyChapter = entry.getKey();
+                    break;
                 }
+
             }
-            if (Objects.isNull(verifyChapterId)){
+            if (Objects.isNull(verifyChapter)){
                 bookChapterService.updateStatus(unVerifyChapter.getId(), Constant.BOOK_CHAPTER_STATUS.VERIFY);
                 continue;
             }
 
             bookChapterService.updateStatus(unVerifyChapter.getId(), Constant.BOOK_CHAPTER_STATUS.WARNING);
-            double similarityText = checkText(unVerifyText, verifyTexts.get(verifyChapterId));
-            warningChapterService.insert(new WarningChapter(unVerifyChapter.getId(), verifyChapterId, similarDocument, similarityText));
+            double similarityText = checkText(unVerifyText, verifyTexts.get(verifyChapter));
+            warningChapterService.insert(new WarningChapter(unVerifyChapter.getId(), verifyChapter.getId(), similarDocument, similarityText));
+            WarningChapter warningChapter = new WarningChapter(unVerifyChapter.getId(), verifyChapter.getId(), similarDocument, similarityText);
+            System.out.println("-----warningChapter: "+ warningChapter);
+
         }
 
         System.out.println("------END check Plagiarism-----");
