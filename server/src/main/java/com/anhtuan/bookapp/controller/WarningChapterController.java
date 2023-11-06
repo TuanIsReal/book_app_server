@@ -40,6 +40,7 @@ public class WarningChapterController {
                                                  @RequestParam int react){
         Response response = new Response();
         WarningChapter warningChapter = warningChapterService.findWarningChapter(chapter);
+
         if (warningChapter == null || (react != Constant.REACT_WARNING.GOOD && react != Constant.REACT_WARNING.NOT_GOOD) ){
             response.setCode(ResponseCode.UNKNOWN_ERROR);
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -51,7 +52,8 @@ public class WarningChapterController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        BookChapter bookChapter = bookChapterService.getBookChapter(warningChapter.getId());
+        BookChapter bookChapter = bookChapterService.getBookChapter(warningChapter.getChapter());
+
         if (bookChapter == null){
             response.setCode(ResponseCode.UNKNOWN_ERROR);
             return new ResponseEntity<>(response, HttpStatus.OK);

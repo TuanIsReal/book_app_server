@@ -126,6 +126,22 @@ public class BookChapterController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("getChapterInfo")
+    private ResponseEntity<Response> getChapterContent(@RequestParam String chapterId){
+        Response response = new Response();
+
+        BookChapter bookChapter = bookChapterService.getBookChapter(chapterId);
+
+        if (bookChapter == null){
+            response.setCode(ResponseCode.CHAPTER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(bookChapter);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("getBookChapterList")
     private ResponseEntity<Response> getBookChapterList(@RequestParam String bookId){
         Response response = new Response();

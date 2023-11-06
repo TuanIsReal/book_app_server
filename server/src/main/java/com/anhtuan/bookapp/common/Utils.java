@@ -16,7 +16,7 @@ public class Utils {
     }
 
     public static final String messRejectUploadBook(String bookName){
-        return "Quyển truyện " + bookName + " đã bị từ chối  đăng lên hệ thống :( Hãy thử đăng lại truyện khác nhé ^^";
+        return "Quyển truyện " + bookName + " đã bị từ chối đăng lên hệ thống :( Hãy thử đăng lại truyện khác nhé ^^";
     }
 
     public static final String messReplyCommentBook(String userName){
