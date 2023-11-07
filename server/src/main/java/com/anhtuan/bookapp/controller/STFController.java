@@ -91,7 +91,7 @@ public class STFController {
     @GetMapping(value = "/getBookImage")
     public ResponseEntity<Response> getBookImage(@RequestParam String imageName){
         Response response = new Response();
-        String filePath = HTTP + IP_SERVER + BOOK_IMAGE_STORAGE_PATH_RESPONSE + imageName + Constant.JPG;
+        String filePath = BOOK_IMAGE_STORAGE_PATH_RESPONSE + imageName + Constant.JPG;
         response.setCode(ResponseCode.SUCCESS);
         response.setData(filePath);
         return ResponseEntity.ok(response);
@@ -100,7 +100,7 @@ public class STFController {
     @GetMapping(value = "/getThumbnail")
     public ResponseEntity<Response> getThumbnail(@RequestParam String thumbnailName){
         Response response = new Response();
-        String filePath = HTTP + IP_SERVER + THUMBNAIL_STORAGE_PATH_RESPONSE + thumbnailName + Constant.JPG;
+        String filePath = THUMBNAIL_STORAGE_PATH_RESPONSE + thumbnailName + Constant.JPG;
         response.setCode(ResponseCode.SUCCESS);
         response.setData(filePath);
         return ResponseEntity.ok(response);
@@ -109,7 +109,7 @@ public class STFController {
     @GetMapping(value = "/getAvatar")
     public ResponseEntity<Response> getAvatar(@RequestParam String imageName){
         Response response = new Response();
-        String filePath = HTTP + IP_SERVER + AVATAR_IMAGE_STORAGE_PATH_RESPONSE + imageName + Constant.JPG;
+        String filePath = AVATAR_IMAGE_STORAGE_PATH_RESPONSE + imageName + Constant.JPG;
         response.setCode(ResponseCode.SUCCESS);
         response.setData(filePath);
         return ResponseEntity.ok(response);
