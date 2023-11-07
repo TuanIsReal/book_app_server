@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
 
 @Service
 public class STFServiceImpl implements STFService {
@@ -44,7 +45,7 @@ public class STFServiceImpl implements STFService {
     public String getChapterContent(String fileName) {
         StringBuilder content = new StringBuilder("");
         try {
-            FileReader fileReader = new FileReader(Constant.CHAPTER_TEXT_STORAGE_PATH + fileName);
+            FileReader fileReader = new FileReader(Constant.CHAPTER_TEXT_STORAGE_PATH + fileName, StandardCharsets.UTF_8);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             String line;
 
