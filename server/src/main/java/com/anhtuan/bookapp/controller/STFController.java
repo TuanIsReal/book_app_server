@@ -37,25 +37,28 @@ public class STFController {
             response.setCode(ResponseCode.BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+
         String bookId = book.getId();
         byte[] fileData = null;
-        try {
+        long time = System.currentTimeMillis();
+        String filePath = BOOK_IMAGE_STORAGE_PATH + bookId + "-" + time + JPG;
+
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
             fileData = image.getBytes();
-            if (fileData == null){
+            if (fileData.length == 0){
                 response.setCode(ResponseCode.UPLOAD_FILE_FAILED);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
-            long time = System.currentTimeMillis();
-            String filePath = BOOK_IMAGE_STORAGE_PATH + bookId + "-" + time + JPG;
-            FileOutputStream fos = new FileOutputStream(filePath);
+
             fos.write(fileData);
-            fos.close();
+
             STFService.createThumbnail(BOOK_IMAGE_STORAGE_PATH, bookId + "-" + time + JPG);
             bookService.updateBookImageByBookId(bookId, bookId + "-" + time);
             response.setCode(ResponseCode.SUCCESS);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -69,22 +72,23 @@ public class STFController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         byte[] fileData = null;
-        try {
+        String filePath = AVATAR_IMAGE_STORAGE_PATH + userId + JPG;
+
+        try (FileOutputStream fos = new FileOutputStream(filePath)) {
             fileData = image.getBytes();
-            if (fileData == null){
+            if (fileData.length == 0){
                 response.setCode(ResponseCode.UPLOAD_FILE_FAILED);
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
-            String filePath = AVATAR_IMAGE_STORAGE_PATH + userId + JPG;
-            FileOutputStream fos = new FileOutputStream(filePath);
             fos.write(fileData);
-            fos.close();
+
             STFService.createThumbnail(AVATAR_IMAGE_STORAGE_PATH, userId + JPG);
             userService.updateAvatarImageByUserId(userId, userId);
             response.setCode(ResponseCode.SUCCESS);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
