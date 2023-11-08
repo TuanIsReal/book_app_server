@@ -1,7 +1,5 @@
 package com.anhtuan.bookapp.service.implement;
 
-import com.anhtuan.bookapp.common.ResponseCode;
-import com.anhtuan.bookapp.common.exception.ApplicationException;
 import com.anhtuan.bookapp.domain.CustomUserDetails;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.repository.base.UserRepository;
@@ -26,10 +24,10 @@ public class UserInfoService implements UserDetailsService {
         return new CustomUserDetails(user);
     }
 
-    public UserDetails loadUserById(String userId) throws ApplicationException {
+    public UserDetails loadUserById(String userId) {
         User user = userRepository.findUserById(userId);
         if (user == null) {
-            throw new ApplicationException(ResponseCode.USER_NOT_EXISTS);
+            throw new UsernameNotFoundException(userId);
         }
         return new CustomUserDetails(user);
     }

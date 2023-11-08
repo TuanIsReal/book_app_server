@@ -19,10 +19,10 @@ public class CustomUserDetails implements UserDetails {
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (Constant.USER_ROLE.USER == user.getRole()){
-            return Collections.singleton(new SimpleGrantedAuthority("user"));
+            return Collections.singleton(new SimpleGrantedAuthority("USER"));
         }
 
-        return Collections.singleton(new SimpleGrantedAuthority("admin"));
+        return Collections.singleton(new SimpleGrantedAuthority("ADMIN"));
     }
 
     @Override

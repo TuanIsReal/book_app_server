@@ -14,6 +14,7 @@ import com.anhtuan.bookapp.response.LoginResponse;
 import com.anhtuan.bookapp.response.RegisterResponse;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.*;
+import com.anhtuan.bookapp.service.implement.UserInfoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,6 +32,7 @@ import java.util.Objects;
 public class UserController{
 
     private UserService userService;
+    private UserInfoService userInfoService;
     private DeviceService deviceService;
     private EmailService emailService;
     private VerifyCodeService verifyCodeService;
@@ -44,34 +46,31 @@ public class UserController{
                                                     @RequestParam String password,
                                                     @RequestParam String ip){
         Response response = new Response();
-//        User user = userService.getUserByEmail(email);
-//        if (user == null){
-//            response.setCode(ResponseCode.ACCOUNT_NOT_EXISTS);
-//            response.setData(new LoginResponse());
-//            return new ResponseEntity<>(response, HttpStatus.OK);
-//        }
-//
-//        if (user.getStatus() == USER_STATUS.BLOCK){
-//            response.setCode(ResponseCode.ACCOUNT_IS_BLOCKED);
-//            response.setData(new LoginResponse());
-//            return new ResponseEntity<>(response, HttpStatus.OK);
-//        }
-//
-//        String encryptPassword = CustomPasswordEncode.encryptPassword(password);
-//        if (!user.getPassword().equals(encryptPassword)){
-//            response.setCode(ResponseCode.PASSWORD_IS_WRONG);
-//            response.setData(new LoginResponse());
-//            return new ResponseEntity<>(response, HttpStatus.OK);
-//        }
+        User user = userService.getUserByEmail(email);
+        if (user == null){
+            response.setCode(ResponseCode.ACCOUNT_NOT_EXISTS);
+            response.setData(new LoginResponse());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(email, password)
         );
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        if (user.getStatus() == USER_STATUS.BLOCK){
+            response.setCode(ResponseCode.ACCOUNT_IS_BLOCKED);
+            response.setData(new LoginResponse());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String token = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
+        String token = tokenProvider.generateToken(userDetails);
+        String refreshToken = tokenProvider.generateRefreshToken(userDetails);
+        userService.updateUserIpAndLoggedStatus(user.getId(), ip);
         response.setCode(ResponseCode.SUCCESS);
-        response.setData(token);
+        response.setData(new LoginResponse(token, refreshToken, userDetails.getUser().getRole()));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -94,8 +93,12 @@ public class UserController{
         User newUser = new User(email, encryptPassword, role, name, "", ip, USER_STATUS.LOGIN,500);
         User user = userService.insertUser(newUser);
 
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+        String token = tokenProvider.generateToken(userDetails);
+        String refreshToken = tokenProvider.generateRefreshToken(userDetails);
+
         response.setCode(ResponseCode.SUCCESS);
-        response.setData(new RegisterResponse(user.getId(), user.getRole()));
+        response.setData(new RegisterResponse(token, refreshToken, user.getRole()));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -104,12 +107,12 @@ public class UserController{
         Response response = new Response();
         User user = userService.findUserLoginGoolge(googleRequest.getEmail(),true);
         if(user!=null && (user.getIsGoogleLogin()==null || !user.getIsGoogleLogin())){
-            throw new RuntimeException("User is existed without google login");
+
         }
         if(user != null && user.getIsGoogleLogin()){
             userService.updateUserIpAndLoggedStatus(user.getId(), googleRequest.getIp());
             response.setCode(ResponseCode.SUCCESS);
-            response.setData(new LoginResponse(user.getId(), user.getRole()));
+            response.setData(new LoginResponse(user.getId(), user.getId(), user.getRole()));
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         String email = googleRequest.getEmail();
@@ -117,8 +120,13 @@ public class UserController{
         String ip = googleRequest.getIp();
         User newUser = new User(email, "", USER_ROLE.USER, name,googleRequest.getImg(), ip, USER_STATUS.LOGIN,500,true);
         User saveUser = userService.insertUser(newUser);
+
+        CustomUserDetails userDetails = new CustomUserDetails(user);
+        String token = tokenProvider.generateToken(userDetails);
+        String refreshToken = tokenProvider.generateRefreshToken(userDetails);
+
         response.setCode(ResponseCode.SUCCESS);
-        response.setData(new RegisterResponse(saveUser.getId(), saveUser.getRole()));
+        response.setData(new LoginResponse(token, refreshToken, saveUser.getRole()));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -289,6 +297,22 @@ public class UserController{
         List<TransactionHistory> transactionList = transactionHistoryService.getTransactionHistoryUser(userId);
         response.setCode(ResponseCode.SUCCESS);
         response.setData(transactionList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/refreshToken")
+    public ResponseEntity<Response> refreshToken(@RequestParam String refreshToken){
+        Response response = new Response();
+        if (refreshToken == null || refreshToken.isEmpty() || !tokenProvider.validateRefreshToken(refreshToken)){
+            response.setCode(ResponseCode.REFRESH_TOKEN_INVALID);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        String userId = tokenProvider.getUserIdFromRefreshToken(refreshToken);
+        CustomUserDetails user = (CustomUserDetails) userInfoService.loadUserById(userId);
+        String newRefreshToken = tokenProvider.generateRefreshToken(user);
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(newRefreshToken);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

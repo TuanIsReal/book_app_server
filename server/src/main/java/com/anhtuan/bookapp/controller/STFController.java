@@ -11,6 +11,7 @@ import com.anhtuan.bookapp.service.base.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -118,6 +119,7 @@ public class STFController {
     }
 
     @GetMapping(value = "/test")
+    @Secured("USER")
     public ResponseEntity<Response> getAvatar(Authentication authentication){
         Response response = new Response();
         String email = "fail";
