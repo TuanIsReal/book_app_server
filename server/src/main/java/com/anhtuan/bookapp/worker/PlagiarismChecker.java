@@ -9,6 +9,7 @@ import com.anhtuan.bookapp.service.base.BookService;
 import com.anhtuan.bookapp.service.base.STFService;
 import com.anhtuan.bookapp.service.base.WarningChapterService;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.similarity.CosineSimilarity;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,6 +21,7 @@ import static com.anhtuan.bookapp.config.Constant.TXT;
 
 @Component
 @AllArgsConstructor
+@Slf4j
 public class PlagiarismChecker {
     private STFService stfService;
     private BookChapterService bookChapterService;
@@ -30,12 +32,12 @@ public class PlagiarismChecker {
 
     @Scheduled(fixedDelay = 600000, initialDelay = 5000)
     private void checkPlagiarism() {
-        System.out.println("------Start check Plagiarism-----");
+        log.info("------Start check Plagiarism-----");
         List<BookChapter> unVerifyChapters = bookChapterService.findBookChaptersNotVerify();
 
         System.out.println("----UnVerify Chapters Size: " + unVerifyChapters.size());
         if (unVerifyChapters.isEmpty()){
-            System.out.println("------No Chapter to check");
+            log.info("------No Chapter to check");
             return;
         }
 
@@ -47,14 +49,15 @@ public class PlagiarismChecker {
             verifyTexts.put(verifyChapter, stfService.getChapterContent(verifyChapter.getChapterContent() + TXT));
         });
 
-        System.out.println("-----Done get verify Chapters, Size: " + verifyChapters.size());
+        log.info("------Verify Chapters Size: " + verifyChapters.size());
 
         for (BookChapter unVerifyChapter : unVerifyChapters){
             Book book = bookService.findBookById(unVerifyChapter.getBookId());
             List<Book> books = bookService.findBooksUpByAuthor(book.getAuthor());
             List<String> bookIds = books.stream().map(Book::getId).toList();
 
-            System.out.println("-----Check Chapter: " + unVerifyChapter.getChapterName());
+            log.info("------Check Chapter: " + unVerifyChapter.getChapterName());
+
             double similarDocument = 0;
             String unVerifyText = stfService.getChapterContent(unVerifyChapter.getChapterContent() + TXT);
             BookChapter verifyChapter = null;
@@ -79,11 +82,11 @@ public class PlagiarismChecker {
             double similarityText = checkText(unVerifyText, verifyTexts.get(verifyChapter));
             warningChapterService.insert(new WarningChapter(unVerifyChapter.getId(), verifyChapter.getId(), similarDocument, similarityText));
             WarningChapter warningChapter = new WarningChapter(unVerifyChapter.getId(), verifyChapter.getId(), similarDocument, similarityText);
-            System.out.println("-----warningChapter: "+ warningChapter);
 
+            log.info("------WarningChapter: "+ warningChapter);
         }
 
-        System.out.println("------END check Plagiarism-----");
+        log.info("------End check Plagiarism-----");
     }
 
     private double checkDocument(String unVerifyText, String verifyText){
