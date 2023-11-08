@@ -1,6 +1,8 @@
 package com.anhtuan.bookapp.common;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -8,9 +10,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
+import java.util.Objects;
 
 @Slf4j
-public class PasswordUtil {
+@NoArgsConstructor
+public class CustomPasswordEncode implements PasswordEncoder {
     private static SecretKeyFactory factory;
     private static SecureRandom random;
 
@@ -24,9 +28,6 @@ public class PasswordUtil {
         }
     }
 
-    private PasswordUtil() {
-    }
-
     public static String encryptPassword(String password) {
         byte[] hash;
         KeySpec spec = new PBEKeySpec(password.toCharArray(), "tuanisreal".getBytes(), 212212, 128);
@@ -36,5 +37,17 @@ public class PasswordUtil {
             throw new RuntimeException(e);
         }
         return Utils.byteToString(hash);
+    }
+
+    @Override
+    public String encode(CharSequence rawPassword) {
+        return encryptPassword(rawPassword.toString());
+    }
+
+    @Override
+    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+        String encodeRawPassword = encryptPassword(rawPassword.toString());
+
+        return Objects.equals(encodedPassword, encodeRawPassword);
     }
 }

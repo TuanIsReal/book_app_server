@@ -1,0 +1,36 @@
+package com.anhtuan.bookapp.service.implement;
+
+import com.anhtuan.bookapp.common.ResponseCode;
+import com.anhtuan.bookapp.common.exception.ApplicationException;
+import com.anhtuan.bookapp.domain.CustomUserDetails;
+import com.anhtuan.bookapp.domain.User;
+import com.anhtuan.bookapp.repository.base.UserRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+@Service
+@AllArgsConstructor
+public class UserInfoService implements UserDetailsService {
+
+    private final UserRepository userRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findUserByEmail(username);
+        if (user == null) {
+            throw new UsernameNotFoundException(username);
+        }
+        return new CustomUserDetails(user);
+    }
+
+    public UserDetails loadUserById(String userId) throws ApplicationException {
+        User user = userRepository.findUserById(userId);
+        if (user == null) {
+            throw new ApplicationException(ResponseCode.USER_NOT_EXISTS);
+        }
+        return new CustomUserDetails(user);
+    }
+}

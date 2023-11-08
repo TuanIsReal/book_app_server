@@ -1,13 +1,9 @@
 package com.anhtuan.bookapp.request;
 
-import javax.validation.constraints.NotNull;
-
 public class LoginRequest extends BaseRequest{
 
-    @NotNull
     private String email;
 
-    @NotNull
     private String password;
 
     public LoginRequest() {

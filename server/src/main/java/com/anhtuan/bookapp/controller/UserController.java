@@ -1,6 +1,7 @@
 package com.anhtuan.bookapp.controller;
 
-import com.anhtuan.bookapp.common.PasswordUtil;
+import com.anhtuan.bookapp.common.CustomPasswordEncode;
+import com.anhtuan.bookapp.common.JwtTokenProvider;
 import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.common.Utils;
 import static com.anhtuan.bookapp.config.Constant.*;
@@ -15,6 +16,10 @@ import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import lombok.AllArgsConstructor;
 import java.util.List;
@@ -30,6 +35,8 @@ public class UserController{
     private EmailService emailService;
     private VerifyCodeService verifyCodeService;
     private TransactionHistoryService transactionHistoryService;
+    private AuthenticationManager authenticationManager;
+    private JwtTokenProvider tokenProvider;
 
 
     @GetMapping("/login")
@@ -37,29 +44,35 @@ public class UserController{
                                                     @RequestParam String password,
                                                     @RequestParam String ip){
         Response response = new Response();
-        User user = userService.getUserByEmail(email);
-        if (user == null){
-            response.setCode(ResponseCode.ACCOUNT_NOT_EXISTS);
-            response.setData(new LoginResponse());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
+//        User user = userService.getUserByEmail(email);
+//        if (user == null){
+//            response.setCode(ResponseCode.ACCOUNT_NOT_EXISTS);
+//            response.setData(new LoginResponse());
+//            return new ResponseEntity<>(response, HttpStatus.OK);
+//        }
+//
+//        if (user.getStatus() == USER_STATUS.BLOCK){
+//            response.setCode(ResponseCode.ACCOUNT_IS_BLOCKED);
+//            response.setData(new LoginResponse());
+//            return new ResponseEntity<>(response, HttpStatus.OK);
+//        }
+//
+//        String encryptPassword = CustomPasswordEncode.encryptPassword(password);
+//        if (!user.getPassword().equals(encryptPassword)){
+//            response.setCode(ResponseCode.PASSWORD_IS_WRONG);
+//            response.setData(new LoginResponse());
+//            return new ResponseEntity<>(response, HttpStatus.OK);
+//        }
 
-        if (user.getStatus() == USER_STATUS.BLOCK){
-            response.setCode(ResponseCode.ACCOUNT_IS_BLOCKED);
-            response.setData(new LoginResponse());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password)
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        String encryptPassword = PasswordUtil.encryptPassword(password);
-        if (!user.getPassword().equals(encryptPassword)){
-            response.setCode(ResponseCode.PASSWORD_IS_WRONG);
-            response.setData(new LoginResponse());
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-
-        userService.updateUserIpAndLoggedStatus(user.getId(), ip);
+        System.out.println(authentication.getPrincipal().toString());
+        String token = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
         response.setCode(ResponseCode.SUCCESS);
-        response.setData(new LoginResponse(user.getId(), user.getRole()));
+        response.setData(token);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -74,7 +87,7 @@ public class UserController{
         }
 
         String password = registerRequest.getPassword();
-        String encryptPassword = PasswordUtil.encryptPassword(password);
+        String encryptPassword = CustomPasswordEncode.encryptPassword(password);
         Integer role = USER_ROLE.USER;
         String name = registerRequest.getName();
         String ip = registerRequest.getIp();
@@ -182,13 +195,13 @@ public class UserController{
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        String encryptPassword = PasswordUtil.encryptPassword(password);
+        String encryptPassword = CustomPasswordEncode.encryptPassword(password);
         if (!user.getPassword().equals(encryptPassword)){
             response.setCode(ResponseCode.PASSWORD_IS_WRONG);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        String encryptNewPassword = PasswordUtil.encryptPassword(newPassword);
+        String encryptNewPassword = CustomPasswordEncode.encryptPassword(newPassword);
         userService.updatePasswordByUserId(userId, encryptNewPassword);
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -259,7 +272,7 @@ public class UserController{
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        String encryptPassword = PasswordUtil.encryptPassword(newPassword);
+        String encryptPassword = CustomPasswordEncode.encryptPassword(newPassword);
         userService.updatePasswordByUserId(userId, encryptPassword);
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);

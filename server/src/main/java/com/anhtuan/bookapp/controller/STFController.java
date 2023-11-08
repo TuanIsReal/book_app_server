@@ -11,6 +11,8 @@ import com.anhtuan.bookapp.service.base.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.FileOutputStream;
@@ -116,10 +118,15 @@ public class STFController {
     }
 
     @GetMapping(value = "/test")
-    public ResponseEntity<Response> getAvatar(){
+    public ResponseEntity<Response> getAvatar(Authentication authentication){
         Response response = new Response();
+        String email = "fail";
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
+            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+            email = userDetails.getUsername();
+        }
         response.setCode(ResponseCode.SUCCESS);
-        response.setData("Okkkk");
+        response.setData(email);
         return ResponseEntity.ok(response);
     }
 }

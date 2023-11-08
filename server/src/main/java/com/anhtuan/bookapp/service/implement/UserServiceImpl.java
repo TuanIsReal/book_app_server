@@ -1,11 +1,9 @@
 package com.anhtuan.bookapp.service.implement;
 
-import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.repository.base.UserRepository;
 import com.anhtuan.bookapp.service.base.UserService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
