@@ -114,4 +114,12 @@ public class STFController {
         response.setData(filePath);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping(value = "/test")
+    public ResponseEntity<Response> getAvatar(){
+        Response response = new Response();
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData("Okkkk");
+        return ResponseEntity.ok(response);
+    }
 }
