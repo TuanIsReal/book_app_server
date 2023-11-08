@@ -69,7 +69,6 @@ public class UserController{
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        System.out.println(authentication.getPrincipal().toString());
         String token = tokenProvider.generateToken((CustomUserDetails) authentication.getPrincipal());
         response.setCode(ResponseCode.SUCCESS);
         response.setData(token);

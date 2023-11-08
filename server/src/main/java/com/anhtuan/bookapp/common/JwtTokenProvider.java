@@ -34,7 +34,7 @@ public class JwtTokenProvider {
                     .withIssuer("BookApp")
                     .sign(algorithm);
         } catch (JWTCreationException exception){
-            // Invalid Signing configuration / Couldn't convert Claims.
+
         }
 
         return token;
@@ -55,10 +55,10 @@ public class JwtTokenProvider {
                     .build();
 
             verifier.verify(authToken);
+            return true;
         } catch (JWTVerificationException exception){
-            log.info("Token Invalid");
+            System.out.println("Invalid JWT");
+            return false;
         }
-
-        return false;
     }
 }
