@@ -37,7 +37,7 @@ public class PlagiarismChecker {
 
         log.info("------UnVerify Chapters Size: " + unVerifyChapters.size());
         if (unVerifyChapters.isEmpty()){
-            log.info("------No Chapter to check");
+            log.info("------End check Plagiarism-----");
             return;
         }
 
