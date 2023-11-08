@@ -35,7 +35,7 @@ public class PlagiarismChecker {
         log.info("------Start check Plagiarism-----");
         List<BookChapter> unVerifyChapters = bookChapterService.findBookChaptersNotVerify();
 
-        System.out.println("----UnVerify Chapters Size: " + unVerifyChapters.size());
+        log.info("------UnVerify Chapters Size: " + unVerifyChapters.size());
         if (unVerifyChapters.isEmpty()){
             log.info("------No Chapter to check");
             return;
