@@ -7,6 +7,7 @@ import com.anhtuan.bookapp.service.base.CategoryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,6 +20,7 @@ public class CategoryController {
     CategoryService categoryService;
 
     @PostMapping("/addCategory")
+    @Secured("ADMIN")
     public ResponseEntity<Response> addCategory(@RequestParam String categoryName){
         Response response = new Response();
         if (categoryService.getCategoryByCategoryName(categoryName) != null){
@@ -41,6 +43,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/deleteCategory")
+    @Secured("ADMIN")
     public ResponseEntity<Response> deleteCategory(@RequestParam String id){
         Response response = new Response();
 

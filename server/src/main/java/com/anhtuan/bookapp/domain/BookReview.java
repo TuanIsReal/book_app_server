@@ -50,7 +50,6 @@ public class BookReview {
 
     public BookReview(AddBookReviewRequest request) {
         this.bookId = request.getBookId();
-        this.author = request.getAuthor();
         this.reviewStar = request.getReviewStar();
         this.reviewContent = request.getReviewContent();
     }

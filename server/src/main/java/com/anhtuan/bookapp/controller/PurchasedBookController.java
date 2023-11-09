@@ -10,6 +10,7 @@ import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -37,17 +38,26 @@ public class PurchasedBookController {
     TransactionHistoryService transactionHistoryService;
 
     @PostMapping("buyBook")
-    public ResponseEntity<Response> buyBook(@RequestParam String userId,
+    public ResponseEntity<Response> buyBook(Authentication authentication,
                                             @RequestParam String bookId){
         Response response = new Response();
+
+        if (authentication == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         Book book = bookService.findBookById(bookId);
         if (book == null){
             response.setCode(ResponseCode.BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
-        User user = userService.getUserByUserId(userId);
+
         User seller = userService.getUserByUserId(book.getAuthor());
-        if (user == null || seller == null){
+        if (seller == null){
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -57,7 +67,7 @@ public class PurchasedBookController {
             response.setCode(ResponseCode.PURCHASED_BOOK_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            int pointUser = user.getPoint();
+            int pointUser = userDetails.getUser().getPoint();
             int pointSeller = seller.getPoint();
             int price = book.getBookPrice();
 
@@ -80,7 +90,7 @@ public class PurchasedBookController {
 
                 bookService.increaseTotalPurchased(bookId);
 
-                String mess = Utils.messageBodyBuyBook(user.getName(), book.getBookName());
+                String mess = Utils.messageBodyBuyBook(userDetails.getUser().getName(), book.getBookName());
                 Notification notification = new Notification
                         (book.getAuthor(), bookId, mess, false, time);
                 notificationService.insertNotification(notification);
@@ -104,13 +114,15 @@ public class PurchasedBookController {
     }
 
     @GetMapping("getUserBookLibrary")
-    public ResponseEntity<Response> getUserBookLibrary(@RequestParam String userId){
+    public ResponseEntity<Response> getUserBookLibrary(Authentication authentication){
         Response response = new Response();
-        User user = userService.getUserByUserId(userId);
-        if (user == null){
+        if (authentication == null) {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
 
         List<PurchasedBook> purchasedBookList = purchasedBookService.getPurchasedBooksByUserIdAndShowLibrary(userId, true);
         HashMap<String, Integer> totalChapterMap = new HashMap<>();
@@ -144,8 +156,17 @@ public class PurchasedBookController {
 
     @GetMapping("checkPurchasedBook")
     public ResponseEntity<Response> checkPurchasedBook(@RequestParam String bookId,
-                                                       @RequestParam String userId){
+                                                       Authentication authentication){
         Response response = new Response();
+
+        if (authentication.getPrincipal() == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         PurchasedBook purchasedBook = purchasedBookService.getPurchasedBookByBookIdAndUserId(bookId, userId);
         if (purchasedBook != null){
             response.setData(STATUS_PURCHASED_BOOK.PURCHASED);
@@ -158,8 +179,17 @@ public class PurchasedBookController {
 
     @GetMapping("getPurchasedBook")
     public ResponseEntity<Response> getPurchasedBook(@RequestParam String bookId,
-                                                       @RequestParam String userId){
+                                                     Authentication authentication){
         Response response = new Response();
+
+        if (authentication.getPrincipal() == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         Book book = bookService.findBookById(bookId);
         if (book == null){
             response.setCode(ResponseCode.USER_NOT_EXISTS);
@@ -178,8 +208,17 @@ public class PurchasedBookController {
 
     @PostMapping("unShowBook")
     public ResponseEntity<Response> unShowBook(@RequestParam String bookId,
-                                               @RequestParam String userId){
+                                               Authentication authentication){
         Response response = new Response();
+
+        if (authentication.getPrincipal() == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         PurchasedBook purchasedBook = purchasedBookService.getPurchasedBookByBookIdAndUserId(bookId, userId);
         if (Objects.isNull(purchasedBook)){
             response.setCode(ResponseCode.PURCHASED_BOOK_NOT_EXISTS);

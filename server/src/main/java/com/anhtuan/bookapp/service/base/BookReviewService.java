@@ -7,6 +7,6 @@ import java.util.List;
 public interface BookReviewService {
     void addBookReview(BookReview bookReview);
     List<BookReview> getBookReviewByBookId(String bookId);
-    List<BookReview> getBookReviewByBookIdAndAuthor(String bookId, String author);
+    BookReview getBookReviewByBookIdAndAuthor(String bookId, String author);
     int countBookReviewsByBookId(String bookId);
 }

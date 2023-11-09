@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AddBookReviewRequest {
     private String bookId;
-    private String author;
     private double reviewStar;
     private String reviewContent;
 }

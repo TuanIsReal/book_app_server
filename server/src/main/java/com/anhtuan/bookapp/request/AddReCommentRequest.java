@@ -9,6 +9,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AddReCommentRequest {
     private String parentCommentId;
-    private String author;
     private String commentContent;
 }

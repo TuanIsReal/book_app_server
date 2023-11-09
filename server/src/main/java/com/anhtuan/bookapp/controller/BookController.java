@@ -13,6 +13,8 @@ import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -34,19 +36,26 @@ public class BookController {
     private PurchasedBookService purchasedBookService;
 
     @PostMapping("/addBook")
-    public ResponseEntity<Response> addBook(@RequestBody AddBookRequest request){
+    public ResponseEntity<Response> addBook(Authentication authentication,
+                                            @RequestBody AddBookRequest request){
         Response response = new Response();
+
+        if (authentication == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         if (bookService.findBookByBookName(request.getBookName()) != null){
             response.setCode(ResponseCode.BOOK_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        User author = userService.getUserByUserId(request.getAuthor());
-        if (author == null){
-            response.setCode(ResponseCode.USER_NOT_EXISTS);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
         Book book = new Book(request);
+        book.setAuthor(userId);
+
         ArrayList<String> categoriesName = request.getBookCategory();
         List<Category> categories = categoryService.findCategoriesByNameList(categoriesName);
         List<String> categoriesId = new ArrayList<>();
@@ -60,7 +69,7 @@ public class BookController {
         book.setTotalReview(0);
         Long currentTime = System.currentTimeMillis();
         book.setRequestTime(currentTime);
-        book.setAdminUp(USER_ROLE.ADMIN == author.getRole());
+        book.setAdminUp(USER_ROLE.ADMIN == userDetails.getUser().getRole());
         if (book.isAdminUp()){
             book.setStatus(BOOK_STATUS.ACCEPTED);
             book.setUploadTime(currentTime);
@@ -68,16 +77,14 @@ public class BookController {
             book.setStatus(BOOK_STATUS.REQUEST);
         }
         book.setLastUpdateTime(currentTime);
-        if (USER_ROLE.ADMIN == author.getRole()){
 
-        }
-        book.setUploadTime(System.currentTimeMillis());
         bookService.insertBook(book);
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("reactBookRequestUp")
+    @Secured("ADMIN")
     public ResponseEntity<Response> updateBookImage(@RequestParam String bookId,
                                                     @RequestParam int action){
         Response response = new Response();
@@ -148,9 +155,18 @@ public class BookController {
     }
 
     @GetMapping("getRequestUploadBook")
-    public ResponseEntity<Response> getRequestUploadBook(@RequestParam String userId,
+    public ResponseEntity<Response> getRequestUploadBook(Authentication authentication,
                                                          @RequestParam int status){
         Response response = new Response();
+
+        if (authentication == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         HashMap<String, String> mapCategory = new HashMap<>();
         List<Category> listCategory = categoryService.findAll();
 
@@ -210,6 +226,7 @@ public class BookController {
     }
 
     @GetMapping("getAllRequestUploadBook")
+    @Secured("ADMIN")
     public ResponseEntity<Response> getAllRequestUploadBook(){
         Response response = new Response();
         HashMap<String, String> mapCategory = new HashMap<>();
@@ -360,11 +377,20 @@ public class BookController {
     }
 
     @PostMapping("/updateBookInfo")
-    public ResponseEntity<Response> updateBookInfo(@RequestBody UpdateBookRequest request) {
+    public ResponseEntity<Response> updateBookInfo(Authentication authentication,
+                                                   @RequestBody UpdateBookRequest request) {
         Response response = new Response();
+
+        if (authentication == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
         
         Book book = bookService.findBookById(request.getBookId());
-        if (Objects.isNull(book)){
+        if (Objects.isNull(book) || !book.getAuthor().equals(userId)){
             response.setCode(ResponseCode.BOOK_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }

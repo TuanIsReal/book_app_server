@@ -164,13 +164,17 @@ public class UserController{
     }
 
     @PostMapping("/loginDevice")
-    public ResponseEntity<Response> loginDevice(@RequestParam String userId,
+    public ResponseEntity<Response> loginDevice(Authentication authentication,
                                                 @RequestParam String deviceToken){
         Response response = new Response();
-        if (userService.getUserByUserId(userId) == null){
+
+        if (authentication == null) {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
 
         Device devices = deviceService.getDeviceByDeviceToken(deviceToken);
         if (devices == null){
@@ -184,8 +188,17 @@ public class UserController{
     }
 
     @PutMapping("/logout")
-    public ResponseEntity<Response> logout(@RequestParam String userId){
+    public ResponseEntity<Response> logout(Authentication authentication){
         Response response = new Response();
+
+        if (authentication == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         userService.updateUserStatus(userId, USER_STATUS.LOGOUT);
         deviceService.removeDevicesByUserId(userId);
         response.setCode(ResponseCode.SUCCESS);
@@ -193,17 +206,20 @@ public class UserController{
     }
 
     @PostMapping("updatePassword")
-    public ResponseEntity<Response> updatePassword(@RequestParam String userId,
+    public ResponseEntity<Response> updatePassword(Authentication authentication,
                                                    @RequestParam String password,
                                                    @RequestParam String newPassword){
         Response response = new Response();
-        User user = userService.getUserByUserId(userId);
-        if (user == null){
+        if (authentication == null) {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         String encryptPassword = CustomPasswordEncode.encryptPassword(password);
-        if (!user.getPassword().equals(encryptPassword)){
+        if (!userDetails.getUser().getPassword().equals(encryptPassword)){
             response.setCode(ResponseCode.PASSWORD_IS_WRONG);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -215,15 +231,16 @@ public class UserController{
     }
 
     @PostMapping("updateName")
-    public ResponseEntity<Response> updateName(@RequestParam String userId,
-                                                   @RequestParam String password,
+    public ResponseEntity<Response> updateName(Authentication authentication,
                                                    @RequestParam String newName){
         Response response = new Response();
-        User user = userService.getUserByIdAndPassword(userId, password);
-        if (user == null){
+        if (authentication == null) {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
 
         userService.updateNameByUserId(userId, newName);
         response.setCode(ResponseCode.SUCCESS);
@@ -286,13 +303,15 @@ public class UserController{
     }
 
     @PostMapping("getBalanceChange")
-    public ResponseEntity<Response> getBalanceChange(@RequestParam String userId){
+    public ResponseEntity<Response> getBalanceChange(Authentication authentication){
         Response response = new Response();
-        User user = userService.getUserByUserId(userId);
-        if (user == null){
+        if (authentication == null) {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
 
         List<TransactionHistory> transactionList = transactionHistoryService.getTransactionHistoryUser(userId);
         response.setCode(ResponseCode.SUCCESS);

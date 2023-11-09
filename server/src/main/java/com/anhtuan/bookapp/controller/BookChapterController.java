@@ -11,6 +11,7 @@ import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -86,10 +87,19 @@ public class BookChapterController {
     }
 
     @GetMapping("getChapterContent")
-    private ResponseEntity<Response> getChapterContent(@RequestParam String userId,
+    private ResponseEntity<Response> getChapterContent(Authentication authentication,
                                                        @RequestParam String bookId,
                                                        @RequestParam int chapterNumber){
         Response response = new Response();
+
+        if (authentication == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         Book book = bookService.findBookById(bookId);
         if (book == null){
             response.setCode(ResponseCode.BOOK_NOT_EXISTS);

@@ -2,6 +2,7 @@ package com.anhtuan.bookapp.controller;
 
 import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.config.Constant.*;
+import com.anhtuan.bookapp.domain.CustomUserDetails;
 import com.anhtuan.bookapp.domain.Payment;
 import com.anhtuan.bookapp.domain.PurchasedBook;
 import com.anhtuan.bookapp.domain.TransactionHistory;
@@ -15,6 +16,8 @@ import com.anhtuan.bookapp.service.base.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -31,10 +34,19 @@ public class StatController {
     private TransactionHistoryService transactionHistoryService;
 
     @PostMapping("incomeMember")
-    public ResponseEntity<Response> incomeMember(@RequestParam String userId,
+    public ResponseEntity<Response> incomeMember(Authentication authentication,
                                                  @RequestParam String startDate,
                                                  @RequestParam String endDate){
         Response response = new Response();
+
+        if (authentication.getPrincipal() == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         IncomeMemberResponse incomeMemberResponse = new IncomeMemberResponse();
         long start, end;
         int revenue = 0, spend = 0;
@@ -69,6 +81,7 @@ public class StatController {
     }
 
     @PostMapping("incomeAdmin")
+    @Secured("ADMIN")
     public ResponseEntity<Response> incomeAdmin(@RequestParam String startDate,
                                                  @RequestParam String endDate){
         Response response = new Response();
@@ -115,6 +128,7 @@ public class StatController {
     }
 
     @PostMapping("rankingUser")
+    @Secured("ADMIN")
     public ResponseEntity<Response> getRankingUser(@RequestParam int typeRanking){
         Response response = new Response();
         List<TransactionHistory> transactionHistoryList;
@@ -158,6 +172,7 @@ public class StatController {
     }
 
     @PostMapping("rankingBook")
+    @Secured("ADMIN")
     public ResponseEntity<Response> getRankingBook(){
         Response response = new Response();
         List<PurchasedBook> purchasedBookList = purchasedBookService.getPurchasedSpendPoint();

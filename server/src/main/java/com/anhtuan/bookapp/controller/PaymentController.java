@@ -11,6 +11,7 @@ import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -34,17 +35,20 @@ public class PaymentController {
     private TransactionHistoryService transactionHistoryService;
 
     @PostMapping("createPayment")
-    public ResponseEntity<Response> createPayment(@RequestBody PaymentRequest requestParams) throws IOException{
+    public ResponseEntity<Response> createPayment(Authentication authentication,
+                                                  @RequestBody PaymentRequest requestParams) throws IOException{
 
         Response response = new Response();
-        Payment payment = new Payment();
-        String userId = requestParams.getUserId();
-        User user = userService.getUserByUserId(userId);
 
-        if (Objects.isNull(user)){
+        if (authentication == null) {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
+        Payment payment = new Payment();
 
         payment.setUserId(userId);
 

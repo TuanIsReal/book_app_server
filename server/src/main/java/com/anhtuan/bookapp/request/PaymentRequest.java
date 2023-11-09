@@ -10,7 +10,6 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 public class PaymentRequest {
-    String userId;
     int point;
     String description;
 }

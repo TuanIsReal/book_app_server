@@ -49,7 +49,6 @@ public class Comment {
 
     public Comment(AddCommentRequest request) {
         this.bookId = request.getBookId();
-        this.author = request.getAuthor();
         this.commentContent = request.getCommentContent();
     }
 }

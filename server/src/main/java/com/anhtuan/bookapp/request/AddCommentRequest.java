@@ -8,6 +8,5 @@ import org.springframework.data.mongodb.core.mapping.Field;
 @NoArgsConstructor
 public class AddCommentRequest {
     private String bookId;
-    private String author;
     private String commentContent;
 }

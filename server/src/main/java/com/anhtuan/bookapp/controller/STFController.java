@@ -3,6 +3,7 @@ package com.anhtuan.bookapp.controller;
 import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.Book;
+import com.anhtuan.bookapp.domain.CustomUserDetails;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.BookService;
@@ -66,9 +67,17 @@ public class STFController {
     }
 
     @PostMapping("/updateAvatarImage")
-    public ResponseEntity<Response> updateAvatarImage(@RequestParam String userId,
+    public ResponseEntity<Response> updateAvatarImage(Authentication authentication,
                                                       @RequestParam("image") MultipartFile image){
         Response response = new Response();
+        if (authentication.getPrincipal() == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         User user = userService.getUserByUserId(userId);
         if (user == null){
             response.setCode(ResponseCode.USER_NOT_EXISTS);

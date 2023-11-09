@@ -3,6 +3,7 @@ package com.anhtuan.bookapp.controller;
 import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.domain.Book;
 import com.anhtuan.bookapp.domain.BookReview;
+import com.anhtuan.bookapp.domain.CustomUserDetails;
 import com.anhtuan.bookapp.request.AddBookReviewRequest;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.BookReviewService;
@@ -11,6 +12,7 @@ import com.anhtuan.bookapp.service.base.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,18 +23,22 @@ import java.util.List;
 public class BookReviewController {
 
     private BookReviewService bookReviewService;
-    private UserService userService;
     private BookService bookService;
 
     @PostMapping("/addBookReview")
-    public ResponseEntity<Response> addBookReview(@RequestBody AddBookReviewRequest request){
+    public ResponseEntity<Response> addBookReview(Authentication authentication,
+                                                  @RequestBody AddBookReviewRequest request){
         Response response = new Response();
-        if (userService.getUserByUserId(request.getAuthor()) == null){
+
+        if (authentication == null) {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        if (!bookReviewService.getBookReviewByBookIdAndAuthor(request.getBookId(), request.getAuthor()).isEmpty()){
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
+        if (bookReviewService.getBookReviewByBookIdAndAuthor(request.getBookId(), userId) != null){
             response.setCode(ResponseCode.BOOK_REVIEW_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
@@ -44,6 +50,7 @@ public class BookReviewController {
         }
 
         BookReview bookReview = new BookReview(request);
+        bookReview.setAuthor(userId);
         bookReview.setReviewTime(System.currentTimeMillis());
         bookReviewService.addBookReview(bookReview);
 
@@ -71,8 +78,8 @@ public class BookReviewController {
     public ResponseEntity<Response> getBookReview(@RequestParam String bookId,
                                                   @RequestParam String userId){
         Response response = new Response();
-        List<BookReview> bookReviewList = bookReviewService.getBookReviewByBookIdAndAuthor(bookId, userId);
-        if (bookReviewList == null || bookReviewList.isEmpty()){
+        BookReview bookReviewList = bookReviewService.getBookReviewByBookIdAndAuthor(bookId, userId);
+        if (bookReviewList == null){
             response.setCode(ResponseCode.BOOK_REVIEW_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }

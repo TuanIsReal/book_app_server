@@ -10,6 +10,7 @@ import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +27,17 @@ public class ReCommentController {
     private FirebaseMessagingService firebaseMessagingService;
 
     @PostMapping("addReComment")
-    public ResponseEntity<Response> addReComment(@RequestBody AddReCommentRequest request){
+    public ResponseEntity<Response> addReComment(Authentication authentication,
+                                                 @RequestBody AddReCommentRequest request){
         Response response = new Response();
+
+        if (authentication.getPrincipal() == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
         Comment comment = commentService.getCommentById(request.getParentCommentId());
 
         if (comment == null){
@@ -35,18 +45,13 @@ public class ReCommentController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        User user = userService.getUserByUserId(request.getAuthor());
-        if (user == null){
-            response.setCode(106);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-
         ReComment reComment = new ReComment(request);
+        reComment.setAuthor(userId);
         reComment.setCommentTime(System.currentTimeMillis());
         reCommentService.insertReComment(reComment);
         commentService.updateTotalReCommentById(request.getParentCommentId(), comment.getTotalReComment()+1);
 
-        String mess = Utils.messReplyCommentBook(user.getName());
+        String mess = Utils.messReplyCommentBook(userDetails.getUser().getName());
         Notification notification = new Notification
                 (comment.getAuthor(), comment.getBookId(), mess, false, System.currentTimeMillis());
         notificationService.insertNotification(notification);

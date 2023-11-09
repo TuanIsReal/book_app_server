@@ -41,7 +41,6 @@ public class ReComment {
 
     public ReComment(AddReCommentRequest request) {
         this.parentCommentId = request.getParentCommentId();
-        this.author = request.getAuthor();
         this.commentContent = request.getCommentContent();
     }
 }

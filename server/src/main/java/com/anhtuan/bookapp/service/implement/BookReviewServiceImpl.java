@@ -25,8 +25,8 @@ public class BookReviewServiceImpl implements BookReviewService {
     }
 
     @Override
-    public List<BookReview> getBookReviewByBookIdAndAuthor(String bookId, String author) {
-        return bookReviewRepository.findBookReviewsByBookIdAndAuthor(bookId, author);
+    public BookReview getBookReviewByBookIdAndAuthor(String bookId, String author) {
+        return bookReviewRepository.findBookReviewByBookIdAndAuthor(bookId, author);
     }
 
     @Override

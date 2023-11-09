@@ -90,7 +90,6 @@ public class Book {
 
     public Book(AddBookRequest request) {
         this.bookName = request.getBookName();
-        this.author = request.getAuthor();
         this.introduction = request.getIntroduction();
         this.bookImage = request.getBookImage();
         this.bookPrice = request.getBookPrice();

@@ -9,7 +9,6 @@ import java.util.List;
 public class AddBookRequest extends BaseRequest{
 
     private String bookName;
-    private String author;
     private String introduction;
     private String bookImage;
     private ArrayList<String> bookCategory;

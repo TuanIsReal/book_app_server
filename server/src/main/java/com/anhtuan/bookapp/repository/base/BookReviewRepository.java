@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface BookReviewRepository extends MongoRepository<BookReview, String> {
     List<BookReview> findBookReviewsByBookId(String bookId);
-    List<BookReview> findBookReviewsByBookIdAndAuthor(String bookId, String author);
+    BookReview findBookReviewByBookIdAndAuthor(String bookId, String author);
     int countBookReviewsByBookId(String bookId);
 }

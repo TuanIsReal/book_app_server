@@ -9,6 +9,7 @@ import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class WarningChapterController {
     private FirebaseMessagingService firebaseMessagingService;
 
     @GetMapping("getWarningList")
+    @Secured("ADMIN")
     public ResponseEntity<Response> getWarningList(){
         Response response = new Response();
         List<WarningChapter> warningChapterList = warningChapterService.findAll();
@@ -36,6 +38,7 @@ public class WarningChapterController {
     }
 
     @PostMapping("reactWarning")
+    @Secured("ADMIN")
     public ResponseEntity<Response> reactWarning(@RequestParam String chapter,
                                                  @RequestParam int react){
         Response response = new Response();
