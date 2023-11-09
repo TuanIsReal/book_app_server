@@ -25,6 +25,10 @@ public class Constant {
 
     public static final String VERIFY_EMAIL_SUBJECT = "Truyện AT - Xác thực tài khoản";
     public static final long MINUTE_15 = 1000*60*15;
+    public static final long A_SECOND = 1000L;
+    public static final long A_MINUTE = 60 * A_SECOND;
+    public static final long AN_HOUR = 60 * A_MINUTE;
+    public static final long A_DAY = 24 * AN_HOUR;
 
     public static class STATUS_PURCHASED_BOOK {
         public static final int PURCHASED = 1;

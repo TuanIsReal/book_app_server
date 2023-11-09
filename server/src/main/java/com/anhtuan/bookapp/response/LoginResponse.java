@@ -1,20 +1,16 @@
 package com.anhtuan.bookapp.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginResponse {
 
-    private String userId;
-
+    private String token;
+    private String refreshToken;
     private Integer role;
-
-    public LoginResponse() {
-    }
-
-    public LoginResponse(String userId, Integer role) {
-        this.userId = userId;
-        this.role = role;
-    }
 
 }
