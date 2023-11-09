@@ -329,9 +329,9 @@ public class UserController{
 
         String userId = tokenProvider.getUserIdFromRefreshToken(refreshToken);
         CustomUserDetails user = (CustomUserDetails) userInfoService.loadUserById(userId);
-        String newRefreshToken = tokenProvider.generateRefreshToken(user);
+        String newToken = tokenProvider.generateToken(user);
         response.setCode(ResponseCode.SUCCESS);
-        response.setData(newRefreshToken);
+        response.setData(newToken);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
