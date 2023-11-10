@@ -1,11 +1,7 @@
 package com.anhtuan.bookapp.config;
 
 import com.anhtuan.bookapp.common.JwtTokenProvider;
-import com.anhtuan.bookapp.common.ResponseCode;
-import com.anhtuan.bookapp.common.exception.ApplicationException;
 import com.anhtuan.bookapp.service.implement.UserInfoService;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

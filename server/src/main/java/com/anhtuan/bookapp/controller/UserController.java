@@ -335,4 +335,12 @@ public class UserController{
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/ping")
+    public ResponseEntity<Response> ping(){
+        Response response = new Response();
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData("pong");
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
 }

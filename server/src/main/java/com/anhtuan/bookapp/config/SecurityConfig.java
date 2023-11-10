@@ -53,6 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/user/authenVerifyCode",
                         "/user/createNewPassword",
                         "/user/checkExistUser",
+                        "user/ping",
                         "/payment/returnResponse",
                         "/stf/getBookImage",
                         "/stf/getThumbnail",
