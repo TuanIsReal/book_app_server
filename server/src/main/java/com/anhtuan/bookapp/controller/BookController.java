@@ -124,12 +124,15 @@ public class BookController {
     }
 
     @GetMapping("/getBookUp")
-    public ResponseEntity<Response> getBookByAuthor(@RequestParam String userId){
+    public ResponseEntity<Response> getBookByAuthor(Authentication authentication){
         Response response = new Response();
-        if (userService.getUserByUserId(userId) == null){
+        if (authentication == null) {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
 
         HashMap<String, String> mapCategory = new HashMap<>();
         List<Category> listCategory = categoryService.findAll();

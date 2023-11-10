@@ -76,8 +76,17 @@ public class BookReviewController {
 
     @GetMapping("/getBookReview")
     public ResponseEntity<Response> getBookReview(@RequestParam String bookId,
-                                                  @RequestParam String userId){
+                                                  Authentication authentication){
         Response response = new Response();
+
+        if (authentication == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        String userId = userDetails.getUser().getId();
+
         BookReview bookReviewList = bookReviewService.getBookReviewByBookIdAndAuthor(bookId, userId);
         if (bookReviewList == null){
             response.setCode(ResponseCode.BOOK_REVIEW_NOT_EXISTS);

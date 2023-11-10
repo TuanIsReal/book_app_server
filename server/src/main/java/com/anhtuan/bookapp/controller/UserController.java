@@ -74,6 +74,41 @@ public class UserController{
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @GetMapping("/reLogin")
+    public ResponseEntity<Response> reLogin(@RequestParam String email,
+                                            @RequestParam String password){
+        Response response = new Response();
+
+        User user = userService.getUserByEmail(email);
+        if (user == null){
+            response.setCode(ResponseCode.ACCOUNT_NOT_EXISTS);
+            response.setData(new LoginResponse());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        CustomUserDetails userDetails;
+        if (user.getIsGoogleLogin() != null && user.getIsGoogleLogin()){
+            userDetails = new CustomUserDetails(user);
+        } else {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(email, password)
+            );
+            userDetails = (CustomUserDetails) authentication.getPrincipal();
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        }
+
+        if (user.getStatus() == USER_STATUS.BLOCK){
+            response.setCode(ResponseCode.ACCOUNT_IS_BLOCKED);
+            response.setData(new LoginResponse());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        String token = tokenProvider.generateToken(userDetails);
+        String refreshToken = tokenProvider.generateRefreshToken(userDetails);
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(new LoginResponse(token, refreshToken, userDetails.getUser().getRole()));
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @PostMapping("/register")
     public ResponseEntity<Response> registerController(@RequestBody RegisterRequest registerRequest){
         Response response = new Response();
@@ -320,7 +355,7 @@ public class UserController{
     }
 
     @GetMapping("/refreshToken")
-    public ResponseEntity<Response> refreshToken(@RequestParam String refreshToken){
+    public ResponseEntity<Response> refreshToken(@RequestParam String refreshToken){;
         Response response = new Response();
         if (refreshToken == null || refreshToken.isEmpty() || !tokenProvider.validateRefreshToken(refreshToken)){
             response.setCode(ResponseCode.REFRESH_TOKEN_INVALID);
