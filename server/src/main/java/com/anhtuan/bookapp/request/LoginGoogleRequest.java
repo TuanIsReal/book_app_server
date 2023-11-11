@@ -7,6 +7,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
 public class LoginGoogleRequest{
     private String email;
     private String name;

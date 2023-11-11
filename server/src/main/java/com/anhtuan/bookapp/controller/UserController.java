@@ -142,12 +142,19 @@ public class UserController{
         Response response = new Response();
         User user = userService.findUserLoginGoolge(googleRequest.getEmail(),true);
         if(user!=null && (user.getIsGoogleLogin()==null || !user.getIsGoogleLogin())){
-
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            response.setData(new LoginResponse());
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
         if(user != null && user.getIsGoogleLogin()){
             userService.updateUserIpAndLoggedStatus(user.getId(), googleRequest.getIp());
+            CustomUserDetails userDetails = new CustomUserDetails(user);
+            String token = tokenProvider.generateToken(userDetails);
+            String refreshToken = tokenProvider.generateRefreshToken(userDetails);
+
             response.setCode(ResponseCode.SUCCESS);
-            response.setData(new LoginResponse(user.getId(), user.getId(), user.getRole()));
+            response.setData(new LoginResponse(token, refreshToken, user.getRole()));
+
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         String email = googleRequest.getEmail();
@@ -186,6 +193,20 @@ public class UserController{
         } else {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
         }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/checkUserInfo")
+    public ResponseEntity<Response> checkUserInfo(Authentication authentication){
+        Response response = new Response();
+        if (authentication == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(userDetails.getUser());
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -267,7 +288,8 @@ public class UserController{
 
     @PostMapping("updateName")
     public ResponseEntity<Response> updateName(Authentication authentication,
-                                                   @RequestParam String newName){
+                                               @RequestParam String password,
+                                               @RequestParam String newName){
         Response response = new Response();
         if (authentication == null) {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
@@ -276,6 +298,11 @@ public class UserController{
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
         String userId = userDetails.getUser().getId();
+
+        if (!userDetails.getUser().getPassword().equals(CustomPasswordEncode.encryptPassword(password))){
+            response.setCode(ResponseCode.PASSWORD_IS_WRONG);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
 
         userService.updateNameByUserId(userId, newName);
         response.setCode(ResponseCode.SUCCESS);

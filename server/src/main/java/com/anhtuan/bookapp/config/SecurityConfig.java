@@ -48,17 +48,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("/user/register",
                         "/user/login",
+                        "/user/google-login",
                         "/user/refreshToken",
                         "/user/forgotPassword",
                         "/user/authenVerifyCode",
                         "/user/createNewPassword",
                         "/user/checkExistUser",
-                        "/user/pong",
+                        "/user/ping",
                         "/user/reLogin",
                         "/payment/returnResponse",
                         "/stf/getBookImage",
                         "/stf/getThumbnail",
                         "/stf/getAvatar",
+                        "/stf/updateAvatarImage",
                         "/bookChapter/getBannedWord").permitAll()
                 .anyRequest().authenticated();
 
