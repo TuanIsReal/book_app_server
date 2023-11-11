@@ -60,7 +60,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/stf/getBookImage",
                         "/stf/getThumbnail",
                         "/stf/getAvatar",
-                        "/stf/updateAvatarImage",
                         "/bookChapter/getBannedWord").permitAll()
                 .anyRequest().authenticated();
 
