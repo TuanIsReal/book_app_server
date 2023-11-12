@@ -67,18 +67,16 @@ public class PurchasedBookController {
             response.setCode(ResponseCode.PURCHASED_BOOK_EXISTS);
             return new ResponseEntity<>(response, HttpStatus.OK);
         } else {
-            int pointUser = userDetails.getUser().getPoint();
-            int pointSeller = seller.getPoint();
             int price = book.getBookPrice();
-
+            int pointUser = userDetails.getUser().getPoint();
             if (price <= pointUser){
                 long time = System.currentTimeMillis();
-                pointUser -= price;
                 int incomePoint = Math.floorDiv(price, 2);
-                pointSeller += incomePoint;
 
-                userService.updatePointByUserId(userId, pointUser);
-                userService.updatePointByUserId(seller.getId(), pointSeller);
+                userService.updatePointByUserId(userId, -1 * price);
+                userService.updatePointByUserId(seller.getId(), incomePoint);
+                pointUser -= price;
+                int pointSeller = seller.getPoint();
 
                 TransactionHistory buyBookHis = new TransactionHistory(userId, -1*price, pointUser, TRANSACTION_TYPE.BUY_BOOK, time);
                 TransactionHistory sellBookHis = new TransactionHistory(seller.getId(), incomePoint, pointSeller, TRANSACTION_TYPE.SELL_BOOK, time);

@@ -165,8 +165,9 @@ public class PaymentController {
         paymentService.updatePaymentByTransactionId(vnp_TxnRef, TRANSACTION_STATUS.SUCCESS, vnp_PayDate, time);
 
         if (payment.getTransactionInfo().equals(ADD_POINT)){
-            int newPoint = user.getPoint() + payment.getPoint();
-            userService.updatePointByUserId(user.getId(), newPoint);
+            int pointPayment = payment.getPoint();
+            int newPoint = user.getPoint() + pointPayment;
+            userService.updatePointByUserId(user.getId(), pointPayment);
 
             TransactionHistory sellBookHis = new TransactionHistory(user.getId(), payment.getPoint(), newPoint, TRANSACTION_TYPE.RECHARGE_BOOK, time);
             transactionHistoryService.addTransactionHistory(sellBookHis);

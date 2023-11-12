@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.service.implement;
 
+import com.anhtuan.bookapp.cache.UserInfoManager;
 import com.anhtuan.bookapp.domain.CustomUserDetails;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.repository.base.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class UserInfoService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final UserInfoManager userInfoManager;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -25,7 +27,7 @@ public class UserInfoService implements UserDetailsService {
     }
 
     public UserDetails loadUserById(String userId) {
-        User user = userRepository.findUserById(userId);
+        User user = userInfoManager.getUserByUserId(userId);
         if (user == null) {
             throw new UsernameNotFoundException(userId);
         }

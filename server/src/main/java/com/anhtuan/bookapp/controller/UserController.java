@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.cache.UserInfoManager;
 import com.anhtuan.bookapp.common.CustomPasswordEncode;
 import com.anhtuan.bookapp.common.JwtTokenProvider;
 import com.anhtuan.bookapp.common.ResponseCode;
@@ -39,6 +40,7 @@ public class UserController{
     private TransactionHistoryService transactionHistoryService;
     private AuthenticationManager authenticationManager;
     private JwtTokenProvider tokenProvider;
+    private final UserInfoManager userInfoManager;
 
 
     @GetMapping("/login")
@@ -127,6 +129,7 @@ public class UserController{
 
         User newUser = new User(email, encryptPassword, role, name, "", ip, USER_STATUS.LOGIN,500);
         User user = userService.insertUser(newUser);
+        userInfoManager.addUser(user);
 
         CustomUserDetails userDetails = new CustomUserDetails(user);
         String token = tokenProvider.generateToken(userDetails);
@@ -162,6 +165,7 @@ public class UserController{
         String ip = googleRequest.getIp();
         User newUser = new User(email, "", USER_ROLE.USER, name,googleRequest.getImg(), ip, USER_STATUS.LOGIN,500,true);
         User saveUser = userService.insertUser(newUser);
+        userInfoManager.addUser(saveUser);
 
         CustomUserDetails userDetails = new CustomUserDetails(user);
         String token = tokenProvider.generateToken(userDetails);
