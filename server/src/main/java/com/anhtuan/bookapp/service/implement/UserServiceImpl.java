@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.service.implement;
 
+import com.anhtuan.bookapp.cache.UserInfoManager;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.repository.base.UserRepository;
 import com.anhtuan.bookapp.service.base.UserService;
@@ -13,6 +14,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
 
     UserRepository userRepository;
+    private final UserInfoManager userInfoManager;
 
     @Override
     public User getUserByEmail(String email) {
@@ -26,17 +28,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUserId(String userId) {
-        return userRepository.findUserById(userId);
+        return userInfoManager.getUserByUserId(userId);
     }
 
     @Override
     public void updateUserStatus(String userId, Integer status) {
         userRepository.updateUserStatus(userId, status);
+        userInfoManager.updateUserStatus(userId, status);
     }
 
     @Override
     public void updateUserIpAndLoggedStatus(String userId, String ip) {
         userRepository.updateUserIpAndLoggedStats(userId, ip);
+        userInfoManager.updateUserIp(userId, ip);
     }
 
     @Override
@@ -51,27 +55,27 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePointByUserId(String userId, int point) {
         userRepository.updatePointByUserId(userId, point);
+        userInfoManager.updateUserPoint(userId, point);
     }
 
     @Override
     public void updateAvatarImageByUserId(String userId, String avatarImage) {
         userRepository.updateAvatarImageByUserId(userId, avatarImage);
+        userInfoManager.updateUserAvatar(userId, avatarImage);
     }
 
     @Override
     public void updatePasswordByUserId(String userId, String password) {
         userRepository.updatePasswordByUserId(userId, password);
+        userInfoManager.updateUserPassword(userId, password);
     }
 
     @Override
     public void updateNameByUserId(String userId, String name) {
         userRepository.updateNameByUserId(userId, name);
+        userInfoManager.updateUserName(userId, name);
     }
 
-    @Override
-    public User getUserByIdAndPassword(String id, String password) {
-        return userRepository.findUserByIdAndPassword(id, password);
-    }
 
     @Override
     public User findUserLoginGoolge(String email, boolean isGoogleLogin) {
