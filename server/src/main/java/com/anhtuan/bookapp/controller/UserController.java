@@ -442,6 +442,21 @@ public class UserController{
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
+    @PostMapping("unBlockUser")
+    @Secured("ADMIN")
+    public ResponseEntity<Response> unBlockUser(@RequestParam String userId){
+        Response response = new Response();
+        User user = userInfoManager.getUserByUserId(userId);
+        if (user == null){
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        userService.updateUserStatus(userId, USER_STATUS.LOGOUT);
+        response.setCode(ResponseCode.SUCCESS);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
     @GetMapping("/ping")
     public ResponseEntity<Response> ping(){
         Response response = new Response();
