@@ -5,6 +5,7 @@ import com.anhtuan.bookapp.repository.base.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,6 +31,10 @@ public class UserInfoManager {
             if (user != null) addUser(user);
         }
         return user;
+    }
+
+    public List<User> getAllUser(){
+        return USER_MAP.values().stream().toList();
     }
 
     public void addUser(User user){

@@ -18,6 +18,7 @@ import com.anhtuan.bookapp.service.base.*;
 import com.anhtuan.bookapp.service.implement.UserInfoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -150,6 +151,12 @@ public class UserController{
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         if(user != null && user.getIsGoogleLogin()){
+            if (user.getStatus() == USER_STATUS.BLOCK){
+                response.setCode(ResponseCode.ACCOUNT_IS_BLOCKED);
+                response.setData(new LoginResponse());
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+
             userService.updateUserIpAndLoggedStatus(user.getId(), googleRequest.getIp());
             CustomUserDetails userDetails = new CustomUserDetails(user);
             String token = tokenProvider.generateToken(userDetails);
@@ -209,6 +216,14 @@ public class UserController{
         }
 
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        User user = userDetails.getUser();
+
+        if (user.getStatus() == USER_STATUS.BLOCK){
+            response.setCode(ResponseCode.ACCOUNT_IS_BLOCKED);
+            response.setData(new LoginResponse());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
         response.setCode(ResponseCode.SUCCESS);
         response.setData(userDetails.getUser());
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -398,6 +413,32 @@ public class UserController{
         String newToken = tokenProvider.generateToken(user);
         response.setCode(ResponseCode.SUCCESS);
         response.setData(newToken);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("getAllUser")
+    @Secured("ADMIN")
+    public ResponseEntity<Response> getAllUSer(){
+        Response response = new Response();
+        List<User> userList = userInfoManager.getAllUser();
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(userList);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("blockUser")
+    @Secured("ADMIN")
+    public ResponseEntity<Response> blockUser(@RequestParam String userId){
+        Response response = new Response();
+        User user = userInfoManager.getUserByUserId(userId);
+        if (user == null){
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        userService.updateUserStatus(userId, USER_STATUS.BLOCK);
+        deviceService.removeDevicesByUserId(userId);
+        response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
