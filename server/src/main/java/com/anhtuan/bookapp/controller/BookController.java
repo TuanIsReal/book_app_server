@@ -216,16 +216,27 @@ public class BookController {
             mapCategory.put(category.getId(), category.getCategoryName());
         }
         List<Book> bookList = bookService.findBookByText(text);
-        for (Book book:bookList){
-            List<String> bookCategoryIdList = book.getBookCategory();
-            List<String> bookNameList = new ArrayList<>();
 
-            for (String categoryId: bookCategoryIdList){
-                bookNameList.add(mapCategory.get(categoryId));
+        List<String> userIds = bookList.stream().map(Book::getAuthor).toList();
+        Map<String, String> userNameMap = userInfoManager.getUserNameMap(userIds);
+        Map<String, String> userAvatarMap = stfService.getBookImagePathMap(bookList);
+
+        bookList.forEach(book -> {
+            List<String> bookCategoryIdList = book.getBookCategory();
+            List<String> bookNameList = bookCategoryIdList.stream()
+                    .map(mapCategory::get)
+                    .collect(Collectors.toList());
+            book.setBookCategory(bookNameList);
+
+            if (userNameMap.containsKey(book.getAuthor())){
+                book.setAuthor(userNameMap.get(book.getAuthor()));
             }
 
-            book.setBookCategory(bookNameList);
-        }
+            if (userAvatarMap.containsKey(book.getId())){
+                book.setBookImage(userAvatarMap.get(book.getId()));
+            }
+        });
+
         response.setCode(ResponseCode.SUCCESS);
         response.setData(bookList);
         return new ResponseEntity<>(response, HttpStatus.OK);
