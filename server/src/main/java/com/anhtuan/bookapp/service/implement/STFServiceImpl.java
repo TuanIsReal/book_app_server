@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static com.anhtuan.bookapp.config.Constant.BOOK_IMAGE_STORAGE_PATH_RESPONSE;
+import static com.anhtuan.bookapp.config.Constant.*;
 
 @Service
 public class STFServiceImpl implements STFService {
@@ -74,7 +74,7 @@ public class STFServiceImpl implements STFService {
 
         return books.stream()
                 .filter(book -> book.getBookImage() != null && !book.getBookImage().isBlank())
-                .collect(Collectors.toMap(Book::getId, book -> BOOK_IMAGE_STORAGE_PATH_RESPONSE + book.getBookImage() + Constant.JPG));
+                .collect(Collectors.toMap(Book::getId, book -> THUMBNAIL_STORAGE_PATH_RESPONSE + book.getBookImage() + Constant.JPG));
     }
 
 }
