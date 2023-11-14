@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.cache.UserInfoManager;
 import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.common.Utils;
 import static com.anhtuan.bookapp.config.Constant.*;
@@ -13,29 +14,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @AllArgsConstructor
 @RequestMapping("purchasedBook")
 public class PurchasedBookController {
 
-    PurchasedBookService purchasedBookService;
+    private PurchasedBookService purchasedBookService;
+    private UserService userService;
+    private BookService bookService;
+    private FirebaseMessagingService firebaseMessagingService;
+    private NotificationService notificationService;
+    private DeviceService deviceService;
+    private TransactionHistoryService transactionHistoryService;
+    private STFService stfService;
 
-    UserService userService;
 
-    BookService bookService;
-
-    FirebaseMessagingService firebaseMessagingService;
-
-    NotificationService notificationService;
-
-    DeviceService deviceService;
-
-    TransactionHistoryService transactionHistoryService;
 
     @PostMapping("buyBook")
     public ResponseEntity<Response> buyBook(Authentication authentication,
@@ -124,7 +119,6 @@ public class PurchasedBookController {
 
         List<PurchasedBook> purchasedBookList = purchasedBookService.getPurchasedBooksByUserIdAndShowLibrary(userId, true);
         HashMap<String, Integer> totalChapterMap = new HashMap<>();
-        HashMap<String, String> bookImageMap = new HashMap<>();
         List<String> idList = new ArrayList<>();
 
         for (PurchasedBook purchasedBook: purchasedBookList){
@@ -133,17 +127,17 @@ public class PurchasedBookController {
 
         List<GetUserBookLibraryResponse> getUserBookLibraryResponses = new ArrayList<>();
         List<Book> bookList = bookService.getBooksByIdList(idList);
+        Map<String, String> imageMap = stfService.getBookImagePathMap(bookList);
 
         for (Book book: bookList){
             totalChapterMap.put(book.getId(), book.getTotalChapter());
-            bookImageMap.put(book.getId(), book.getBookImage());
         }
 
         GetUserBookLibraryResponse getUserBookLibraryResponse;
         for (PurchasedBook purchasedBook: purchasedBookList){
             getUserBookLibraryResponse = new GetUserBookLibraryResponse(purchasedBook);
             getUserBookLibraryResponse.setTotalChapter(totalChapterMap.get(purchasedBook.getBookId()));
-            getUserBookLibraryResponse.setBookImage(bookImageMap.get(purchasedBook.getBookId()));
+            getUserBookLibraryResponse.setBookImage(imageMap.getOrDefault(purchasedBook.getBookId(), ""));
             getUserBookLibraryResponses.add(getUserBookLibraryResponse);
         }
 

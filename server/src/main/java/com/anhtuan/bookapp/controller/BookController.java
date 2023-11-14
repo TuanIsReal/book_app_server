@@ -337,17 +337,26 @@ public class BookController {
         }
 
         List<Book> books = bookService.getBooksHome(typeFilter, limit);
-
-        for (Book book:books){
-            List<String> bookCategoryIdList = book.getBookCategory();
-            List<String> bookNameList = new ArrayList<>();
-
-            for (String categoryId: bookCategoryIdList){
-                bookNameList.add(mapCategory.get(categoryId));
-            }
-
-            book.setBookCategory(bookNameList);
+        if (books.isEmpty()){
+            response.setCode(ResponseCode.SUCCESS);
+            response.setData(Collections.emptyList());
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
+
+        Map<String, String> userAvatarMap = stfService.getBookImagePathMap(books);
+
+        books.forEach(book -> {
+            List<String> bookCategoryIdList = book.getBookCategory();
+            List<String> bookNameList = bookCategoryIdList.stream()
+                    .map(mapCategory::get)
+                    .collect(Collectors.toList());
+            book.setBookCategory(bookNameList);
+
+            if (userAvatarMap.containsKey(book.getId())){
+                book.setBookImage(userAvatarMap.get(book.getId()));
+            }
+        });
+
         response.setCode(ResponseCode.SUCCESS);
         response.setData(books);
         return new ResponseEntity<>(response, HttpStatus.OK);
