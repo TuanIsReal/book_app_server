@@ -2,6 +2,7 @@ package com.anhtuan.bookapp.controller;
 
 import static com.anhtuan.bookapp.config.Constant.*;
 
+import com.anhtuan.bookapp.cache.UserInfoManager;
 import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.common.Utils;
 import com.anhtuan.bookapp.domain.*;
@@ -34,6 +35,8 @@ public class BookController {
     private FirebaseMessagingService firebaseMessagingService;
     private NotificationService notificationService;
     private PurchasedBookService purchasedBookService;
+    private UserInfoManager userInfoManager;
+    private STFService stfService;
 
     @PostMapping("/addBook")
     public ResponseEntity<Response> addBook(Authentication authentication,
@@ -366,12 +369,30 @@ public class BookController {
                 request.getPage()
         );
 
+        if (books.isEmpty()){
+            response.setCode(ResponseCode.SUCCESS);
+            response.setData(Collections.emptyList());
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        List<String> userIds = books.stream().map(Book::getAuthor).toList();
+        Map<String, String> userNameMap = userInfoManager.getUserNameMap(userIds);
+        Map<String, String> userAvatarMap = stfService.getBookImagePathMap(books);
+
         books.forEach(book -> {
             List<String> bookCategoryIdList = book.getBookCategory();
             List<String> bookNameList = bookCategoryIdList.stream()
                     .map(mapCategory::get)
                     .collect(Collectors.toList());
             book.setBookCategory(bookNameList);
+
+            if (userNameMap.containsKey(book.getAuthor())){
+                book.setAuthor(userNameMap.get(book.getAuthor()));
+            }
+
+            if (userAvatarMap.containsKey(book.getId())){
+                book.setBookImage(userAvatarMap.get(book.getId()));
+            }
         });
 
         response.setCode(ResponseCode.SUCCESS);

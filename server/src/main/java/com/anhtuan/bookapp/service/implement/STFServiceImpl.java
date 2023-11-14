@@ -1,6 +1,8 @@
 package com.anhtuan.bookapp.service.implement;
 
 import com.anhtuan.bookapp.config.Constant;
+import com.anhtuan.bookapp.domain.Book;
+import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.service.base.STFService;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +13,11 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static com.anhtuan.bookapp.config.Constant.BOOK_IMAGE_STORAGE_PATH_RESPONSE;
 
 @Service
 public class STFServiceImpl implements STFService {
@@ -59,6 +66,15 @@ public class STFServiceImpl implements STFService {
         }
 
         return content.toString();
+    }
+
+    @Override
+    public Map<String, String> getBookImagePathMap(List<Book> books) {
+        if (books == null || books.isEmpty()) return null;
+
+        return books.stream()
+                .filter(book -> book.getBookImage() != null && !book.getBookImage().isBlank())
+                .collect(Collectors.toMap(Book::getId, book -> BOOK_IMAGE_STORAGE_PATH_RESPONSE + book.getBookImage() + Constant.JPG));
     }
 
 }

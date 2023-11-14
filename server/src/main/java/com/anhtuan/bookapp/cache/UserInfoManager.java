@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Component
 @AllArgsConstructor
@@ -35,6 +36,12 @@ public class UserInfoManager {
 
     public List<User> getAllUser(){
         return USER_MAP.values().stream().toList();
+    }
+
+    public Map<String, String> getUserNameMap(List<String> userId){
+        return USER_MAP.entrySet().stream()
+                .filter(entry -> userId.contains(entry.getKey()))
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getName()));
     }
 
     public void addUser(User user){
