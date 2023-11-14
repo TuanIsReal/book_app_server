@@ -219,7 +219,7 @@ public class BookController {
 
         List<String> userIds = bookList.stream().map(Book::getAuthor).toList();
         Map<String, String> userNameMap = userInfoManager.getUserNameMap(userIds);
-        Map<String, String> userAvatarMap = stfService.getBookImagePathMap(bookList);
+        Map<String, String> bookImageMap = stfService.getBookImagePathMap(bookList);
 
         bookList.forEach(book -> {
             List<String> bookCategoryIdList = book.getBookCategory();
@@ -228,13 +228,8 @@ public class BookController {
                     .collect(Collectors.toList());
             book.setBookCategory(bookNameList);
 
-            if (userNameMap.containsKey(book.getAuthor())){
-                book.setAuthor(userNameMap.get(book.getAuthor()));
-            }
-
-            if (userAvatarMap.containsKey(book.getId())){
-                book.setBookImage(userAvatarMap.get(book.getId()));
-            }
+            book.setAuthor(userNameMap.getOrDefault(book.getAuthor(), "Tác giả"));
+            book.setBookImage(bookImageMap.getOrDefault(book.getId(), ""));
         });
 
         response.setCode(ResponseCode.SUCCESS);
@@ -354,7 +349,7 @@ public class BookController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        Map<String, String> userAvatarMap = stfService.getBookImagePathMap(books);
+        Map<String, String> bookImageMap = stfService.getBookImagePathMap(books);
 
         books.forEach(book -> {
             List<String> bookCategoryIdList = book.getBookCategory();
@@ -363,9 +358,7 @@ public class BookController {
                     .collect(Collectors.toList());
             book.setBookCategory(bookNameList);
 
-            if (userAvatarMap.containsKey(book.getId())){
-                book.setBookImage(userAvatarMap.get(book.getId()));
-            }
+            book.setBookImage(bookImageMap.getOrDefault(book.getId(), ""));
         });
 
         response.setCode(ResponseCode.SUCCESS);
@@ -397,7 +390,7 @@ public class BookController {
 
         List<String> userIds = books.stream().map(Book::getAuthor).toList();
         Map<String, String> userNameMap = userInfoManager.getUserNameMap(userIds);
-        Map<String, String> userAvatarMap = stfService.getBookImagePathMap(books);
+        Map<String, String> bookImageMap = stfService.getBookImagePathMap(books);
 
         books.forEach(book -> {
             List<String> bookCategoryIdList = book.getBookCategory();
@@ -405,14 +398,8 @@ public class BookController {
                     .map(mapCategory::get)
                     .collect(Collectors.toList());
             book.setBookCategory(bookNameList);
-
-            if (userNameMap.containsKey(book.getAuthor())){
-                book.setAuthor(userNameMap.get(book.getAuthor()));
-            }
-
-            if (userAvatarMap.containsKey(book.getId())){
-                book.setBookImage(userAvatarMap.get(book.getId()));
-            }
+            book.setAuthor(userNameMap.getOrDefault(book.getAuthor(), ""));
+            book.setBookImage(bookImageMap.getOrDefault(book.getId(), ""));
         });
 
         response.setCode(ResponseCode.SUCCESS);
