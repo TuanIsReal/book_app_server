@@ -26,6 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import lombok.AllArgsConstructor;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController
@@ -42,6 +43,7 @@ public class UserController{
     private AuthenticationManager authenticationManager;
     private JwtTokenProvider tokenProvider;
     private final UserInfoManager userInfoManager;
+    private final STFService stfService;
 
 
     @GetMapping("/login")
@@ -421,6 +423,12 @@ public class UserController{
     public ResponseEntity<Response> getAllUSer(){
         Response response = new Response();
         List<User> userList = userInfoManager.getAllUser();
+
+        Map<String, String> userAvatarMap = stfService.getUserAvatarPathMap(userList);
+        userList.stream()
+                .filter(user -> userAvatarMap.containsKey(user.getId()))
+                .forEach(user -> user.setAvatarImage(userAvatarMap.get(user.getId())));
+
         response.setCode(ResponseCode.SUCCESS);
         response.setData(userList);
         return new ResponseEntity<>(response, HttpStatus.OK);
