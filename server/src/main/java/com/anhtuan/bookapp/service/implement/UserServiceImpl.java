@@ -87,4 +87,9 @@ public class UserServiceImpl implements UserService {
     public User findByEmailAndNotLoginGoogle(String email) {
         return userRepository.findByEmailAndNotLoginGoogle(email);
     }
+
+    @Override
+    public List<User> findUserByText(String text) {
+        return userRepository.findUserByText(text);
+    }
 }
