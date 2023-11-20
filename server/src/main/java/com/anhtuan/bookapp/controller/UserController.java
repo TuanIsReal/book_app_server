@@ -441,8 +441,9 @@ public class UserController{
     public ResponseEntity<Response> searchUser(@RequestParam String key){
         Response response = new Response();
         if (key == null || key.isBlank()){
+            List<User> userList = userInfoManager.getAllUser();
             response.setCode(ResponseCode.SUCCESS);
-            response.setData(Collections.emptyList());
+            response.setData(userList);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
