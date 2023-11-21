@@ -39,7 +39,7 @@ public class PlagiarismChecker extends Thread{
                 if (bookChapterId != null && bookChapterService.getBookChapter(bookChapterId) != null) {
                     log.info("----Start check Plagiarism----");
                     BookChapter bookChapter = bookChapterService.getBookChapter(bookChapterId);
-                    log.info("----Check Chapter: {} - {}", bookChapter.getId(), bookChapter.getChapterName());
+                    log.info("----Check Chapter: {}", bookChapter.getId());
                     List<BookChapter> verifyChapters = bookChapterService.findBookChaptersVerify(bookChapter.getBookId());
                     Map<BookChapter, String> verifyTexts = new HashMap<>();
                     verifyChapters.forEach(verifyChapter -> {
