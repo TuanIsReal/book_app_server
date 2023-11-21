@@ -107,7 +107,6 @@ public class BookChapterController {
     }
 
     @GetMapping("getChapterContentById")
-    @Secured("ADMIN")
     private ResponseEntity<Response> getChapterContentById(@RequestParam String chapterId){
         Response response = new Response();
         BookChapter bookChapter = bookChapterService.getBookChapter(chapterId);

@@ -26,12 +26,12 @@ import static com.anhtuan.bookapp.config.Constant.WARNING_CHAPTER_TITLE;
 @AllArgsConstructor
 public class WarningChapterController {
 
-    private final WarningChapterService warningChapterService;
-    private final BookChapterService bookChapterService;
-    private final BookService bookService;
-    private final DeviceService deviceService;
-    private final NotificationService notificationService;
-    private final FirebaseMessagingService firebaseMessagingService;
+    private WarningChapterService warningChapterService;
+    private BookChapterService bookChapterService;
+    private BookService bookService;
+    private DeviceService deviceService;
+    private NotificationService notificationService;
+    private FirebaseMessagingService firebaseMessagingService;
     private final UserInfoManager userInfoManager;
 
     @GetMapping("getWarningList")
