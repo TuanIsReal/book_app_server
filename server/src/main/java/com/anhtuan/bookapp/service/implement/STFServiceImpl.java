@@ -38,8 +38,7 @@ public class STFServiceImpl implements STFService {
     @Override
     public void createChapterText(String chapterContent, String fileName) {
         File file = new File(Constant.CHAPTER_TEXT_STORAGE_PATH, fileName);
-        try (FileOutputStream fos = new FileOutputStream(file)) {
-            OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
+        try (FileWriter writer = new FileWriter(file, StandardCharsets.UTF_8)) {
             writer.write(chapterContent);
         } catch (Exception ex){
             System.out.println(ex.getMessage());
