@@ -6,7 +6,6 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.FirebaseMessaging;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,7 +16,7 @@ public class Config {
     @Bean
     FirebaseMessaging firebaseMessaging() throws IOException {
         GoogleCredentials googleCredentials = GoogleCredentials
-                .fromStream(new FileInputStream("C:/firebase/firebase-service-account.json"));
+                .fromStream(new FileInputStream("/opt/book_app/firebase/firebase-service-account.json"));
         FirebaseOptions firebaseOptions = FirebaseOptions.builder()
                 .setCredentials(googleCredentials).build();
         FirebaseApp app = FirebaseApp.initializeApp(firebaseOptions, "my-app");
