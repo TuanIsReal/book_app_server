@@ -20,4 +20,6 @@ public interface UserCustomizeRepository {
     void updateNameByUserId(String userId, String name);
 
     User findByEmailAndNotLoginGoogle(String email);
+
+    List<User> findUserByText(String text);
 }

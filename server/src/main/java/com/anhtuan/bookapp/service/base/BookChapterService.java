@@ -14,7 +14,7 @@ public interface BookChapterService {
 
     List<BookChapter> findBookChaptersByBookIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(String bookId, int chapterNumber);
 
-    List<BookChapter> findBookChaptersVerify(List<String> bookIds);
+    List<BookChapter> findBookChaptersVerify(String bookId);
     List<BookChapter> findBookChaptersNotVerify();
 
     void updateStatus(String chapterId, int status);

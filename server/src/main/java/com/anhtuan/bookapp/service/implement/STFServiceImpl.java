@@ -77,4 +77,15 @@ public class STFServiceImpl implements STFService {
                 .collect(Collectors.toMap(Book::getId, book -> THUMBNAIL_STORAGE_PATH_RESPONSE + book.getBookImage() + Constant.JPG));
     }
 
+    @Override
+    public Map<String, String> getUserAvatarPathMap(List<User> users) {
+        if (users == null || users.isEmpty()){
+            return null;
+        }
+
+        return users.stream()
+                .filter(user -> user.getAvatarImage() != null && !user.getAvatarImage().isBlank())
+                .collect(Collectors.toMap(User::getId, user -> (user.getIsGoogleLogin() == null || !user.getIsGoogleLogin()) ? THUMBNAIL_STORAGE_PATH_RESPONSE + user.getAvatarImage() + JPG : user.getAvatarImage()));
+    }
+
 }

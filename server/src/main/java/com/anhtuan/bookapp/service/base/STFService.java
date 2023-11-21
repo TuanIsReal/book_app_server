@@ -13,5 +13,7 @@ public interface STFService {
 
     String getChapterContent(String fileName);
 
-    Map<String, String> getBookImagePathMap(List<Book> users);
+    Map<String, String> getBookImagePathMap(List<Book> books);
+
+    Map<String, String> getUserAvatarPathMap(List<User> users);
 }

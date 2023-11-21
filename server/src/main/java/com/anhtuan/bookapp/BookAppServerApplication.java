@@ -1,6 +1,7 @@
 package com.anhtuan.bookapp;
 
 import com.anhtuan.bookapp.cache.UserInfoManager;
+import com.anhtuan.bookapp.worker.WorkerManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -17,7 +18,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @Slf4j
 public class BookAppServerApplication implements CommandLineRunner {
 
-	private UserInfoManager userInfoManager;
+	private final UserInfoManager userInfoManager;
+	private final WorkerManager workerManager;
 
 	public static void main(String[] args) {
 		SpringApplication.run(BookAppServerApplication.class, args);
@@ -29,6 +31,7 @@ public class BookAppServerApplication implements CommandLineRunner {
 		log.info("INIT USER CACHE");
 		userInfoManager.initData();
 		log.info("DONE INIT USER CACHE, SIZE: {}", userInfoManager.getSize());
+		workerManager.startWorkers();
 		log.info("---SERVER STARTED---");
 	}
 }

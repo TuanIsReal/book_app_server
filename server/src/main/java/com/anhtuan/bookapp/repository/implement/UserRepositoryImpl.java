@@ -9,6 +9,8 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 @AllArgsConstructor
 public class UserRepositoryImpl implements UserCustomizeRepository {
@@ -80,5 +82,15 @@ public class UserRepositoryImpl implements UserCustomizeRepository {
         Query query = new Query();
         query.addCriteria(Criteria.where(User.EMAIL).is(email).and(User.IS_GOOGLE_LOGIN).ne(true));
         return mongoTemplate.findOne(query, User.class);
+    }
+
+    @Override
+    public List<User> findUserByText(String text) {
+        Query query = new Query();
+        Criteria nameCriteria = Criteria.where(User.NAME).regex(text, "i");
+        Criteria emailCriteria = Criteria.where(User.EMAIL).is(text);
+        Criteria userIdCriteria = Criteria.where(User.USER_ID).is(text);
+        query.addCriteria(new Criteria().orOperator(nameCriteria, emailCriteria, userIdCriteria));
+        return mongoTemplate.find(query, User.class);
     }
 }

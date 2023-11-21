@@ -8,6 +8,7 @@ import com.anhtuan.bookapp.request.AddBookChapterRequest;
 import com.anhtuan.bookapp.request.UpdateBannerWordRequest;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.*;
+import com.anhtuan.bookapp.worker.ChapterContainer;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +40,8 @@ public class BookChapterController {
     private STFService stfService;
 
     private BannedWordService bannedWordService;
+
+    private final ChapterContainer chapterContainer;
 
     @PostMapping("addChapter")
     private ResponseEntity<Response> addChapter(@RequestBody AddBookChapterRequest request){
@@ -81,6 +84,7 @@ public class BookChapterController {
             notificationList.add(notification);
         }
         notificationService.insertNotificationList(notificationList);
+        chapterContainer.add(chapterId);
 
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
