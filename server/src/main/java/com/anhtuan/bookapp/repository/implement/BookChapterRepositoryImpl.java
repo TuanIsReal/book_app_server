@@ -10,6 +10,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Repository
 @AllArgsConstructor
 public class BookChapterRepositoryImpl implements BookChapterCustomizeRepository {
@@ -34,5 +37,13 @@ public class BookChapterRepositoryImpl implements BookChapterCustomizeRepository
         update.set(BookChapter.STATUS, status);
         update.set(BookChapter.LAST_UPDATE_TIME, System.currentTimeMillis());
         mongoTemplate.updateFirst(query, update, BookChapter.class);
+    }
+
+    @Override
+    public List<BookChapter> findChapterByIds(List<String> ids) {
+        Query query = new Query();
+        List<ObjectId> idList = ids.stream().map(ObjectId::new).toList();
+        query.addCriteria(Criteria.where(BookChapter.ID).in(idList));
+        return mongoTemplate.find(query, BookChapter.class);
     }
 }

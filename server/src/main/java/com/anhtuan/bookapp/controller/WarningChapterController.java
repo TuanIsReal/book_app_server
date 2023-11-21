@@ -1,9 +1,11 @@
 package com.anhtuan.bookapp.controller;
 
+import com.anhtuan.bookapp.cache.UserInfoManager;
 import com.anhtuan.bookapp.common.ResponseCode;
 import com.anhtuan.bookapp.common.Utils;
 import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.*;
+import com.anhtuan.bookapp.response.GetWarningListResponse;
 import com.anhtuan.bookapp.response.Response;
 import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import static com.anhtuan.bookapp.config.Constant.WARNING_CHAPTER_TITLE;
 
 @RestController
@@ -20,20 +26,50 @@ import static com.anhtuan.bookapp.config.Constant.WARNING_CHAPTER_TITLE;
 @AllArgsConstructor
 public class WarningChapterController {
 
-    private WarningChapterService warningChapterService;
-    private BookChapterService bookChapterService;
-    private BookService bookService;
-    private DeviceService deviceService;
-    private NotificationService notificationService;
-    private FirebaseMessagingService firebaseMessagingService;
+    private final WarningChapterService warningChapterService;
+    private final BookChapterService bookChapterService;
+    private final BookService bookService;
+    private final DeviceService deviceService;
+    private final NotificationService notificationService;
+    private final FirebaseMessagingService firebaseMessagingService;
+    private final UserInfoManager userInfoManager;
 
     @GetMapping("getWarningList")
     @Secured("ADMIN")
     public ResponseEntity<Response> getWarningList(){
         Response response = new Response();
         List<WarningChapter> warningChapterList = warningChapterService.findAll();
+        List<String> chapterList = new ArrayList<>();
+
+        warningChapterList.forEach(warningChapter -> {
+            chapterList.add(warningChapter.getChapter());
+            chapterList.add(warningChapter.getChapterReport());
+        });
+
+        List<BookChapter> bookChapterList = bookChapterService.findChapterByIds(chapterList);
+        List<Book> bookList = bookService.findBookByBookIdList(bookChapterList.stream().map(BookChapter::getBookId).collect(Collectors.toList()));
+        List<String> userIds = bookList.stream().map(Book::getAuthor).toList();
+        Map<String, String> userNameMap = userInfoManager.getUserNameMap(userIds);
+        Map<String, BookChapter> bookChapterMap = bookChapterList.stream().collect(Collectors.toMap(BookChapter::getId, bookChapter -> bookChapter));
+        Map<String, Book> bookMap = bookList.stream().collect(Collectors.toMap(Book::getId, book -> book));
+
+        List<GetWarningListResponse> getWarningListResponses = new ArrayList<>();
+
+        warningChapterList.forEach(warningChapter -> {
+           GetWarningListResponse getWarningListResponse = new GetWarningListResponse();
+           BookChapter bookChapter = bookChapterMap.get(warningChapter.getChapter());
+           BookChapter bookChapterReport = bookChapterMap.get(warningChapter.getChapterReport());
+           bookMap.get(bookChapter.getBookId()).setAuthor(userNameMap.get(bookMap.get(bookChapter.getBookId()).getAuthor()));
+           bookMap.get(bookChapterReport.getBookId()).setAuthor(userNameMap.get(bookMap.get(bookChapterReport.getBookId()).getAuthor()));
+           getWarningListResponse.setChapter(bookChapter);
+           getWarningListResponse.setChapterReport(bookChapterReport);
+           getWarningListResponse.setBook(bookMap.get(bookChapter.getBookId()));
+           getWarningListResponse.setBookReport(bookMap.get(bookChapterReport.getBookId()));
+           getWarningListResponses.add(getWarningListResponse);
+        });
+
         response.setCode(ResponseCode.SUCCESS);
-        response.setData(warningChapterList);
+        response.setData(getWarningListResponses);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

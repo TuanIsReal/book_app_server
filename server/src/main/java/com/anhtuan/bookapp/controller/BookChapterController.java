@@ -12,6 +12,7 @@ import com.anhtuan.bookapp.worker.ChapterContainer;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -102,6 +103,22 @@ public class BookChapterController {
         bookChapter.setChapterContent(chapterContent);
         response.setCode(ResponseCode.SUCCESS);
         response.setData(bookChapter);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("getChapterContentById")
+    @Secured("ADMIN")
+    private ResponseEntity<Response> getChapterContentById(@RequestParam String chapterId){
+        Response response = new Response();
+        BookChapter bookChapter = bookChapterService.getBookChapter(chapterId);
+        if (bookChapter == null){
+            response.setCode(ResponseCode.CHAPTER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        String chapterContent = stfService.getChapterContent(bookChapter.getChapterContent() + TXT);
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(chapterContent);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
