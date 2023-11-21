@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +38,8 @@ public class STFServiceImpl implements STFService {
     @Override
     public void createChapterText(String chapterContent, String fileName) {
         File file = new File(Constant.CHAPTER_TEXT_STORAGE_PATH, fileName);
-        try (FileWriter writer = new FileWriter(file)) {
+        try (FileOutputStream fos = new FileOutputStream(file)) {
+            OutputStreamWriter writer = new OutputStreamWriter(fos, StandardCharsets.UTF_8);
             writer.write(chapterContent);
         } catch (Exception ex){
             System.out.println(ex.getMessage());
