@@ -96,5 +96,10 @@ public class BookChapterServiceImpl implements BookChapterService {
         notificationService.insertNotificationList(notificationList);
     }
 
+    @Override
+    public List<BookChapter> findChapterByIds(List<String> ids) {
+        return bookChapterRepository.findChapterByIds(ids);
+    }
+
 
 }

@@ -25,4 +25,5 @@ public interface BookChapterService {
     BookChapter getBookChapter(String id);
 
     void actionUploadChapter(BookChapter chapter, Book book);
+    List<BookChapter> findChapterByIds(List<String> ids);
 }

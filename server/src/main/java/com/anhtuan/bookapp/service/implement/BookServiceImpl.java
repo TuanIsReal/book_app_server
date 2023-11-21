@@ -131,4 +131,9 @@ public class BookServiceImpl implements BookService {
     public void updateBookInfo(Book book, boolean isFinish) {
         bookRepository.updateBookInfo(book, isFinish);
     }
+
+    @Override
+    public List<Book> findBookByBookIdList(List<String> ids) {
+        return bookRepository.findBookByBookIdList(ids);
+    }
 }

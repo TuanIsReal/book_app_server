@@ -153,4 +153,12 @@ public class BookRepositoryImpl implements BookCustomizeRepository {
         mongoTemplate.updateFirst(query, update, Book.class);
     }
 
+    @Override
+    public List<Book> findBookByBookIdList(List<String> ids) {
+        Query query = new Query();
+        List<ObjectId> objectIds = ids.stream().map(ObjectId::new).toList();
+        query.addCriteria(Criteria.where(Book.ID).in(objectIds));
+        return mongoTemplate.find(query, Book.class);
+    }
+
 }
