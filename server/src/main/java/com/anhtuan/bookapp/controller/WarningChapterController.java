@@ -49,12 +49,6 @@ public class WarningChapterController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        if (Constant.REACT_WARNING.GOOD == react){
-            warningChapterService.deleteByChapter(chapter);
-            response.setCode(ResponseCode.SUCCESS);
-            return new ResponseEntity<>(response, HttpStatus.OK);
-        }
-
         BookChapter bookChapter = bookChapterService.getBookChapter(warningChapter.getChapter());
 
         if (bookChapter == null){
@@ -62,9 +56,17 @@ public class WarningChapterController {
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         Book book = bookService.findBookById(bookChapter.getBookId());
+
+        if (Constant.REACT_WARNING.GOOD == react){
+            warningChapterService.deleteByChapter(chapter);
+            bookChapterService.updateStatus(chapter, Constant.BOOK_CHAPTER_STATUS.VERIFY);
+            bookChapterService.actionUploadChapter(bookChapter, book);
+            response.setCode(ResponseCode.SUCCESS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
         warningChapterService.deleteByChapter(chapter);
         bookChapterService.deleteById(chapter);
-        bookService.increaseTotalChapter(book.getId(), -1);
 
         String mess = Utils.warningChapter(bookChapter.getChapterNumber(), book.getBookName());
 

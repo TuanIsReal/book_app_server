@@ -13,10 +13,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Component
 @AllArgsConstructor
 public class ChapterContainer {
-    private STFService stfService;
-    private BookChapterService bookChapterService;
-    private WarningChapterService warningChapterService;
-    private BookService bookService;
+    private final STFService stfService;
+    private final BookChapterService bookChapterService;
+    private final WarningChapterService warningChapterService;
+    private final BookService bookService;
     private final ConcurrentLinkedQueue<String> CHAPTER_QUEUE = new ConcurrentLinkedQueue<>();
     private static final Integer MAX_THREAD = 2;
 

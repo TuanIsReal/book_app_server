@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.service.base;
 
+import com.anhtuan.bookapp.domain.Book;
 import com.anhtuan.bookapp.domain.BookChapter;
 
 import java.util.List;
@@ -22,4 +23,6 @@ public interface BookChapterService {
     void deleteById(String id);
 
     BookChapter getBookChapter(String id);
+
+    void actionUploadChapter(BookChapter chapter, Book book);
 }

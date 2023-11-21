@@ -25,22 +25,11 @@ import java.util.Objects;
 @AllArgsConstructor
 public class BookChapterController {
 
-    private BookChapterService bookChapterService;
-
-    private BookService bookService;
-
-    private PurchasedBookService purchasedBookService;
-
-    private DeviceService deviceService;
-
-    private NotificationService notificationService;
-
-    private FirebaseMessagingService firebaseMessagingService;
-
-    private STFService stfService;
-
-    private BannedWordService bannedWordService;
-
+    private final BookChapterService bookChapterService;
+    private final BookService bookService;
+    private final PurchasedBookService purchasedBookService;
+    private final STFService stfService;
+    private final BannedWordService bannedWordService;
     private final ChapterContainer chapterContainer;
 
     @PostMapping("addChapter")
@@ -60,30 +49,6 @@ public class BookChapterController {
         BookChapter bookChapter = new BookChapter(bookId, request.getChapterNumber(), request.getChapterName(), request.getChapterContent(), time, time, BOOK_CHAPTER_STATUS.NOT_VERIFY);
         String chapterId = bookChapterService.insertBookChapter(bookChapter);
         stfService.createChapterText(request.getChapterContent(), chapterId + TXT);
-        bookService.increaseTotalChapter(book.getId(), 1);
-
-        List<PurchasedBook> purchasedBookList = purchasedBookService.findPurchasedBooksByBookIdAndUserIdIsNot(bookId, book.getAuthor());
-        List<String> purchasedUserList = new ArrayList<>();
-        for (PurchasedBook purchasedBook: purchasedBookList){
-            purchasedUserList.add(purchasedBook.getUserId());
-        }
-
-        String messBody = Utils.messBodyAddChapter(book.getBookName(), request.getChapterNumber(), request.getChapterName());
-        List<Notification> notificationList = new ArrayList<>();
-
-        List<Device> deviceList = deviceService.getDevicesByUserIdIsIn(purchasedUserList);
-        for (Device device:deviceList){
-            if (!device.getDeviceToken().isEmpty()){
-                NotificationMessage message = new NotificationMessage(device.getDeviceToken(), ADD_CHAPTER_NOTIFICATION_TITLE, messBody);
-                firebaseMessagingService.sendNotificationByToken(message);
-            }
-        }
-
-        for (String userId:purchasedUserList){
-            Notification notification = new Notification(userId, bookId, messBody, false, System.currentTimeMillis());
-            notificationList.add(notification);
-        }
-        notificationService.insertNotificationList(notificationList);
         chapterContainer.add(chapterId);
 
         response.setCode(ResponseCode.SUCCESS);

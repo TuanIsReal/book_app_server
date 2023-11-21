@@ -10,9 +10,9 @@ public interface BookChapterRepository extends MongoRepository<BookChapter, Stri
 
     BookChapter findBookChapterByBookIdAndChapterNumber(String bookId, int chapterNumber);
 
-    List<BookChapter> findBookChaptersByBookIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(String bookId, int chapterNumber);
+    List<BookChapter> findBookChaptersByBookIdAndStatusAndChapterNumberGreaterThanOrderByChapterNumberAsc(String bookId, int status, int chapterNumber);
 
-    List<BookChapter> findBookChaptersByBookId(String bookId);
+    List<BookChapter> findBookChaptersByBookIdAndStatus(String bookId, int status);
 
     List<BookChapter> findBookChaptersByBookIdIsNotAndStatus(String bookId, int status);
 

@@ -1,13 +1,9 @@
 package com.anhtuan.bookapp.worker;
 
+import com.anhtuan.bookapp.common.Utils;
 import com.anhtuan.bookapp.config.Constant;
-import com.anhtuan.bookapp.domain.Book;
-import com.anhtuan.bookapp.domain.BookChapter;
-import com.anhtuan.bookapp.domain.WarningChapter;
-import com.anhtuan.bookapp.service.base.BookChapterService;
-import com.anhtuan.bookapp.service.base.BookService;
-import com.anhtuan.bookapp.service.base.STFService;
-import com.anhtuan.bookapp.service.base.WarningChapterService;
+import com.anhtuan.bookapp.domain.*;
+import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.similarity.CosineSimilarity;
@@ -17,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static com.anhtuan.bookapp.config.Constant.ADD_CHAPTER_NOTIFICATION_TITLE;
 import static com.anhtuan.bookapp.config.Constant.TXT;
 
 @Component
@@ -24,10 +21,10 @@ import static com.anhtuan.bookapp.config.Constant.TXT;
 @Slf4j
 public class PlagiarismChecker extends Thread{
     private final ChapterContainer chapterContainer;
-    private STFService stfService;
-    private BookChapterService bookChapterService;
-    private WarningChapterService warningChapterService;
-    private BookService bookService;
+    private final STFService stfService;
+    private final BookChapterService bookChapterService;
+    private final WarningChapterService warningChapterService;
+    private final BookService bookService;
 
     private static final Double MAX_SIMILAR_DOCUMENT = 60.0;
 
@@ -67,19 +64,19 @@ public class PlagiarismChecker extends Thread{
                         }
 
                     }
+
                     if (Objects.isNull(verifyChapter)){
                         bookChapterService.updateStatus(bookChapter.getId(), Constant.BOOK_CHAPTER_STATUS.VERIFY);
-                        continue;
+                        bookChapterService.actionUploadChapter(bookChapter, book);
+                        log.info("----End check Plagiarism----");
+                    } else {
+                        bookChapterService.updateStatus(bookChapter.getId(), Constant.BOOK_CHAPTER_STATUS.WARNING);
+                        double similarityText = checkText(unVerifyText, verifyTexts.get(verifyChapter));
+                        warningChapterService.insert(new WarningChapter(bookChapter.getId(), verifyChapter.getId(), similarDocument, similarityText));
+                        WarningChapter warningChapter = new WarningChapter(bookChapter.getId(), verifyChapter.getId(), similarDocument, similarityText);
+                        log.info("----WarningChapter: {}", warningChapter);
+                        log.info("----End check Plagiarism----");
                     }
-
-                    bookChapterService.updateStatus(bookChapter.getId(), Constant.BOOK_CHAPTER_STATUS.WARNING);
-                    double similarityText = checkText(unVerifyText, verifyTexts.get(verifyChapter));
-                    warningChapterService.insert(new WarningChapter(bookChapter.getId(), verifyChapter.getId(), similarDocument, similarityText));
-                    WarningChapter warningChapter = new WarningChapter(bookChapter.getId(), verifyChapter.getId(), similarDocument, similarityText);
-
-                    log.info("----WarningChapter: {}", warningChapter);
-
-                    log.info("----End check Plagiarism----");
                 } else {
                     Thread.sleep(10000);
                 }

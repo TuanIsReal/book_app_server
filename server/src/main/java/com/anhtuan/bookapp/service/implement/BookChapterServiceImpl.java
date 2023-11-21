@@ -1,19 +1,28 @@
 package com.anhtuan.bookapp.service.implement;
 
+import com.anhtuan.bookapp.common.Utils;
 import com.anhtuan.bookapp.config.Constant;
-import com.anhtuan.bookapp.domain.BookChapter;
+import com.anhtuan.bookapp.domain.*;
 import com.anhtuan.bookapp.repository.base.BookChapterRepository;
-import com.anhtuan.bookapp.service.base.BookChapterService;
+import com.anhtuan.bookapp.service.base.*;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.anhtuan.bookapp.config.Constant.ADD_CHAPTER_NOTIFICATION_TITLE;
 
 @Service
 @AllArgsConstructor
 public class BookChapterServiceImpl implements BookChapterService {
 
     private BookChapterRepository bookChapterRepository;
+    private final BookService bookService;
+    private final PurchasedBookService purchasedBookService;
+    private final DeviceService deviceService;
+    private final NotificationService notificationService;
+    private final FirebaseMessagingService firebaseMessagingService;
 
     @Override
     public String insertBookChapter(BookChapter bookChapter) {
@@ -29,12 +38,12 @@ public class BookChapterServiceImpl implements BookChapterService {
 
     @Override
     public List<BookChapter> getBookChaptersByBookId(String bookId) {
-        return bookChapterRepository.findBookChaptersByBookId(bookId);
+        return bookChapterRepository.findBookChaptersByBookIdAndStatus(bookId, Constant.BOOK_CHAPTER_STATUS.VERIFY);
     }
 
     @Override
     public List<BookChapter> findBookChaptersByBookIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(String bookId, int chapterNumber) {
-        return bookChapterRepository.findBookChaptersByBookIdAndChapterNumberGreaterThanOrderByChapterNumberAsc(bookId, chapterNumber);
+        return bookChapterRepository.findBookChaptersByBookIdAndStatusAndChapterNumberGreaterThanOrderByChapterNumberAsc(bookId, Constant.BOOK_CHAPTER_STATUS.VERIFY, chapterNumber);
     }
 
     @Override
@@ -60,6 +69,31 @@ public class BookChapterServiceImpl implements BookChapterService {
     @Override
     public BookChapter getBookChapter(String id) {
         return bookChapterRepository.findBookChapterById(id);
+    }
+
+    @Override
+    public void actionUploadChapter(BookChapter chapter, Book book) {
+        bookService.increaseTotalChapter(book.getId(), 1);
+
+        List<PurchasedBook> purchasedBookList = purchasedBookService.findPurchasedBooksByBookIdAndUserIdIsNot(book.getId(), book.getAuthor());
+        List<String> purchasedUserList = purchasedBookList.stream().map(PurchasedBook::getUserId).toList();
+
+        String messBody = Utils.messBodyAddChapter(book.getBookName(), chapter.getChapterNumber(), chapter.getChapterName());
+        List<Notification> notificationList = new ArrayList<>();
+
+        List<Device> deviceList = deviceService.getDevicesByUserIdIsIn(purchasedUserList);
+        for (Device device:deviceList){
+            if (!device.getDeviceToken().isEmpty()){
+                NotificationMessage message = new NotificationMessage(device.getDeviceToken(), ADD_CHAPTER_NOTIFICATION_TITLE, messBody);
+                firebaseMessagingService.sendNotificationByToken(message);
+            }
+        }
+
+        for (String userId:purchasedUserList){
+            Notification notification = new Notification(userId, book.getId(), messBody, false, System.currentTimeMillis());
+            notificationList.add(notification);
+        }
+        notificationService.insertNotificationList(notificationList);
     }
 
 
