@@ -1,10 +1,10 @@
 package com.anhtuan.bookapp.config;
 
 public class Constant {
-    public static final String BOOK_IMAGE_STORAGE_PATH = "/opt/book_app/image/";
-    public static final String THUMBNAIL_STORAGE_PATH = "/opt/book_app/thumbnail/";
-    public static final String AVATAR_IMAGE_STORAGE_PATH = "/opt/book_app/avatar/";
-    public static final String CHAPTER_TEXT_STORAGE_PATH = "/opt/book_app/chapter/";
+    public static final String BOOK_IMAGE_STORAGE_PATH = "C:/inetpub/wwwroot/book_image/";
+    public static final String THUMBNAIL_STORAGE_PATH = "C:/inetpub/wwwroot/thumbnail/";
+    public static final String AVATAR_IMAGE_STORAGE_PATH = "C:/inetpub/wwwroot/avatar_image/";
+    public static final String CHAPTER_TEXT_STORAGE_PATH = "C:/chapter/";
     public static final String JPG = ".jpg";
     public static final String TXT = ".txt";
     public static final String BOOK_IMAGE_STORAGE_PATH_RESPONSE = "/image/";
