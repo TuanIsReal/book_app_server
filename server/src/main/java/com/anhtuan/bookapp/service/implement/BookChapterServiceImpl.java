@@ -38,8 +38,8 @@ public class BookChapterServiceImpl implements BookChapterService {
     }
 
     @Override
-    public List<BookChapter> findBookChaptersVerify(List<String> bookIds) {
-        return bookChapterRepository.findBookChaptersByBookIdNotInAndStatus(bookIds, Constant.BOOK_CHAPTER_STATUS.VERIFY);
+    public List<BookChapter> findBookChaptersVerify(String bookId) {
+        return bookChapterRepository.findBookChaptersByBookIdIsNotAndStatus(bookId, Constant.BOOK_CHAPTER_STATUS.VERIFY);
     }
 
     @Override
