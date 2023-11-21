@@ -124,6 +124,11 @@ public class Constant {
         public static final int GOOD = 1;
         public static final int NOT_GOOD = -1;
     }
+
+    public static class REPORT_STATUS{
+        public static final int NOT_CHECK = 0;
+        public static final int CHECKED = 1;
+    }
 }
 
 
