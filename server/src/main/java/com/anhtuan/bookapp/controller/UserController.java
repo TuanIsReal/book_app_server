@@ -422,7 +422,7 @@ public class UserController{
 
     @GetMapping("getAllUser")
     @Secured("ADMIN")
-    public ResponseEntity<Response> getAllUSer(){
+    public ResponseEntity<Response> getAllUser(){
         Response response = new Response();
         List<User> userList = userInfoManager.getAllUser();
 
