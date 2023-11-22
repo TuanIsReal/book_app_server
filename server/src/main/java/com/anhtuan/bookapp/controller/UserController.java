@@ -26,10 +26,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import lombok.AllArgsConstructor;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 @RestController
 @RequestMapping("user")
@@ -238,7 +235,7 @@ public class UserController{
         Response response = new Response();
         User user = userService.getUserByUserId(userId);
         response.setCode(100);
-        response.setData(user.getName());
+        response.setData(user != null ? user.getName() : "");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -440,14 +437,12 @@ public class UserController{
     @Secured("ADMIN")
     public ResponseEntity<Response> searchUser(@RequestParam String key){
         Response response = new Response();
+        List<User> userList;
         if (key == null || key.isBlank()){
-            List<User> userList = userInfoManager.getAllUser();
-            response.setCode(ResponseCode.SUCCESS);
-            response.setData(userList);
-            return new ResponseEntity<>(response, HttpStatus.OK);
+            userList = userInfoManager.getAllUser();
+        } else {
+            userList = userService.findUserByText(key);
         }
-
-        List<User> userList = userService.findUserByText(key);
 
         if (userList.isEmpty()){
             response.setCode(ResponseCode.SUCCESS);
