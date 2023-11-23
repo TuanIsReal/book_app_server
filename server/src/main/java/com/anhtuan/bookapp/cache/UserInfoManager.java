@@ -1,10 +1,12 @@
 package com.anhtuan.bookapp.cache;
 
+import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.repository.base.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +37,16 @@ public class UserInfoManager {
     }
 
     public List<User> getAllUser(){
-        return USER_MAP.values().stream().toList();
+        List<User> userList = USER_MAP.values().stream()
+                .filter(user -> !user.getRole().equals(Constant.USER_ROLE.ADMIN))
+                .toList();
+
+        List<User> result = new ArrayList<>();
+        userList.forEach(user ->{
+            result.add(new User(user));
+        });
+
+        return result;
     }
 
     public Map<String, String> getUserNameMap(List<String> userId){

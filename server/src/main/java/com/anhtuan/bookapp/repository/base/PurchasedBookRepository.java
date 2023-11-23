@@ -15,4 +15,6 @@ public interface PurchasedBookRepository extends MongoRepository<PurchasedBook, 
     int countPurchasedBooksByBookIdAndUserIdIsNot(String bookId, String userId);
 
     List<PurchasedBook> findPurchasedBooksByBookIdAndUserIdIsNot(String bookId, String userId);
+
+    int countPurchasedBooksByUserId(String userId);
 }

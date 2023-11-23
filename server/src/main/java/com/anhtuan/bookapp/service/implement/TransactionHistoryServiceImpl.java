@@ -49,4 +49,9 @@ public class TransactionHistoryServiceImpl implements TransactionHistoryService 
     public List<TransactionHistory> getSpendMoneyUser() {
         return transactionHistoryRepository.getSpendMoneyUser();
     }
+
+    @Override
+    public List<TransactionHistory> getTransactionsByUserId(String userId) {
+        return transactionHistoryRepository.getTransactionHistoriesByUserId(userId);
+    }
 }

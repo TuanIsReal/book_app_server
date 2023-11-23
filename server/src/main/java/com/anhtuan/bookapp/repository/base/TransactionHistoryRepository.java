@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface TransactionHistoryRepository extends MongoRepository<TransactionHistory, String>, TransactionHistoryCustomizeRepository {
     List<TransactionHistory> getTransactionHistoriesByUserIdOrderByTransactionTimeDesc(String userId);
+
+    List<TransactionHistory> getTransactionHistoriesByUserId(String userId);
 }

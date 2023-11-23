@@ -82,6 +82,14 @@ public class BookChapterServiceImpl implements BookChapterService {
         List<Notification> notificationList = new ArrayList<>();
 
         List<Device> deviceList = deviceService.getDevicesByUserIdIsIn(purchasedUserList);
+
+        for (String userId:purchasedUserList){
+            Notification notification = new Notification(userId, book.getId(), messBody, false, System.currentTimeMillis());
+            notificationList.add(notification);
+        }
+
+        notificationService.insertNotificationList(notificationList);
+
         for (Device device:deviceList){
             if (!device.getDeviceToken().isEmpty()){
                 NotificationMessage message = new NotificationMessage(device.getDeviceToken(), ADD_CHAPTER_NOTIFICATION_TITLE, messBody);
@@ -89,11 +97,7 @@ public class BookChapterServiceImpl implements BookChapterService {
             }
         }
 
-        for (String userId:purchasedUserList){
-            Notification notification = new Notification(userId, book.getId(), messBody, false, System.currentTimeMillis());
-            notificationList.add(notification);
-        }
-        notificationService.insertNotificationList(notificationList);
+
     }
 
     @Override

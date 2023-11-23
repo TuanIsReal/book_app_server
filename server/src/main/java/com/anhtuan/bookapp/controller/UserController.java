@@ -11,6 +11,7 @@ import com.anhtuan.bookapp.domain.*;
 import com.anhtuan.bookapp.request.LoginGoogleRequest;
 import com.anhtuan.bookapp.request.AuthenVerifyCodeRequest;
 import com.anhtuan.bookapp.request.RegisterRequest;
+import com.anhtuan.bookapp.response.GetUserDetailResponse;
 import com.anhtuan.bookapp.response.LoginResponse;
 import com.anhtuan.bookapp.response.RegisterResponse;
 import com.anhtuan.bookapp.response.Response;
@@ -43,6 +44,8 @@ public class UserController{
     private JwtTokenProvider tokenProvider;
     private final UserInfoManager userInfoManager;
     private final STFService stfService;
+    private BookService bookService;
+    private PurchasedBookService purchasedBookService;
 
 
     @GetMapping("/login")
@@ -132,6 +135,8 @@ public class UserController{
         User newUser = new User(email, encryptPassword, role, name, "", ip, USER_STATUS.LOGIN,500);
         User user = userService.insertUser(newUser);
         userInfoManager.addUser(user);
+        TransactionHistory pointAdd = new TransactionHistory(user.getId(), 500, 500, TRANSACTION_TYPE.ADMIN_ADD, System.currentTimeMillis());
+        transactionHistoryService.addTransactionHistory(pointAdd);
 
         CustomUserDetails userDetails = new CustomUserDetails(user);
         String token = tokenProvider.generateToken(userDetails);
@@ -488,6 +493,48 @@ public class UserController{
 
         userService.updateUserStatus(userId, USER_STATUS.LOGOUT);
         response.setCode(ResponseCode.SUCCESS);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("getUserDetail")
+    @Secured("ADMIN")
+    public ResponseEntity<Response> getUserDetail(@RequestParam String userId){
+        Response response = new Response();
+        User user = userInfoManager.getUserByUserId(userId);
+        if (user == null){
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        GetUserDetailResponse userDetail = new GetUserDetailResponse();
+        userDetail.setTotalBook(bookService.countBooksByAuthor(user.getId()));
+        userDetail.setTotalPurchasedBook(purchasedBookService.countPurchasedBooksByUserId(user.getId()));
+
+        List<TransactionHistory> transactionList = transactionHistoryService.getTransactionsByUserId(userId);
+
+        if (transactionList == null || transactionList.isEmpty()){
+            userDetail.setPurchasedPoint(0);
+            userDetail.setEarnedPoint(0);
+            response.setCode(ResponseCode.SUCCESS);
+            response.setData(userDetail);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        double totalPurchasedPoint = 0;
+        double totalEarnedPoint = 0;
+
+        for (TransactionHistory transaction : transactionList){
+            if (transaction.getTransactionType() == TRANSACTION_TYPE.RECHARGE_POINT){
+                totalPurchasedPoint += transaction.getPoint();
+            } else if (transaction.getTransactionType() == TRANSACTION_TYPE.SELL_BOOK){
+                totalEarnedPoint += transaction.getPoint();
+            }
+        }
+
+        userDetail.setPurchasedPoint(totalPurchasedPoint);
+        userDetail.setEarnedPoint(totalEarnedPoint);
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(userDetail);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

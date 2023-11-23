@@ -86,7 +86,7 @@ public class Constant {
     public static class TRANSACTION_TYPE{
         public static final int BUY_BOOK = 1;
         public static final int SELL_BOOK = 2;
-        public static final int RECHARGE_BOOK = 3;
+        public static final int RECHARGE_POINT = 3;
         public static final int ADMIN_ADD = 4;
     }
 
