@@ -76,4 +76,16 @@ public class User {
         this.isGoogleLogin = isGoogleLogin;
     }
 
+    public User(User user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.role = user.getRole();
+        this.name = user.getName();
+        this.avatarImage = user.getAvatarImage();
+        this.lastLoginIp = user.getLastLoginIp();
+        this.status = user.getStatus();
+        this.point = user.getPoint();
+        this.isGoogleLogin = user.getIsGoogleLogin();
+    }
 }

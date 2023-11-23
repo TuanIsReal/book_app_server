@@ -169,7 +169,7 @@ public class PaymentController {
             int newPoint = user.getPoint() + pointPayment;
             userService.updatePointByUserId(user.getId(), pointPayment);
 
-            TransactionHistory sellBookHis = new TransactionHistory(user.getId(), payment.getPoint(), newPoint, TRANSACTION_TYPE.RECHARGE_BOOK, time);
+            TransactionHistory sellBookHis = new TransactionHistory(user.getId(), payment.getPoint(), newPoint, TRANSACTION_TYPE.RECHARGE_POINT, time);
             transactionHistoryService.addTransactionHistory(sellBookHis);
 
             String mess = Utils.messSuccessAddPoint(payment.getPoint());

@@ -13,4 +13,6 @@ public interface TransactionHistoryService {
     List<TransactionHistory> getIncomeWriter();
     List<TransactionHistory> getRechargedUser();
     List<TransactionHistory> getSpendMoneyUser();
+
+    List<TransactionHistory> getTransactionsByUserId(String userId);
 }

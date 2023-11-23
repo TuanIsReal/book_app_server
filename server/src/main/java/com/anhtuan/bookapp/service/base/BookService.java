@@ -33,4 +33,5 @@ public interface BookService {
     void updateBookStatus(String bookId, int status);
     void updateBookInfo(Book book, boolean isFinish);
     List<Book> findBookByBookIdList(List<String> ids);
+    int countBooksByAuthor(String author);
 }

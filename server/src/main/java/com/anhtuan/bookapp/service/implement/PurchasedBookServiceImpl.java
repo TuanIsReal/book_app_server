@@ -53,4 +53,9 @@ public class PurchasedBookServiceImpl implements PurchasedBookService {
     public List<PurchasedBook> getPurchasedSpendPoint() {
         return purchasedBookRepository.getPurchasedSpendPoint();
     }
+
+    @Override
+    public int countPurchasedBooksByUserId(String userId) {
+        return purchasedBookRepository.countPurchasedBooksByUserId(userId);
+    }
 }

@@ -19,4 +19,6 @@ public interface PurchasedBookService {
 
     void unShowPurchasedBook(String bookId, String userId);
     List<PurchasedBook> getPurchasedSpendPoint();
+
+    int countPurchasedBooksByUserId(String userId);
 }

@@ -136,4 +136,9 @@ public class BookServiceImpl implements BookService {
     public List<Book> findBookByBookIdList(List<String> ids) {
         return bookRepository.findBookByBookIdList(ids);
     }
+
+    @Override
+    public int countBooksByAuthor(String author) {
+        return bookRepository.countBooksByAuthorAndStatusGreaterThanEqual(author, Constant.BOOK_STATUS.ACCEPTED);
+    }
 }

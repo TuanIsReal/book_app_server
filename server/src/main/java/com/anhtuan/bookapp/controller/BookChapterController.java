@@ -116,8 +116,9 @@ public class BookChapterController {
         }
 
         String chapterContent = stfService.getChapterContent(bookChapter.getChapterContent() + TXT);
+        bookChapter.setChapterContent(chapterContent);
         response.setCode(ResponseCode.SUCCESS);
-        response.setData(chapterContent);
+        response.setData(bookChapter);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

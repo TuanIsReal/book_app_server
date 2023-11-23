@@ -11,7 +11,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 @AllArgsConstructor
@@ -52,7 +51,7 @@ public class TransactionHistoryRepositoryImpl implements TransactionHistoryCusto
     @Override
     public List<TransactionHistory> getRechargedUser() {
         Query query = new Query();
-        query.addCriteria(Criteria.where(TransactionHistory.TRANSACTION_TYPE).is(TRANSACTION_TYPE.RECHARGE_BOOK));
+        query.addCriteria(Criteria.where(TransactionHistory.TRANSACTION_TYPE).is(TRANSACTION_TYPE.RECHARGE_POINT));
         return mongoTemplate.find(query, TransactionHistory.class);
     }
 
