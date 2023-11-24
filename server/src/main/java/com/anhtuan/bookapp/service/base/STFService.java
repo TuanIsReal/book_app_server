@@ -16,4 +16,6 @@ public interface STFService {
     Map<String, String> getBookImagePathMap(List<Book> books);
 
     Map<String, String> getUserAvatarPathMap(List<User> users);
+
+    String getAvatarPath(User user);
 }

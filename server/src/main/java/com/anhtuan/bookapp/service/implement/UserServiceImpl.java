@@ -18,7 +18,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByEmail(String email) {
-        return userRepository.findUserByEmail(email);
+        User user =  userRepository.findUserByEmail(email);
+        return user == null ? null : new User(user);
     }
 
     @Override
@@ -28,7 +29,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserByUserId(String userId) {
-        return userInfoManager.getUserByUserId(userId);
+        User user = userInfoManager.getUserByUserId(userId);
+        return user == null ? null : new User(user);
     }
 
     @Override

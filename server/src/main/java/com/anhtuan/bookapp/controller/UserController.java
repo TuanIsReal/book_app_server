@@ -46,6 +46,8 @@ public class UserController{
     private final STFService stfService;
     private BookService bookService;
     private PurchasedBookService purchasedBookService;
+    private NotificationService notificationService;
+    private FirebaseMessagingService firebaseMessagingService;
 
 
     @GetMapping("/login")
@@ -135,8 +137,13 @@ public class UserController{
         User newUser = new User(email, encryptPassword, role, name, "", ip, USER_STATUS.LOGIN,500);
         User user = userService.insertUser(newUser);
         userInfoManager.addUser(user);
-        TransactionHistory pointAdd = new TransactionHistory(user.getId(), 500, 500, TRANSACTION_TYPE.ADMIN_ADD, System.currentTimeMillis());
+        long time = System.currentTimeMillis();
+        TransactionHistory pointAdd = new TransactionHistory(user.getId(), 500, 500, TRANSACTION_TYPE.ADMIN_ADD, time);
         transactionHistoryService.addTransactionHistory(pointAdd);
+
+        String mess = Utils.messAdminAddPoint(500);
+        Notification notification = new Notification(user.getId(), "", mess, false, time);
+        notificationService.insertNotification(notification);
 
         CustomUserDetails userDetails = new CustomUserDetails(user);
         String token = tokenProvider.generateToken(userDetails);
@@ -153,21 +160,19 @@ public class UserController{
         User user = userService.findUserLoginGoolge(googleRequest.getEmail(),true);
         if(user!=null && (user.getIsGoogleLogin()==null || !user.getIsGoogleLogin())){
             response.setCode(ResponseCode.USER_NOT_EXISTS);
-            response.setData(new LoginResponse());
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
         if(user != null && user.getIsGoogleLogin()){
             if (user.getStatus() == USER_STATUS.BLOCK){
                 response.setCode(ResponseCode.ACCOUNT_IS_BLOCKED);
-                response.setData(new LoginResponse());
                 return new ResponseEntity<>(response, HttpStatus.OK);
             }
 
-            userService.updateUserIpAndLoggedStatus(user.getId(), googleRequest.getIp());
             CustomUserDetails userDetails = new CustomUserDetails(user);
             String token = tokenProvider.generateToken(userDetails);
             String refreshToken = tokenProvider.generateRefreshToken(userDetails);
 
+            userService.updateUserIpAndLoggedStatus(user.getId(), googleRequest.getIp());
             response.setCode(ResponseCode.SUCCESS);
             response.setData(new LoginResponse(token, refreshToken, user.getRole()));
 
@@ -184,6 +189,7 @@ public class UserController{
         String token = tokenProvider.generateToken(userDetails);
         String refreshToken = tokenProvider.generateRefreshToken(userDetails);
 
+        userService.updateUserIpAndLoggedStatus(user.getId(), googleRequest.getIp());
         response.setCode(ResponseCode.SUCCESS);
         response.setData(new LoginResponse(token, refreshToken, saveUser.getRole()));
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -210,6 +216,23 @@ public class UserController{
         } else {
             response.setCode(ResponseCode.USER_NOT_EXISTS);
         }
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("getUser")
+    @Secured("ADMIN")
+    public ResponseEntity<Response> getUser(@RequestParam String userId){
+        Response response = new Response();
+        User user = userService.getUserByUserId(userId);
+        if (user == null) {
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+
+        String avatar = stfService.getAvatarPath(user);
+        user.setAvatarImage(avatar);
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(user);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -492,6 +515,41 @@ public class UserController{
         }
 
         userService.updateUserStatus(userId, USER_STATUS.LOGOUT);
+        response.setCode(ResponseCode.SUCCESS);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("addPointAdmin")
+    @Secured("ADMIN")
+    public ResponseEntity<Response> addPointAdmin(@RequestParam String userId,
+                                                  @RequestParam int point){
+        Response response = new Response();
+        User user = userInfoManager.getUserByUserId(userId);
+        if (user == null){
+            response.setCode(ResponseCode.USER_NOT_EXISTS);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        }
+        long time = System.currentTimeMillis();
+        int newPoint = user.getPoint() + point;
+        userService.updatePointByUserId(user.getId(), point);
+
+        TransactionHistory transactionHistory = new TransactionHistory(user.getId(), point, newPoint, TRANSACTION_TYPE.ADMIN_ADD, time);
+        transactionHistoryService.addTransactionHistory(transactionHistory);
+
+        String mess = Utils.messAdminAddPoint(point);
+        Notification notification = new Notification
+                (user.getId(), "", mess, false, time);
+        notificationService.insertNotification(notification);
+
+        List<Device> devices = deviceService.getDevicesByUserId(user.getId());
+        if (devices != null && !devices.isEmpty()){
+            devices.forEach(device -> {
+                NotificationMessage message = new
+                        NotificationMessage(device.getDeviceToken(), ADD_POINT_TITLE, mess);
+                firebaseMessagingService.sendNotificationByToken(message);
+            });
+        }
+
         response.setCode(ResponseCode.SUCCESS);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

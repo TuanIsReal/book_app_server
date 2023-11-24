@@ -1,5 +1,6 @@
 package com.anhtuan.bookapp.repository.implement;
 
+import com.anhtuan.bookapp.config.Constant;
 import com.anhtuan.bookapp.domain.User;
 import com.anhtuan.bookapp.repository.customize.UserCustomizeRepository;
 import lombok.AllArgsConstructor;
@@ -37,6 +38,7 @@ public class UserRepositoryImpl implements UserCustomizeRepository {
         query.addCriteria(Criteria.where(User.USER_ID).is(userId));
         Update update = new Update();
         update.set(User.LAST_LOGIN_IP, ip);
+        update.set(User.STATUS, Constant.USER_STATUS.LOGIN);
         mongoTemplate.updateFirst(query, update, User.class);
     }
 
