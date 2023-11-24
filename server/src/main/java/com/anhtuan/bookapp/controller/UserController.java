@@ -46,6 +46,7 @@ public class UserController{
     private final STFService stfService;
     private BookService bookService;
     private PurchasedBookService purchasedBookService;
+    private NotificationService notificationService;
 
 
     @GetMapping("/login")
@@ -135,8 +136,13 @@ public class UserController{
         User newUser = new User(email, encryptPassword, role, name, "", ip, USER_STATUS.LOGIN,500);
         User user = userService.insertUser(newUser);
         userInfoManager.addUser(user);
-        TransactionHistory pointAdd = new TransactionHistory(user.getId(), 500, 500, TRANSACTION_TYPE.ADMIN_ADD, System.currentTimeMillis());
+        long time = System.currentTimeMillis();
+        TransactionHistory pointAdd = new TransactionHistory(user.getId(), 500, 500, TRANSACTION_TYPE.ADMIN_ADD, time);
         transactionHistoryService.addTransactionHistory(pointAdd);
+
+        String mess = Utils.messAdminAddPoint(500);
+        Notification notification = new Notification(user.getId(), "", mess, false, time);
+        notificationService.insertNotification(notification);
 
         CustomUserDetails userDetails = new CustomUserDetails(user);
         String token = tokenProvider.generateToken(userDetails);

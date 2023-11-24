@@ -27,6 +27,10 @@ public class Utils {
         return "Bạn đã nạp thêm thành công " + point + " point vào tài khoản!";
     }
 
+    public static final String messAdminAddPoint(int point){
+        return "Hệ thống đã cộng thêm cho bạn " + point + " point vào tài khoản!";
+    }
+
     public static final String mailForgotPassword(String code){
         return "Mã xác nhận mật khẩu của bạn là : " + code + " \nMã xác nhận có hiệu lực trong vòng 15 phút. Bạn vui lòng quay lại app để xác thực";
     }
