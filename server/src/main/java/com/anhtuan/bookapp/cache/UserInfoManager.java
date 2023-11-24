@@ -74,6 +74,7 @@ public class UserInfoManager {
         User user = USER_MAP.get(userId);
         if (user != null) {
             user.setLastLoginIp(ip);
+            user.setStatus(Constant.USER_STATUS.LOGIN);
             USER_MAP.put(userId, user);
         } else {
             User newUser = userRepository.findUserById(userId);
