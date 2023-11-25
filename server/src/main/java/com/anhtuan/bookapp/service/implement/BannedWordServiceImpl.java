@@ -13,7 +13,6 @@ import java.util.List;
 public class BannedWordServiceImpl implements BannedWordService {
     private BannedWordRepository bannedWordRepository;
 
-
     @Override
     public void updateBannedWord(int version, List<String> words) {
         bannedWordRepository.updateBannedWord(version, words);
@@ -27,6 +26,16 @@ public class BannedWordServiceImpl implements BannedWordService {
     @Override
     public BannedWord findOne() {
         return bannedWordRepository.findOne();
+    }
+
+    @Override
+    public void pushBannedWord(int version, String word) {
+        bannedWordRepository.pushBannedWord(version, word);
+    }
+
+    @Override
+    public void pullBannedWord(int version, String word) {
+        bannedWordRepository.pullBannedWord(version, word);
     }
 
 }

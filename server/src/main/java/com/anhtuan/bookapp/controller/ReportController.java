@@ -53,15 +53,15 @@ public class ReportController {
 
     @GetMapping("getReports")
     @Secured("ADMIN")
-    public ResponseEntity<Response> getNewReports(@RequestParam Integer type){
+    public ResponseEntity<Response> getNewReports(@RequestParam Integer status){
         Response response = new Response();
 
-        if (type != Constant.REPORT_STATUS.NOT_CHECK && type != Constant.REPORT_STATUS.CHECKED){
+        if (status != Constant.REPORT_STATUS.NOT_CHECK && status != Constant.REPORT_STATUS.CHECKED){
             response.setCode(ResponseCode.WRONG_DATA_FORMAT);
             return new ResponseEntity<>(response, HttpStatus.OK);
         }
 
-        List<Report> reportList = reportService.findReportsByStatus(type);
+        List<Report> reportList = reportService.findReportsByStatus(status);
 
         response.setCode(ResponseCode.SUCCESS);
         response.setData(reportList);

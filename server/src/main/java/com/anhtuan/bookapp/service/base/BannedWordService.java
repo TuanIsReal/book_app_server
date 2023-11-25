@@ -11,4 +11,8 @@ public interface BannedWordService {
     void createBannedWord(BannedWord bannedWord);
 
     BannedWord findOne();
+
+    void pushBannedWord(int version, String word);
+
+    void pullBannedWord(int version, String word);
 }
