@@ -17,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -170,6 +171,44 @@ public class BookChapterController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("addBannedWord")
+    private ResponseEntity<Response> addBannedWord(@RequestParam String word){
+        Response response = new Response();
+        BannedWord bannedWord = bannedWordService.findOne();
+        if (Objects.isNull(bannedWord)){
+            BannedWord newBannedWord = new BannedWord(1, Collections.singletonList(word));
+            bannedWordService.createBannedWord(newBannedWord);
+            response.setCode(ResponseCode.SUCCESS);
+            return ResponseEntity.ok(response);
+        }
+
+        if (bannedWord.getWords().contains(word)){
+            response.setCode(ResponseCode.BANNED_WORD_EXISTS);
+            return ResponseEntity.ok(response);
+        }
+
+        bannedWordService.pushBannedWord(bannedWord.getVersion(), word);
+        response.setCode(ResponseCode.SUCCESS);
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("removeBannedWord")
+    private ResponseEntity<Response> removeBannedWord(@RequestParam String word){
+        Response response = new Response();
+        BannedWord bannedWord = bannedWordService.findOne();
+        if (Objects.isNull(bannedWord)){
+            response.setCode(ResponseCode.SUCCESS);
+            return ResponseEntity.ok(response);
+        }
+
+        if (bannedWord.getWords().contains(word)){
+            bannedWordService.pullBannedWord(bannedWord.getVersion(), word);
+        }
+
+        response.setCode(ResponseCode.SUCCESS);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("getBannedWord")
     private ResponseEntity<Response> getBannedWord(@RequestParam int version){
         Response response = new Response();
@@ -182,4 +221,16 @@ public class BookChapterController {
         response.setData(bannedWord);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
+    @GetMapping("getBannedWordAdmin")
+    private ResponseEntity<Response> getBannedWordAdmin(){
+        Response response = new Response();
+        BannedWord bannedWord = bannedWordService.findOne();
+
+        response.setCode(ResponseCode.SUCCESS);
+        response.setData(bannedWord);
+        return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+
 }

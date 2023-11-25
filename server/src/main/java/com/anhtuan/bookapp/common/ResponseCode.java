@@ -26,4 +26,5 @@ public class ResponseCode {
     public static final int ACCOUNT_IS_BLOCKED = 122;
     public static final int PASSWORD_IS_WRONG = 123;
     public static final int REFRESH_TOKEN_INVALID = 124;
+    public static final int BANNED_WORD_EXISTS = 125;
 }

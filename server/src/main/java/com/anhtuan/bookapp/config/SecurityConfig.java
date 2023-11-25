@@ -60,7 +60,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "/stf/getBookImage",
                         "/stf/getThumbnail",
                         "/stf/getAvatar",
-                        "/bookChapter/getBannedWord").permitAll()
+                        "/bookChapter/getBannedWord",
+                        "/bookChapter/getBannedWordAdmin").permitAll()
                 .anyRequest().authenticated();
 
         http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);

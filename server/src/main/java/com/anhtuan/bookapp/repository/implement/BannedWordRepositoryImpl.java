@@ -29,6 +29,27 @@ public class BannedWordRepositoryImpl implements BannedWordCustomizeRepository {
     }
 
     @Override
+    public void pushBannedWord(int version, String word) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(BannedWord.VERSION).is(version));
+        Update update = new Update();
+        update.set(BannedWord.VERSION, version + 1);
+        update.push(BannedWord.WORDS, word);
+        mongoTemplate.updateFirst(query, update, BannedWord.class);
+    }
+
+    @Override
+    public void pullBannedWord(int version, String word) {
+        Query query = new Query();
+        query.addCriteria(Criteria.where(BannedWord.VERSION).is(version));
+        Update update = new Update();
+        update.set(BannedWord.VERSION, version + 1);
+        update.pull(BannedWord.WORDS, word);
+        mongoTemplate.updateFirst(query, update, BannedWord.class);
+    }
+
+
+    @Override
     public void insertBannedWord(BannedWord bannedWord) {
         mongoTemplate.insert(bannedWord);
     }
