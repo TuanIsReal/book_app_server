@@ -53,7 +53,7 @@ public class ReportController {
 
     @GetMapping("getReports")
     @Secured("ADMIN")
-    public ResponseEntity<Response> getNewReports(@RequestParam Integer status){
+    public ResponseEntity<Response> getReports(@RequestParam Integer status){
         Response response = new Response();
 
         if (status != Constant.REPORT_STATUS.NOT_CHECK && status != Constant.REPORT_STATUS.CHECKED){
